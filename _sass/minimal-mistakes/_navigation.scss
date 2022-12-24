@@ -257,6 +257,11 @@
         pointer-events: none;
         cursor: not-allowed;
       }
+
+      &.prev_next {
+        font-family: $cute;
+        color:#ffd861;
+      }
     }
   }
   
