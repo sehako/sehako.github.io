@@ -112,7 +112,7 @@ author:
     - label: "dhtpgkr1999@gmail.com"
       icon: "fas fa-fw fa-envelope-square"
       # url: "mailto:dhtpgkr1999@gmail.com"
-      
+
     - label: "GitHub"
       icon: "fab fa-fw fa-github"
       url: "https://github.com/sehako/sehako.github.io"
@@ -255,3 +255,4 @@ defaults:
       comments: # true
       share: true
       related: true
+      sidebar_main: true
