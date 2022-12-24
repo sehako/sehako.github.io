@@ -30,7 +30,7 @@
             <ul>
                 {% for category in site.categories %}
                     {% if category[0] == "Baekjoon" %}
-                        <li><a href="/categories/baekjoon" class="">알고리즘 구현 (with C++) ({{category[1].size}})</a></li>
+                        <li><a href="/categories/baekjoon" class="">Baekjoon ({{category[1].size}})</a></li>
                     {% endif %}
                 {% endfor %}
             </ul>
