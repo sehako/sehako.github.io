@@ -159,6 +159,11 @@
     @include clearfix();
     float: left;
     width: 100%;
+
+    .prev_next {
+      font-family: $cute;
+      color:#fff;
+    }
   
     /* next/previous buttons */
     &--pager {
