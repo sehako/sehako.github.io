@@ -256,3 +256,6 @@ defaults:
       share: false
       related: false
       sidebar_main: true
+      lunr:
+        search_within_pages: true
+        search_full_content: true
