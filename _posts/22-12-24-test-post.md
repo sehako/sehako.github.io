@@ -3,7 +3,7 @@ title:  "sample_title"
 excerpt: "카테고리, 태그, 날짜 테스트"
 
 categories:
-  - Blog
+  - Java
 
 toc: true
 toc_sticky: true
