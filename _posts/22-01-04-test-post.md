@@ -4,8 +4,6 @@ excerpt: "카테고리, 태그, 날짜 테스트"
 
 categories:
   - Blog
-tags:
-  - [Blog, jekyll, Github, Git]
 
 toc: true
 toc_sticky: true
