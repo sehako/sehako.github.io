@@ -104,9 +104,9 @@ analytics:
 
 # Site Author
 author:
-  name             : "Sehak O"
-  avatar           : # path of avatar image, e.g. "/assets/images/bio-photo.jpg"
-  bio              : "About Computer"
+  name             : "sehako"
+  avatar           : "/assets/images/android-chrome-192x192.png" # path of avatar image, e.g. 
+  bio              : "NOTE"
   location         : "South Korea"
   links:
     - label: "Email"
