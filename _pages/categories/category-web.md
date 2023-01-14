@@ -1,11 +1,11 @@
 ---
-title: "HTML"
+title: "WEB"
 layout: archive
-permalink: categories/html
+permalink: categories/web
 author_profile: true
 sidebar_main: true
 ---
 
 
-{% assign posts = site.categories.HTML %}
+{% assign posts = site.categories.WEB %}
 {% for post in posts %} {% include archive-single.html type=page.entries_layout %} {% endfor %}

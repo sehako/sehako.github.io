@@ -3,13 +3,13 @@ title:  "[HTML] 강의 정리"
 excerpt: "생활코딩 HTML 강의"
 
 categories:
-  - HTML
+  - WEB
 
 toc: true
 toc_sticky: true
  
 date: 2023-01-12
-last_modified_at: 2023-01-13
+last_modified_at: 2023-01-14
 ---
 
 # 태그
@@ -141,9 +141,35 @@ html 전체 문서를 감싸는 태그로 기본 형식은 다음과 같다.
 <a href = "링크 주소">텍스트</a>
 ```
 
+## 동영상 삽입
+
+https://www.youtube.com/watch?v=lB3z8r6lNB8
+
+해당 유튜브 동영상을 공유한다고 가정한다면, 유튜브 공유 기능의 퍼가기를 선택하여 html 소스를 붙여넣기 하면 된다. `iframe` 태그를 이용하며 위 동영상의 html 소스는 다음과 같다.
+
+```html
+<iframe width="560" height="315" src="https://www.youtube.com/embed/lB3z8r6lNB8" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+```
+
+## 방문자 분석기
+
+구글에서 제공하는 방문자 분석기를 이용하여 웹의 방문자 숫자를 알 수 있다.
+[링크](https://www.youtube.com/watch?v=4QCZxcCBtCI)참조
+
 # 인터넷
 가장 기초적인 인터넷을 구성하는데 필요한 컴퓨터는 총 2대다. 하나는 웹 브라우저, 다른 하나는 웹 서버로 구성되어 있다.
 
 웹 브라우저(클라이언트)는 정보를 요청하고 웹 서버(서버)는 요청된 정보에 대해 응답을 한다.
 
 ![image](/assets/images/web_image_01.png)
+
+## 깃허브를 이용한 웹 호스팅
+깃허브를 이용하여 웹 호스팅을 할 수 있다. 깃허브 리포지토리의 pages 기능을 이용하는 방법이다. 웹 호스팅이 완료되면 [링크](https://sehako.github.io/my-first-web-site/)가 생성된다.
+
+웹 호스팅 과정을 그림으로 표현하면 다음과 같다.
+![image](/assets/images/web_image_02.png)
+
+대부분 웹 호스팅 시스템을 사용한다. 제작자는 웹을 구성하기만 하면 끝나기 떄문이다. 방문자의 요청에 따라서 웹을 서비스 하는 것은 호스팅하는 곳의 역할이다.
+
+## 웹 서버 운영
+Visual Studio의 확장 기능인 Live Server로 웹 서버를 운영해본다. Live Server 확장을 설치한 후 오른쪽 아래 Go Live 버튼을 누르면 웹 서버가 만들어진다. 
