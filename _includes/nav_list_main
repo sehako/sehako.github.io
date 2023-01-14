@@ -42,14 +42,14 @@
             </ul>
             <ul>
                 {% for category in site.categories %}
-                    {% if category[0] == "HTML" %}
+                    {% if category[0] == "WEB" %}
                         <li><a href="/categories/html" class="">HTML ({{category[1].size}})</a></li>
                     {% endif %}
                 {% endfor %}
             </ul>
             <ul>
                 {% for category in site.categories %}
-                    {% if category[0] == "ML" %}
+                    {% if category[0] == "Machine_Learning" %}
                         <li><a href="/categories/ml" class="">HTML ({{category[1].size}})</a></li>
                     {% endif %}
                 {% endfor %}
