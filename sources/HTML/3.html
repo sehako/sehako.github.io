@@ -3,10 +3,46 @@
     <head>
         <title>WEB Study</title>
         <meta charset="utf-8">
+        <script>
+            var Link = {
+                setColor:function(color) {
+                    var i = 0;
+                    var links = document.querySelectorAll('a');
+                    while(i < links.length) {
+                        links[i].style.color = color
+                        i++;
+                    }
+                }
+            }
+            var Body = {
+                setBackground:function(color) {
+                    document.querySelector('body').style.backgroundColor = color;
+                },
+                setColor:function(color) {
+                    document.querySelector('body').style.color = color;
+                }
+            }
+
+            function night_day(self) {
+                if (self.value == 'night') {
+                    Body.setBackground('black');
+                    Body.setColor('white');
+                    Link.setColor('powderblue');
+                    self.value = 'day';
+                }
+                else {
+                    Body.setBackground('white');
+                    Body.setColor('black');
+                    Link.setColor('blue');
+                    self.value = 'night';
+                }
+            }
+        </script>
     </head>
 
     <body>
         <h1><a href="index.html">WEB</a></h1>
+        <input type = "button" value = "night" onclick = "night_day(this)">
         <ol>
             <li><a href="1.html">HTML</a></li>
             <li><a href="2.html">CSS</a></li>

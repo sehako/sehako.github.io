@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset = "utf-8">
+        <title></title>
+    </head>
+    <body>
+        <h1>Object</h1>
+        <h2>Create</h2>
+        <script>
+            var names = {
+                "O":"Sehak",
+                "Ji":"Jungsuk"
+            };
+            document.write(names.Ji + '<br>');
+            names.bookkeeper = "qq";
+            document.write(names.bookkeeper);
+
+        </script>
+        <h2>Iterate</h2>
+        <script>
+            for (var key in names) { //객체의 키 값을 가져오는 반복문
+                document.write(names[key] + '<br>');
+            }
+        </script>
+        <h2>Property & Method</h2>
+        <script>
+            names.showAll = function() {
+                for(var key in names) {
+                    document.write(key + ':' + names[key]+ '<br>');
+                }
+            }
+            names.showAll();
+        </script>
+    </body>
+</html>
