@@ -9,7 +9,7 @@ toc: true
 toc_sticky: true
  
 date: 2023-01-16
-last_modified_at: 2023-01-16
+last_modified_at: 2023-01-18
 ---
 
 # 웹에서의 상호작용
@@ -380,4 +380,59 @@ names.showAll = function() {
         <h2>JavaScript</h2>
     </body>
 </html>
+```
+
+# 파일
+HTML 문서 안에 `script` 태그 안에 코드를 정의하는 방법외에, 자바 스크립트를 하나의 파일로 생성하여 HTML 문서에 선언하는 방법도 존재한다. `file.js`라는 자바 스크립트 파일이 있다면, HTML 문서에서 다음 코드로 파일을 불러오기만 하면 된다.
+```html
+<script src = "file.js"></script>
+```
+만약 같은 자바 스크립트 소스를 여러 HTML에 적용해야 한다면, 파일을 이용하는 방식이 굉장히 효율적일 것이다.
+
+# jQuery
+```html
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+```
+
+위 코드는 구글에서 제공하는 일종의 자바 스크립트 라이브러리이다. 구글 이외에도 여러 회사가 독자적인 라이브러리를 제작 및 제공한다. [링크](https://jquery.com/download/)참조
+
+아래 코드는 구글 jQuery를 사용하여 기존의 자바 스크립트 야간/주간 모드 변환에 대한 코드를 리팩토링한 것이다.
+
+```js
+var Link = {
+    setColor:function(color) {
+        // var i = 0;
+        // var links = document.querySelectorAll('a');
+        // while(i < links.length) {
+        //     links[i].style.color = color
+        //     i++;
+        // }
+        $('a').css('color', color);
+    }
+}
+var Body = {
+    setBackground:function(color) {
+        // document.querySelector('body').style.backgroundColor = color;
+        $('body').css('backgroundColor', color);
+    },
+    setColor:function(color) {
+        // document.querySelector('body').style.color = color;
+        $('body').css('color', color);
+    }
+}
+
+function night_day(self) {
+    if (self.value == 'night') {
+        Body.setBackground('black');
+        Body.setColor('white');
+        Link.setColor('powderblue');
+        self.value = 'day';
+    }
+    else {
+        Body.setBackground('white');
+        Body.setColor('black');
+        Link.setColor('blue');
+        self.value = 'night';
+    }
+}
 ```
