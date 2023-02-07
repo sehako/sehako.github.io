@@ -9,7 +9,6 @@ toc: true
 toc_sticky: true
  
 date: 2023-02-04
-last_modified_at: 2023-02-06
 ---
 
 # 포인터와 다차원 배열

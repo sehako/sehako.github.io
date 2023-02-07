@@ -9,7 +9,6 @@ toc: true
 toc_sticky: true
  
 date: 2023-01-10
-last_modified_at: 2023-02-04
 ---
 
 # 포인터

@@ -9,7 +9,6 @@ toc: true
 toc_sticky: true
  
 date: 2023-01-14
-last_modified_at: 2023-01-15
 ---
 
 # HTML에서 CSS 작성하기

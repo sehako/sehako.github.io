@@ -9,7 +9,6 @@ toc: true
 toc_sticky: true
  
 date: 2023-01-16
-last_modified_at: 2023-01-18
 ---
 
 # 웹에서의 상호작용
