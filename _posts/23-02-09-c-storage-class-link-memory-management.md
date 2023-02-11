@@ -1,5 +1,5 @@
 ---
-title:  "[C] 저장 클래스, 연계, 메모리 관리"
+title:  "[C] 저장 클래스, 연계"
 excerpt: "정리"
 
 categories:
@@ -318,3 +318,111 @@ extern void delta();
 
 안전한 프로그래밍을 위한 황금률 중 하나는, 공유할 필요가 있는 변수들만 공유하면서, 각 함수들의 작업을 가능하면 해당 함수에만 국한시키는 것이다.(Need to know rule)
 
+# 난수 함수와 정적 변수
+
+C 라이브러리는 난수들을 발생시키는 `rand()` 함수를 제공한다. 해당 함수를 '의사 난수 발생기(pseudorandom number generator)'라고 한다. 난수들의 실제 시퀀스를 예측할 수 있다는 것을 의미한다. 다시 말해서, 가능한 값들의 범위에 걸쳐 난수들이 아주 일정하게 분포된다. 
+
+제공된 `rand()` 함수를 사용하는 대신에, 이식 가능한 ANSI 버전의 함수를 만들어 볼 것이다. 아래 예제는 버전 0(?)함수이다.
+
+```c
+//rand0.c
+static unsigned long int next = 1;
+
+int rand0(void) {
+    next = next * 1103515245 + 12345;
+    
+    return (unsigned int) (next / 65536) % 32768;
+}
+```
+
+내부 연계 정적 변수 `next`는 호출될 떄마다 함수에 정의된 공식에 의해 변경된다.
+
+```c
+#include <stdio.h>
+extern int rand0(void);
+
+int main(void) {
+    int count;
+
+    for (count = 0; count < 5; count++) {
+        printf("%hd\n", rand0());
+    }
+
+    return 0;
+}
+```
+
+```
+16838
+5758
+10113
+17515
+31051
+```
+
+위 실행 결과는 매번 실행할 때마다 같다. 이것이 바로 '의사(pseudo)' 특성이다. 초기값을 지정해줄 수 있는 함수를 추가로 정의하면 이런 문제를 해결할 수 있다.
+
+```c
+static unsigned long int next = 1;
+
+int rand1(void) {
+	next = next * 1103515245 + 12345;
+
+	return (unsigned int)(next / 65536) % 32768;
+}
+
+void srand1(unsigned int seed) {
+	next = seed;
+}
+```
+
+```c
+#include <stdio.h>
+
+extern void srand1(unsigned int x);
+extern int rand1(void);
+
+int main(void) {
+    int count;
+    unsigned seed;
+
+    printf("초기값 입력: ");
+
+    while (scanf_s("%u", &seed) == 1) {
+        srand1(seed);
+        
+        for (count = 0; count < 5; count++) {
+            printf("%hd\n", rand1());
+        }
+        printf("다음 초기값 입력(q입력시 종료): ");
+    }
+    printf("종료\n");
+
+    return 0;
+}
+```
+
+```
+초기값 입력: 1
+16838
+5758
+10113
+17515
+31051
+다음 초기값 입력(q입력시 종료): 2
+908
+22817
+10239
+12914
+25837
+다음 초기값 입력(q입력시 종료): 3
+17747
+7107
+10365
+8312
+20622
+다음 초기값 입력(q입력시 종료): q
+종료
+```
+
+초기값이 달라지면 난수 또한 달라지는 것을 볼 수 있다. 
