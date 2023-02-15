@@ -15,14 +15,29 @@ struct person {
 };
 
 int main(void) {
-    struct person man = {
-        {"James", "Hallow"},
-        "Ramen",
-        "Trainer",
-        50000
+    struct person man[2] = {
+        {
+            {"James", "Hallow"},
+            "Ramen",
+            "Trainer",
+            50000
+        }, 
+        {
+            {"Bit", "Coin"},
+            "Sushi",
+            "Trader",
+            100000   
+        }
     };
 
-    printf("%s, %s, %s, %s, %f", man.handle.last, man.handle.first, man.food, man.job, man.income);
+    struct person * ptt;
+    ptt = &man[0];
+    
+    printf("주소 #1: %p #2: %p\n", &man[0], &man[1]);
+    printf("포인터 #1: %p #2: %p\n", ptt, ptt + 1);
+    printf("ptt -> income: %f, (*ptt).income: %f\n", ptt -> income, (*ptt).income);
+    ptt++;
+    printf("ptt -> food: %s, ptt -> handle.last: %s\n", ptt -> food, ptt -> handle.last);
 
     return 0;
 }
