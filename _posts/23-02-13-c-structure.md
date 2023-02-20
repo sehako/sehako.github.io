@@ -923,52 +923,9 @@ struct person ted = {8483, {"Ted", "Grass"}};
 
 함수를 사용하여 구조체의 배열을 처리해야 한다고 가정하자. 배열 이름은 배열의 주소와 동등하므로, 함수에 전달될 수 있다. 그리고 그 함수는 구조체 템플릿에 접근할 필요가 있다. 
 
-```c
-#include <stdio.h>
+(깃허브 빌드 오류 때문에 스크린샷으로 대체)
 
-#define FUNDLEN 50
-#define N 2
-
-struct funds {
-    char bank[FUNDLEN];
-    double bankfund;
-    char save[FUNDLEN];
-    double savefund;
-};
-
-double sum(const struct funds money[], int n);
-
-int main(void) {
-    struct funds jones[N] = {{
-        "KB",
-        40000.00,
-        "ABC",
-        4054.44
-    },
-    {
-        "SH",
-        20000.00,
-        "EDF",
-        30000.00
-    }
-    };
-
-    printf("%f", sum(jones, N));
-
-    return 0;
-}
-
-double sum(const struct funds money[], int n) {
-    double total;
-    int i;
-
-    for(i = 0, total = 0; i < n; i++) {
-        total += money[i].bankfund + money[i].savefund;
-    }
-
-    return total;
-}
-```
+![image](/assets/images/c_image_06.png)
 
 ```
 94054.440000
