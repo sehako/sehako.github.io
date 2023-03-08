@@ -1,6 +1,6 @@
 ---
 title:  "[C] 구조체"
-excerpt: "정리"
+excerpt: " "
 
 categories:
   - C

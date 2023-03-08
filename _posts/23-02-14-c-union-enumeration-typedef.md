@@ -1,6 +1,6 @@
 ---
 title:  "[C] 공용체, 열거형, typedef"
-excerpt: "정리"
+excerpt: " "
 
 categories:
   - C

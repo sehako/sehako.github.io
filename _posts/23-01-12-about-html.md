@@ -1,6 +1,6 @@
 ---
 title:  "[HTML] 강의 정리"
-excerpt: "생활코딩 HTML 강의"
+excerpt: " "
 
 categories:
   - WEB

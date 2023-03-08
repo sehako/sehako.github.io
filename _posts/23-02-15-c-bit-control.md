@@ -1,6 +1,6 @@
 ---
 title:  "[C] 비트 조작"
-excerpt: "정리"
+excerpt: " "
 
 categories:
   - C

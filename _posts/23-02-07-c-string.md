@@ -1,6 +1,6 @@
 ---
 title:  "[C] 문자열과 문자열 입출력"
-excerpt: "정리"
+excerpt: " "
 
 categories:
   - C

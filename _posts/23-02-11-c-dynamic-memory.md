@@ -1,6 +1,6 @@
 ---
 title:  "[C] 메모리 관리"
-excerpt: "정리"
+excerpt: " "
 
 categories:
   - C

@@ -1,6 +1,6 @@
 ---
 title:  "[C] 전처리기"
-excerpt: "정리"
+excerpt: " "
 
 categories:
   - C

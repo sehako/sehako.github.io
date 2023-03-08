@@ -1,6 +1,6 @@
 ---
 title:  "[C] 포인터와 다차원 배열"
-excerpt: "포인터에 관하여 정리"
+excerpt: " "
 
 categories:
   - C

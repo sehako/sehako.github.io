@@ -1,6 +1,6 @@
 ---
 title:  "[CSS] 강의 정리"
-excerpt: "생활코딩 CSS 강의"
+excerpt: " "
 
 categories:
   - WEB

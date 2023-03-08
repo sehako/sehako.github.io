@@ -1,6 +1,6 @@
 ---
 title:  "[C] 포인터"
-excerpt: "포인터에 관하여 정리"
+excerpt: " "
 
 categories:
   - C

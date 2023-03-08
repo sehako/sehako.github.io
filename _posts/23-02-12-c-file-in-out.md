@@ -1,6 +1,6 @@
 ---
 title:  "[C] 파일 입출력"
-excerpt: "정리"
+excerpt: " "
 
 categories:
   - C

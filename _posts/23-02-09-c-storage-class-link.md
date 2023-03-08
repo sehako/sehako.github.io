@@ -1,6 +1,6 @@
 ---
 title:  "[C] 저장 클래스, 연계"
-excerpt: "정리"
+excerpt: " "
 
 categories:
   - C
