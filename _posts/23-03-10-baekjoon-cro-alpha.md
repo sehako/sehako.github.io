@@ -1,0 +1,53 @@
+---
+title:  "[Baekjoon] [Java] 크로아티아 알파벳 문제"
+excerpt: " "
+
+categories:
+  - Baekjoon
+
+toc: true
+toc_sticky: true
+ 
+date: 2023-02-17
+---
+
+# 문제
+[백준 크로아티아 알파벳 - 2941](https://www.acmicpc.net/problem/2941)
+
+총 8개의 특수 문자가 있고 이것을 포함하여 크로아티아 알파벳이 해당 문장에서 몇 개인지 출력하는 문제이다. 개인적으로 생각하지 못했던 것은 `count` 변수를 선언하여 특수 알파벳의 개수만을 새는 실수를 저질렀다.
+
+```java
+import java.util.Scanner;
+
+public class Main {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        String [] cro_alpha = {"c=", "c-", "dz=", "d-", "lj", "nj", "s=", "z="};
+
+        String letters = scanner.nextLine();
+
+        for (int i = 0; i < cro_alpha.length; i++) {
+            if(letters.contains(cro_alpha[i])) {
+                letters = letters.replace(cro_alpha[i], "!");
+            }
+        }
+        System.out.println(letters.length());
+    }
+}
+```
+
+특수 알파벳 8개를 담은 문자열 배열을 선언하고 `for`문에 사용한다. 여기서 `String.contains` 메소드가 위 문제를 푸는데 편리하다. 위 메소드는 문자열과 파라미터의 내용을 대조해 해당되는 내용이 있다면 `true`값을 반환한다. 입력받은 문자열에서 해당되는 부분의 문자열을 `!`로 바꾸고 입력받은 문자열의 길이를 출력하면 된다.
+
+입력이 다음과 같다면
+
+```
+ddz=z=
+```
+
+프로그램 내에서는 다음과 같이 대체된다.
+
+```
+d!!
+```
+
+따라서 `System.out.println(letters.length())`의 명령문을 통해 출력되는 값은 3이다.
