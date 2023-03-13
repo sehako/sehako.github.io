@@ -1,0 +1,51 @@
+---
+title:  "[Baekjoon] [Java] 문자열 세로로 출력"
+excerpt: " "
+
+categories:
+  - Baekjoon
+
+toc: true
+toc_sticky: true
+ 
+date: 2023-03-13
+---
+
+# 문제
+
+[문제](https://www.acmicpc.net/problem/10798)
+
+# 풀이
+
+```java
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+
+public class Main {
+    public static void main(String[] args) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        char[][] ch = new char[5][15];
+
+        for (int i = 0; i < ch.length; i++) {
+            String str = br.readLine();
+
+            for (int j = 0; j < str.length(); j++) {
+                ch[i][j] = str.charAt(j);
+            }
+        }
+
+        for (int i = 0; i < 15; i++) {
+            for (int j = 0; j < 5; j++) {
+                if(ch[j][i] == ' ' || ch[j][i] == '\0') {
+                    continue;
+                }
+                System.out.print(ch[j][i]);
+            }
+        }
+    }
+}
+```
+
+문자를 담는 5 x 15 크기의 2차원 배열을 선언한다. 그리고 이중 중첩 반복문으로 문자열을 입력받고 문자열을 각 문자 배열에 순서대로 입력한다. 그리고 2중 반복분으로 출력을 하는데, 조건문으로 공백이거나 `null`문자면 반복문을 건너뛰도록 만든다.

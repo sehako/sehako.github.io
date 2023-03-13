@@ -1,5 +1,5 @@
 ---
-title: "Algorithm"
+title: "Solutions"
 layout: archive
 permalink: categories/baekjoon
 author_profile: true
