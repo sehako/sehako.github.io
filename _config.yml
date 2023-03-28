@@ -104,8 +104,8 @@ analytics:
 
 # Site Author
 author:
-  name             : "sehako"
-  avatar           : # path of avatar image, e.g. "/assets/images/apple-touch-icon.jpg"
+  name             : "Sehako"
+  avatar           : "/assets/images/apple-touch-icon.jpg" # path of avatar image, e.g. "/assets/images/apple-touch-icon.jpg"
   bio              : "NOTE"
   location         : "South Korea"
   links:
