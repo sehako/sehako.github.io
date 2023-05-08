@@ -2,6 +2,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "Sound",
+            "request": "launch",
+            "mainClass": "sources.Programming.Sound",
+            "projectName": "sehako.github.io_db44fb45"
+        },
+        {
+            "type": "java",
             "name": "Triangle",
             "request": "launch",
             "mainClass": "sources.Programming.Triangle",
