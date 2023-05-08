@@ -1,6 +1,69 @@
 {
     "configurations": [
         {
+            "type": "java",
+            "name": "Triangle",
+            "request": "launch",
+            "mainClass": "sources.Programming.Triangle",
+            "projectName": "sehako.github.io_db44fb45"
+        },
+        {
+            "type": "java",
+            "name": "After_party",
+            "request": "launch",
+            "mainClass": "sources.Programming.After_party",
+            "projectName": "sehako.github.io_db44fb45"
+        },
+        {
+            "type": "java",
+            "name": "Duck_clock",
+            "request": "launch",
+            "mainClass": "sources.Programming.Duck_clock",
+            "projectName": "sehako.github.io_db44fb45"
+        },
+        {
+            "type": "java",
+            "name": "Snack",
+            "request": "launch",
+            "mainClass": "sources.Programming.Snack",
+            "projectName": "sehako.github.io_db44fb45"
+        },
+        {
+            "type": "java",
+            "name": "Car",
+            "request": "launch",
+            "mainClass": "sources.Programming.Car",
+            "projectName": "sehako.github.io_db44fb45"
+        },
+        {
+            "type": "java",
+            "name": "Three_sort",
+            "request": "launch",
+            "mainClass": "sources.Programming.Three_sort",
+            "projectName": "sehako.github.io_db44fb45"
+        },
+        {
+            "type": "java",
+            "name": "Alphabet_count",
+            "request": "launch",
+            "mainClass": "sources.Programming.Alphabet_count",
+            "projectName": "sehako.github.io_db44fb45"
+        },
+        {
+            "type": "java",
+            "name": "Hamburger",
+            "request": "launch",
+            "mainClass": "sources.Programming.Hamburger",
+            "projectName": "sehako.github.io_db44fb45"
+        },
+        {
+            "type": "java",
+            "name": "Average_recover",
+            "request": "launch",
+            "mainClass": "sources.Programming.Average_recover",
+            "projectName": "sehako.github.io_db44fb45"
+        },
+        {
             "name": "C/C++: g++.exe 활성 파일 빌드 및 디버그",
             "type": "cppdbg",
             "request": "launch",
