@@ -2,6 +2,27 @@
     "configurations": [
         {
             "type": "java",
+            "name": "Time",
+            "request": "launch",
+            "mainClass": "sources.Programming.Time",
+            "projectName": "sehako.github.io_db44fb45"
+        },
+        {
+            "type": "java",
+            "name": "Num_count",
+            "request": "launch",
+            "mainClass": "sources.Programming.Num_count",
+            "projectName": "sehako.github.io_db44fb45"
+        },
+        {
+            "type": "java",
+            "name": "OX",
+            "request": "launch",
+            "mainClass": "sources.Programming.OX",
+            "projectName": "sehako.github.io_db44fb45"
+        },
+        {
+            "type": "java",
             "name": "Sound",
             "request": "launch",
             "mainClass": "sources.Programming.Sound",
