@@ -2,6 +2,27 @@
     "configurations": [
         {
             "type": "java",
+            "name": "Hotel",
+            "request": "launch",
+            "mainClass": "sources.Programming.Hotel",
+            "projectName": "sehako.github.io_db44fb45"
+        },
+        {
+            "type": "java",
+            "name": "Pythagoras",
+            "request": "launch",
+            "mainClass": "sources.Programming.Pythagoras",
+            "projectName": "sehako.github.io_db44fb45"
+        },
+        {
+            "type": "java",
+            "name": "Escape",
+            "request": "launch",
+            "mainClass": "sources.Programming.Escape",
+            "projectName": "sehako.github.io_db44fb45"
+        },
+        {
+            "type": "java",
             "name": "Time",
             "request": "launch",
             "mainClass": "sources.Programming.Time",
