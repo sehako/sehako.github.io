@@ -6,7 +6,7 @@
   <input id="ac-toc" name="accordion-toc" type="checkbox" />
   <label for="ac-toc">{{ site.data.ui-text[site.locale].menu_label }}</label>
   <ul class="nav__items" id="category_tag_menu">
-      <li>
+      <li>z
         <!--span 태그로 카테고리들을 크게 분류 ex) C/C++/C-->
         <span class="nav__sub-title">Programming</span>
             <!--ul 태그로 같은 카테고리들 모아둔 페이지들 나열-->
@@ -33,27 +33,30 @@
                     {% endif %}
                 {% endfor %}
             </ul>
-            <span class="nav__sub-title">Web & Server</span>
+        <span class="nav__sub-title">Web & Server</span>
+            <ul>
                 {% for category in site.categories %}
                     {% if category[0] == "Node.js" %}
                         <li><a href="/categories/node-js" class="">Node.js ({{category[1].size}})</a></li>
                     {% endif %}
                 {% endfor %}
-
-            <span class="nav__sub-title">Algorithm & Code Test</span>
+            </ul>
+        <span class="nav__sub-title">Algorithm & Code Test</span>
+            <ul>
                 {% for category in site.categories %}
                     {% if category[0] == "Algorithm" %}
                         <li><a href="/categories/algorithm" class="">Algorithm ({{category[1].size}})</a></li>
                     {% endif %}
                 {% endfor %}
-
+            </ul>
+            <ul>
                 {% for category in site.categories %}
                     {% if category[0] == "Code Test" %}
                         <li><a href="/categories/code-test" class="">Code Test ({{category[1].size}})</a></li>
                     {% endif %}
                 {% endfor %}
-
-            <span class="nav__sub-title">Projects</span>
+            </ul>
+        <span class="nav__sub-title">Projects</span>
       </li>
   </ul>
 </nav>
