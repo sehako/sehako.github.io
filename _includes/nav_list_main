@@ -36,7 +36,7 @@
         <span class="nav__sub-title">Web & Server</span>
             <ul>
                 {% for category in site.categories %}
-                    {% if category[0] == "Nodejs" %}
+                    {% if category[0] == "Node.js" %}
                         <li><a href="/categories/nodejs" class="">Node.js ({{category[1].size}})</a></li>
                     {% endif %}
                 {% endfor %}
@@ -51,7 +51,7 @@
             </ul>
             <ul>
                 {% for category in site.categories %}
-                    {% if category[0] == "CdoeTest" %}
+                    {% if category[0] == "Cdoe Test" %}
                         <li><a href="/categories/codetest" class="">Code Test ({{category[1].size}})</a></li>
                     {% endif %}
                 {% endfor %}
