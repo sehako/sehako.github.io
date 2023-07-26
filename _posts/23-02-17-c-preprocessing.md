@@ -15,8 +15,6 @@ date: 2023-02-17
 
 ## #define
 
-![image](/assets/images/c_image_05.png)
-
 `#define` 전처리기는 다음과 같은 사용법들이 존재한다.
 
 ```c

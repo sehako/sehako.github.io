@@ -33,9 +33,25 @@
                     {% endif %}
                 {% endfor %}
             </ul>
-            <span class="nav__sub-title">Server</span>
+            <span class="nav__sub-title">Web & Server</span>
+                {% for category in site.categories %}
+                    {% if category[0] == "Nodejs" %}
+                        <li><a href="/categories/node-js" class="">Node.js ({{category[1].size}})</a></li>
+                    {% endif %}
+                {% endfor %}
 
-            <span class="nav__sub-title">Algorithm & Test</span>
+            <span class="nav__sub-title">Algorithm & Code Test</span>
+                {% for category in site.categories %}
+                    {% if category[0] == "Algorithm" %}
+                        <li><a href="/categories/algorithm" class="">Algorithm ({{category[1].size}})</a></li>
+                    {% endif %}
+                {% endfor %}
+
+                {% for category in site.categories %}
+                    {% if category[0] == "Code Test" %}
+                        <li><a href="/categories/code-test" class="">Code Test ({{category[1].size}})</a></li>
+                    {% endif %}
+                {% endfor %}
 
             <span class="nav__sub-title">Projects</span>
       </li>
