@@ -35,7 +35,7 @@
             </ul>
             <span class="nav__sub-title">Web & Server</span>
                 {% for category in site.categories %}
-                    {% if category[0] == "Nodejs" %}
+                    {% if category[0] == "Node.js" %}
                         <li><a href="/categories/node-js" class="">Node.js ({{category[1].size}})</a></li>
                     {% endif %}
                 {% endfor %}
