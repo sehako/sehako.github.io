@@ -37,7 +37,7 @@
             <ul>
                 {% for category in site.categories %}
                     {% if category[0] == "Node.js" %}
-                        <li><a href="/categories/node.js" class="">Node.js ({{category[1].size}})</a></li>
+                        <li><a href="/categories/nodejs" class="">Node.js ({{category[1].size}})</a></li>
                     {% endif %}
                 {% endfor %}
             </ul>
@@ -51,7 +51,7 @@
             </ul>
             <ul>
                 {% for category in site.categories %}
-                    {% if category[0] == "Code Test" %}
+                    {% if category[0] == "Code-Test" %}
                         <li><a href="/categories/code-test" class="">Code Test ({{category[1].size}})</a></li>
                     {% endif %}
                 {% endfor %}

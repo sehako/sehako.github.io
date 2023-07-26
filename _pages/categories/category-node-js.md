@@ -1,7 +1,7 @@
 ---
 title: "Node.js"
 layout: archive
-permalink: categories/node.js
+permalink: categories/nodejs
 author_profile: true
 sidebar_main: true
 ---
