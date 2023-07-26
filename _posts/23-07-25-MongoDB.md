@@ -3,7 +3,7 @@ title:  "[Node.js] 04 - MongoDB"
 excerpt: " "
 
 categories:
-  - Node.js
+  - Nodejs
 
 toc: true
 toc_sticky: true
