@@ -5,12 +5,12 @@
 <h1>{{title}}</h1>
 
 {{!-- 검색어 영역 --}}
-<input type="text" name="search" id="search" value="" size="50"
+<input type="text" name="search" id="search" value="{{search}}" size="50"
 placeholder="검색어 입력" />
 {{!-- <button>검색</button> --}}
 {{!-- 버튼 클릭 시 search 변수에 검색어 데이터를 담아서 서버로 보냄 --}}
 <button onclick="location.href=`/?search=${document.getElementById('search').value}`">검색</button>
-<br />
+<br>
 
 {{!-- 글쓰기 페이지 이동 링크 --}}
 <a href="/write"> 글쓰기</a>
