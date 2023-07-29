@@ -1,5 +1,5 @@
 ---
-title:  "[Node.js] 07 - NestJS로 블로그 만들기 - 1"
+title:  "[Node.js] 07 - Nest.js로 블로그 만들기 - 1"
 excerpt: " "
 
 categories:
@@ -28,6 +28,8 @@ npm install -g @nestjs/cli
 ```
 nest new testblog
 ```
+
+이후 프로젝트를 관리할 3가지 패키지 매니저를 선택할 수 있는데 `npm`으로 선택하였다.
 
 testblog라는 이름의 프로젝트가 만들어진다.
 

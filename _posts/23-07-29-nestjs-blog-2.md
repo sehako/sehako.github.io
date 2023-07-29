@@ -1,5 +1,5 @@
 ---
-title:  "[Node.js] 07 - NestJS로 블로그 만들기 - 2"
+title:  "[Node.js] 07 - Nest.js로 블로그 만들기 - 2"
 excerpt: " "
 
 categories:
