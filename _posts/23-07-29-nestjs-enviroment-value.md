@@ -162,6 +162,38 @@ export class WeatherController {
 
 `localhost:3000/weather`에서 결과를 확인할 수 있다.
 
+### API 사용에 관한 간단한 예제 코드
+
+```ts
+import { Controller, Get } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import axios from 'axios';
+
+@Controller('weather')
+export class WeatherController {
+    constructor(private configService: ConfigService) {}
+
+    @Get()
+    async getWeather() {
+      const apiUrl = this.configService.get('WEATHER_API_URL');
+      const apiKey = this.configService.get('WEATHER_API_KEY');
+  
+      // 날씨 API 호출
+      return await this.callWheatherApi(apiUrl, apiKey);
+    }
+  
+    async callWheatherApi(apiUrl: string, apiKey: string): Promise<string> {
+      console.log('날씨 정보 가져오는 중...');
+      console.log(apiUrl);
+      const url = `${apiUrl}${apiKey}`;
+      const result = await axios.get(url)
+      const weather = result.data
+      const mains = weather.weather.map((el) => el.main)
+      return mains.join(" and ");
+    }
+}
+```
+
 # 여러 환경 변수 파일 사용
 
 실무에서는 개발용(dev), QA용(qa), 베타 서비스용(beta), 실제 서비스용(prod | real)등 여러 가지 환경 변수를 사용한다. Node.js는 일반적으로 `NODE_ENV` 환경 변수에 용도 별 환경 변수를 정의해 사용한다. **package.json**의 `scripts` 부분에서 서버 실행에 관련된 키의 값을 수정한다.
