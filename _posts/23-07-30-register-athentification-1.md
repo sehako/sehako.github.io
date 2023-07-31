@@ -92,14 +92,18 @@ export class User {
     username: string;
 
     // 작동 안되는 코드... 1로 고정됨
-    @Column({ default:true })
+    // @Column({ default:true })
+    // createDt: Date = new Date();
+    
+    // !!
+    @Column({ type: 'datetime', default: () => 'CURRENT_TIMESTAMP' })
     createDt: Date = new Date();
 }
 ```
 
 pk값은 기본키면서 자동증가하는 값이 된다. pk값 선언에 붙은 `?`는 객체 생성 시 필수값이 아니란 의미다.
 
-위 코드 중 날짜 관련 코드는 책과 다르게 작동이 안된다. 실제 서버를 실행해서 사용자를 생성해보면 1로 고정되어 입력되는 값이 되어버린다...
+위 코드 중 날짜 관련 코드는 책과 다르게 작동이 안된다. 실제 서버를 실행해서 사용자를 생성해보면 1로 고정되어 입력되는 값이 되어버린다... <= [해결](https://sehako.github.io/nodejs/oauth/)됨
 
 생성한 엔티티를 유저 서비스에 주입하고 CRUD를 구성한다.
 
