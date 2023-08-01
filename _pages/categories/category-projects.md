@@ -1,5 +1,5 @@
 ---
-title: "C"
+title: "Projects"
 layout: archive
 permalink: categories/projects
 author_profile: true
