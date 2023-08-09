@@ -11,7 +11,7 @@ toc_sticky: true
 date: 2023-08-09
 ---
 
-[백준 문제](https://www.acmicpc.net/submit/2609/63990956)를 풀다가 최대 공약수와 최소 공배수를 구하는 문제를 다음과 같이 풀었었다.
+[백준 문제](https://www.acmicpc.net/problem/2609)를 풀다가 최대 공약수와 최소 공배수를 구하는 문제를 다음과 같이 풀었었다.
 
 ```java
 import java.io.BufferedReader;
