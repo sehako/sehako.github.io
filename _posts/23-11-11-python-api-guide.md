@@ -65,9 +65,9 @@ response = requests.get(url=weather_endpoint, params=weather_params)
 requests는 파이썬에서 HTTP 통신을 하기 위한 라이브러리다. 위 코드의 `get()` 메소드는 HTTP 통신의 GET 요청이다.
 
 |통신|설명|
-|:---:|:---|
-GET|데이터를 읽기 요청
-POST|데이터를 쓰기 요청
+|:---:|:---:|
+GET|데이터 읽기 요청
+POST|데이터 쓰기 요청
 PUT|데이터 수정 요청
 DELETE|데이터 삭제 요청
 
@@ -116,11 +116,11 @@ header_value = {
 response = requests.post(url=endpoint, headers=header_value)
 ```
 
-물론 이 또한 각 API 마다 정리해 놓은 문서를 살펴보고 요구하는 형식을 맞춰 요청을 해야한다. 위 요청은 구글 스프레드 시트에 접근할 수 있는 API인 [Sheety](https://sheety.co/)가 요구하는 인증 정책이다.
+물론 이 또한 각 API 마다 정리해 놓은 문서를 살펴보고 요구하는 형식을 맞춰 요청을 해야한다. 위 두 개의 코드는 구글 스프레드 시트에 접근할 수 있는 API인 [Sheety](https://sheety.co/)가 요구하는 인증 정책이다.
 
 ### 환경 변수로 민감 정보 숨기기
 
-몇몇 API는 사용량에 따른 요금을 부과하는 경우도 존재한다. 이런 경우 API 키를 하드 코딩하는 것은 바람직하지 않을 것이다. 따라서 환경 변수를 이용하여 이런 API 키를 포함한 보안에 민감한 변수는 감춘다고 한다. 리눅스 실행 환경에서는 환경 변수를 다음과 같이 설정한다.
+몇몇 API는 사용량에 따른 요금을 부과하는 경우도 존재한다. 이런 경우 API 키를 하드 코딩하는 것은 바람직하지 않을 것이다. 따라서 환경 변수를 이용하여 이런 API 키를 포함한 보안에 민감한 변수는 감춘다. 리눅스 실행 환경에서는 환경 변수를 다음과 같이 설정한다.
 
 ```bash
 export API_KEY=value
