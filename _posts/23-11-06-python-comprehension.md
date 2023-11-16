@@ -61,11 +61,14 @@ a_dict = {num: 'int' for num in a_list}
 a_dict = {element for element in range() if expression}
 ```
 
-## 기존 딕셔너리를 이용한 예시
+## 기존 딕셔너리를 이용한 컴프리헨션
 
-딕셔너리 자료형은 `.items()` 메소드를 이용하여 키와 값을 추출할 수 있다. 다음은 그 예시다.
+딕셔너리 자료형은 `.items()` 메소드를 이용하여 키와 값을 추출할 수 있다. 
 
 ```py
 a_dict = {'a': 1, 'b': 2, 'c': 3}
 b_dict = {value, key for key, value in a_dict.items()}
+print(b_dict)
+
+>> {1: 'a', 2: 'b', 3: 'c'}
 ```
