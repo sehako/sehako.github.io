@@ -124,3 +124,54 @@ const App = () => {
 
 export default App;
 ```
+
+## 하위-상위 컴포넌트 간 값 전달
+
+**App.js** -> **Component1.js** -> **Component2.js** 순서로 컴포넌트를 호출한다고 할 때 함수를 이용하여 하위 컴포넌트에서 상위 컴포넌트로 값을 전달할 수 있다.
+
+```js
+// App.js
+import Component1 from './Component1'
+
+function App() {
+  function valuePass(value) {
+    // 값 처리
+  }
+
+  return (
+    <Component1 pass={valuePass} />
+  );
+}
+```
+
+```js
+import Component2 from './Component2'
+
+function Component1(props) {
+  function valuePass1(value) {
+    // 값 처리
+    props.pass(value);
+  }
+
+  return (
+    <Component2 pass1={valuePass1}/>
+  );
+}
+
+export default Component1;
+```
+
+```js
+function Component2(props) {
+  const num = 0;
+  function valuePass2(value) {
+    // 값 처리
+    props.pass1(num);
+  }
+
+  return (
+  );
+}
+
+export default Component2;
+```
