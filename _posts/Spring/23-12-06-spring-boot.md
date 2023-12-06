@@ -99,6 +99,7 @@ public class CourseController {
 ```
 
 ## Quickly
+
 ### Spring Boot Starter Projects
 
 하나의 어플리캐이션을 빌드할 때 수 많은 프레임워크가 필요하다. 예를 들어 REST API를 빌드하려면 Spring, Spring MVC, Tomcat, JSON 변환기 등이 필요하다. 스타터는 이런 다양한 프레임워크를 통합 및 빌드하기 위해 편리한 의존성 설명서를 제공한다.
@@ -246,7 +247,7 @@ public class ExampleController {
 </dependency>
 ```
 
-이 다음 앱을 실행하고 `접근 주소/포트/actuator`에 접근하면 여러 앤드포인트가 나온다. **application.properties**에 수집할 여러 정보(앤드포인트)를 작성할 수 있다.
+이 다음 앱을 실행하고 `접근 주소/actuator`에 접근하면 여러 앤드포인트가 나온다. **application.properties**에 수집할 여러 정보(앤드포인트)를 작성할 수 있다.
 
 ```
 management.endpoints.web.exposure.include=health,metrics
