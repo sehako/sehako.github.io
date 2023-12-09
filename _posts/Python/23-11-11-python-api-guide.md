@@ -45,7 +45,7 @@ print(position)
 
 ### API와 문서
 
-API는 코드와는 다르게 엄연히 제각각의 사용법이 존재한다. 그리고 API를 제공하는 곳에서는 항상 이 API에 대한 사용 방법을 정리해둔다. 따라서 API를 사용하기 전에 늘 문서를 꼼꼼하게 참고해야 한다. 예를 들어 날씨 정보를 저장해놓은 [OpenWeather](https://openweathermap.org/)의 [One Call API 3.0](https://openweathermap.org/api/one-call-3) 문서를 살펴보면 요청에 필요한 필수 Jquery의 값과 자료형, 그리고 선택적인 Jquery 값을 살펴볼 수 있다. 위 API의 경우 필수적으로 위도(lat)와 경도(lon), 그리고 API key(appid)가 필요하다. 이런 값들을 파이썬에서 전달하는 방법은 다음과 같다.
+API는 코드와는 다르게 엄연히 제각각의 사용법이 존재한다. 그리고 API를 제공하는 곳에서는 항상 이 API에 대한 사용 방법을 정리해둔다. 따라서 API를 사용하기 전에 늘 문서를 꼼꼼하게 참고해야 한다. 예를 들어 날씨 정보를 저장해놓은 [OpenWeather](https://openweathermap.org/)의 [One Call API 3.0](https://openweathermap.org/api/one-call-3) 문서를 살펴보면 요청에 필요한 필수 쿼리 스트링 값과 자료형, 그리고 선택적인 쿼리 스트링 값을 살펴볼 수 있다. 위 API의 경우 필수적으로 위도(lat)와 경도(lon), 그리고 API key(appid)가 필요하다. 이런 값들을 파이썬에서 전달하는 방법은 다음과 같다.
 
 ```py
 import requests
@@ -71,7 +71,7 @@ POST|데이터 쓰기 요청
 PUT|데이터 수정 요청
 DELETE|데이터 삭제 요청
 
-또한 API는 GET 만을 사용하지 않는다. 예를 들어 습관 기록 API인 [Pixela](https://pixe.la/)는 모든 HTTP 통신을 활용한다. 또한 모든 메소드가 Jquery가 아닌 json값으로 전달할 수 있다. 둘 모두 딕셔너리 자료형으로 전달한다.
+또한 API는 GET 만을 사용하지 않는다. 예를 들어 습관 기록 API인 [Pixela](https://pixe.la/)는 모든 HTTP 통신을 활용한다. 또한 모든 메소드가 쿼리 스트링이 아닌 json값으로 전달할 수 있다. 둘 모두 딕셔너리 자료형으로 전달한다.
 
 ```py
 import requests
@@ -81,7 +81,7 @@ response = requests.post(url=endpoint, json=json_value)
 
 ## Header
 
-HTTP 통신에서 헤더는 부가적인 정보를 전송하고, Jquery와는 다르게 헤더는 주소창에 그 내용이 표기되지 않기 때문에 일부 API는 헤더나 앞서 설명한 json를 통해 API 키 값을 주고 받는 경우가 있다. 마찬가지로 딕셔너리 자료형을 사용한다.
+HTTP 통신에서 헤더는 부가적인 정보를 전송하고, 쿼리 스트링과는 다르게 헤더는 주소창에 그 내용이 표기되지 않기 때문에 일부 API는 헤더나 앞서 설명한 json를 통해 API 키 값을 주고 받는 경우가 있다. 마찬가지로 딕셔너리 자료형을 사용한다.
 
 ```py
 import requests

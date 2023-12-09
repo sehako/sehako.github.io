@@ -98,6 +98,16 @@ public class CourseController {
 }
 ```
 
+```java
+// 메인 메소드
+@SpringBootApplication
+public class LearnSpringBootApplication {
+	public static void main(String[] args) {
+		SpringApplication.run(LearnSpringBootApplication.class, args);
+	}
+}
+```
+
 ## Quickly
 
 ### Spring Boot Starter Projects
