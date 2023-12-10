@@ -41,6 +41,12 @@ if __name__ == "__main__":
 python -m flask run
 ```
 
+### 디버그 모드
+
+```py
+app.run(debug=True)
+```
+
 ## 데코레이터
 
 플라스크 예시 코드에 보이는 `@app.route('/')` 부분을 데코레이터라고 한다. 위 경우 서버에 접근할 경로를 설정하는데 사용한다. 파이썬의 데코레이터를 알기 위해서 다음 개념들이 필요하다.
@@ -126,3 +132,97 @@ decorated_function()
 
 정리하자면 데코레이터는 위 세개의 개념을 활용한 프로그래밍 코드를 간결하게 만드는(이 경우엔 `@함수명`, Syntax sugar라고 부름) 문법적 편의 기능이다.
 
+### 데코레이터 심화
+
+`*args`나 `*kwargs`를 사용하여 데코레이터에 다수의 매개변수를 전달할 수도 있다.
+
+```py
+
+class User:
+    def __init__(self, name):
+        self.name = name
+        self.is_logged_in = False
+
+def is_authenticated_decorator(function):
+    def wrapper(*args, **kwargs):
+        if args[0].is_logged_in == True:
+            function(args[0])
+    return wrapper
+
+@is_authenticated_decorator
+def create_blog_post(user):
+    print(f"This is {user.name} user.")
+
+new_user = User("test")
+new_user.is_logged_in = True
+create_blog_post(new_user)
+```
+
+# 라우팅에 변수 입력
+
+라우트 경로에 `<>`를 이용하여 특정 키워드를 작성하면 해당 키워드가 함수 내 변수로 사용될 수 있다.
+
+```py
+@app.route('/username/<name>')
+def greet(name):
+    return f"Hello, {name}"
+```
+
+## 변수의 자료형 지정
+
+```py
+@app.route('/<path:name>/<int:number>')
+def test(name, number):
+    return f"Hello, {name}. {number}"
+```
+
+자료형의 종류는 다음과 같다.
+
+string (default) accepts any text without a slash
+
+int accepts positive integers
+
+float accepts positive floating point values
+
+path like string but also accepts slashes
+
+uuid accepts UUID strings
+
+# html 랜더링
+
+단순하게 라우트 함수의 리턴 문자열을 통해 랜더링 할 수 있다.
+
+```py
+@app.route('/')
+def hello_world():
+    return '<h1>Hello, World!</h1>'
+```
+
+## 데코레이터를 이용하여 태그 추가
+
+```py
+def make_bold(function):
+    def bold():
+        b_tag = f"<b>{function()}</b>"
+        return b_tag
+    return bold
+
+
+def make_em(function):
+    def em():
+        em_tag = f"<em>{function()}</em>"
+        return em_tag
+    return em
+
+
+@app.route('/')
+@make_bold
+@make_em
+def hello_world():
+    return 'Hello, World!'
+```
+
+최종 랜더링 값
+```
+<em><b>Hello, World!</b></em>
+```
