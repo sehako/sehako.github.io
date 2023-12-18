@@ -190,6 +190,8 @@ uuid accepts UUID strings
 
 # html 랜더링
 
+## 문자열로 랜더링
+
 단순하게 라우트 함수의 리턴 문자열을 통해 랜더링 할 수 있다.
 
 ```py
@@ -198,7 +200,7 @@ def hello_world():
     return '<h1>Hello, World!</h1>'
 ```
 
-## 데코레이터를 이용하여 태그 추가
+### 데코레이터를 이용하여 태그 추가
 
 ```py
 def make_bold(function):
@@ -225,4 +227,23 @@ def hello_world():
 최종 랜더링 값
 ```
 <em><b>Hello, World!</b></em>
+```
+
+## html 파일 랜더링
+
+`render_template`을 불러와 따로 제작한 html 파일을 랜더링 할 수 있다. 기본 경로는 **/templates/index.html**이다.
+
+```py
+from flask import Flask, render_template
+
+app = Flask(__name__)
+
+
+@app.route('/')
+def hello_world():
+    return render_template('index.html', name=None)
+
+
+if __name__ == '__main__':
+    app.run(debug=True)
 ```
