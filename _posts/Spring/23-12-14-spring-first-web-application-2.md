@@ -41,7 +41,7 @@ Your todos are [Todo{id=1, username='Test', description='Learn Spring', targetDa
 
 **listTodos.jsp**
 
-```html
+```jsp
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <html>
@@ -103,7 +103,7 @@ jsp파일에 css를 적용하기 위해 bootstrap CSS 프레임워크를 사용�
 
 ## JSP 수정
 
-```html
+```jsp
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <html>
@@ -131,14 +131,14 @@ bootstrap은 각 태그에 대한 클래스를 지원한다. `body`의 전체 �
 
 **listTodos.jsp**에 버튼 생성
 
-```html
+```jsp
 <!-- ... -->
 <a href="add-todo" class="btn btn-success">Add Todo</a>
 ```
 
 **todo.jsp** 설정
 
-```html
+```jsp
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <html>
@@ -247,7 +247,7 @@ public String addNewTodo(ModelMap model, @Valid Todo todo, BindingResult result)
 
 ### JSP 수정
 
-```html
+```jsp
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 

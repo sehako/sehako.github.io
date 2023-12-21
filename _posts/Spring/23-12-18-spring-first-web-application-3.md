@@ -8,14 +8,14 @@ categories:
 toc: true
 toc_sticky: true
  
-date: 2023-12-14
+date: 2023-12-18
 ---
 
 # 할 일 삭제 기능 구현  
 
 ## 표 요소 추가
 
-```html
+```jsp
 <td><a href="delete-todo?id=${todo.id}" class="btn btn-warning">DELETE</a></td>
 ```
 
@@ -46,7 +46,7 @@ public String deleteTodo(@RequestParam int id) {
 
 ## 표 요소 추가
 
-```html
+```jsp
 <td><a href="update-todo?id=${todo.id}" class="btn btn-success">UPDATE</a></td>
 ```
 
@@ -93,7 +93,7 @@ public String updateTodo(ModelMap model, @Valid Todo todo, BindingResult result)
 
 날짜 기능을 컨트롤러에 매핑하기 위해 `input` 태그를 하나 만든다. 또한 같은 역할을 가지고 있는 태그를 `fieldset`으로 묶는다.
 
-```html
+```jsp
 <fieldset class="mb-3">
     <form:label path="targetDate">Target Date</form:label>
     <form:input type="text" path="targetDate" required="required" />
@@ -145,7 +145,7 @@ public String addNewTodo(ModelMap model, @Valid Todo todo, BindingResult result)
 
 프레임워크를 불러오고 자바 스크립트 코드를 작성한다.
 
-```html
+```jsp
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 
@@ -164,4 +164,33 @@ public String addNewTodo(ModelMap model, @Valid Todo todo, BindingResult result)
         </script>
     </body>
 </html>
+```
+
+# jsp 프래그먼트
+
+중복되는 부분을 하나의 프래그먼트로 만들어 코드의 작성량을 줄이고 유지보수를 쉽게 해준다. 
+
+**resources\META-INF\resources\WEB-INF\jsp**에 **common** 폴더를 만들고 그 안에 **.jspf** 확장자를 가진 파일을 만들어 사용한다.
+
+**navigation.jspf**
+
+```jsp
+<nav class="navbar navbar-expand-md navbar-light bg-light mb-3 p-1">
+    <a class="navbar-brand m-1" href="https://courses.in28minutes.com">in28Minutes</a>
+    <div class="collapse navbar-collapse">
+        <ul class="navbar-nav">
+            <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
+            <li class="nav-item"><a class="nav-link" href="/todo-list">Todos</a></li>
+        </ul>
+    </div>
+    <ul class="navbar-nav">
+        <li class="nav-item"><a class="nav-link" href="/logout">Logout</a></li>
+    </ul>
+</nav>
+```
+
+불러오는 방법
+
+```jsp
+<%@ include file="common/navigation.jspf" %>
 ```

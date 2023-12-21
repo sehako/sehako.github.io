@@ -73,7 +73,7 @@ JSP는 스프링에서 뷰의 역할을 담당한다. 뷰를 반환하기 위해
 
 해당 디렉터리 내에 JSP를 정의하여 사용한다. 위 html 코드를 jsp로 정의한 **sayHello.jsp** 파일은 다음과 같다.
 
-```html
+```jsp
 <html>
     <head>
         <title>My Title</title>
@@ -127,7 +127,7 @@ public String helloJsp (@RequestParam String name, ModelMap model) {
 
 jsp 파일에는 `${'키값'}`을 이용해 접근한다. 위 경우에는 `${name}`이다.
 
-```html
+```jsp
 <html>
     <head>
         <title>My Title</title>

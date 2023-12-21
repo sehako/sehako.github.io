@@ -19,7 +19,7 @@ date: 2023-12-10
 
 **loginForm.jsp**
 
-```html
+```jsp
 <html>
     <head>
         <title>User Login</title>
@@ -53,7 +53,7 @@ jsp에서 `form`은 보안(`get` 요청은 쿼리 스트링으로 주소 값에 
 
 **welcome.jsp**
 
-```html
+```jsp
 <html>
     <head>
         <title>Welcome!</title>
@@ -174,7 +174,7 @@ public class TodoService {
 
 **listTodos.jsp**
 
-```html
+```jsp
 <html>
     <head>
         <title>Todo list</title>
