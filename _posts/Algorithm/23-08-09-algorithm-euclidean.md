@@ -1,5 +1,5 @@
 ---
-title:  "유클리드 호제법"
+title:  "[Algorithm][Java]유클리드 호제법"
 excerpt: " "
 
 categories:
