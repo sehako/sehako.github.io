@@ -16,12 +16,7 @@ date: 2023-08-09
 [백준 문제](https://www.acmicpc.net/problem/2609)에 대한 풀이, 반복문을 이용하여 최대공약수와 최소공배수를 구했다.
 
 ```java
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.StringTokenizer;
-
-public class Main{
+public class Main {
     public static void main(String[] args) throws IOException {
         int num = 2;
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -62,11 +57,6 @@ public class Main{
 # 유클리드 호제법
 
 ```java
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.StringTokenizer;
-
 public class Euclidean {
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
