@@ -1,5 +1,5 @@
 ---
-title:  "[Spring] 스프링 부트로 REST API 빌드"
+title:  "[Spring] 스프링 부트 & REST API - 1"
 excerpt: " "
 
 categories:
