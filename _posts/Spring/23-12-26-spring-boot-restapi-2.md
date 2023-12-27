@@ -66,6 +66,15 @@ public EntityModel<User> getUser(@PathVariable int id) {
 }
 ```
 
+## Hal Explorer
+
+```
+<dependency>
+    <groupId>org.springframework.data</groupId>
+    <artifactId>spring-data-rest-hal-explorer</artifactId>
+</dependency>
+```
+
 # 사용자 지정 응답
 
 ## 직렬화

@@ -1,5 +1,5 @@
 ---
-title:  "[Spring] REST API로 소셜 미디어 어플 빌드 -1"
+title:  "[Spring] REST API로 소셜 미디어 어플 빌드 - 1"
 excerpt: " "
 
 categories:
@@ -263,5 +263,91 @@ protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotV
 @Nullable
 protected ResponseEntity<Object> handleHandlerMethodValidationException(HandlerMethodValidationException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
     return this.handleExceptionInternal(ex, (Object)null, headers, status, request);
+}
+```
+
+# 사용자 목록을 DB에서 관리
+
+```java
+@Entity(name = "user_details")
+public class User {
+    @Id
+    @GeneratedValue
+    private Integer id;
+
+    protected User() {}
+    // ...
+}
+```
+
+```
+spring.h2.console.enabled=true
+spring.datasource.url=jdbc:h2:mem:testdb
+spring.jpa.defer-datasource-initialization=true
+```
+
+```sql
+insert into user_details(id, birth_date, name)
+values(1000, current_date(), 'TESTDB');
+
+insert into user_details(id, birth_date, name)
+values(2000, current_date(), 'TESTDB2');
+
+insert into user_details(id, birth_date, name)
+values(3000, current_date(), 'TESTDB3');
+```
+
+
+
+```java
+public interface UserRepository extends JpaRepository<User, Integer> {
+}
+```
+
+```java
+@RestController
+public class UserJpaResource {
+    private UserRepository userRepository;
+    public UserJpaResource(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
+
+    @GetMapping(path = "/jpa/users")
+    public List<User> getAllUsers() {
+        return userRepository.findAll();
+    }
+
+    @GetMapping(path = "/jpa/users/{id}")
+    public EntityModel<User> getUser(@PathVariable int id) {
+        Optional<User> user = userRepository.findById(id);
+        // 존재하는 사용자가 없다면 404에러 반환
+        if(user.isEmpty()) {
+            throw new UserNotFoundException("id: " + id);
+        }
+        // User 클래스를 EntityModel로 래핑
+        EntityModel<User> entityModel = EntityModel.of(user.get());
+        WebMvcLinkBuilder link = WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(this.getClass()).getAllUsers());
+        entityModel.add(link.withRel("all-users"));
+        return entityModel;
+    }
+
+    @PostMapping(path = "/jpa/users")
+    public ResponseEntity<User> createUser(@Valid @RequestBody User user) {
+        User savedUser = userRepository.save(user);
+
+        //생성된 리소스의 주소값을 응답값 헤더에 넣어서 반환
+        URI location = ServletUriComponentsBuilder.
+                fromCurrentRequest().
+                path("/{id}").
+                buildAndExpand(savedUser.getId()).toUri();
+        // 201 응답을 반환하도록 함
+        return ResponseEntity.created(location).build();
+    }
+
+    @DeleteMapping(path = "/jpa/users/{id}")
+    public List<User> deleteUser(@PathVariable int id) {
+        userRepository.deleteById(id);
+        return userRepository.findAll();
+    }
 }
 ```
