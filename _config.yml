@@ -125,7 +125,7 @@ author:
 
     - label: "GitHub"
       icon: "fab fa-fw fa-github"
-      url: "https://github.com/sehako/sehako.github.io"
+      url: "https://github.com/sehako"
 
 # Site Footer
 footer:
@@ -136,7 +136,7 @@ footer:
 
     - label: "GitHub"
       icon: "fab fa-fw fa-github"
-      url: "https://github.com/sehako/sehako.github.io"
+      url: "https://github.com/sehako"
 
 
 # Reading Files
