@@ -3,7 +3,7 @@ title:  "[Algorithm] [Java]유클리드 호제법"
 excerpt: " "
 
 categories:
-  - Algorithm
+  - Baekjoon
 
 toc: true
 toc_sticky: true
