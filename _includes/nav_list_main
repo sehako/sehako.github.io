@@ -21,8 +21,8 @@
         </ul>
         <ul>
             {% for category in site.categories %}
-                {% if category[0] == "Baekjoon" %}
-                    <li><a href="/categories/baekjoon" class="">Baekjoon ({{category[1].size}})</a></li>
+                {% if category[0] == "ps" %}
+                    <li><a href="/categories/problem-solving" class="">Problem Solving ({{category[1].size}})</a></li>
                 {% endif %}
             {% endfor %}
         </ul>
