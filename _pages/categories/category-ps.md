@@ -1,5 +1,5 @@
 ---
-title: "Problem Solving"
+title: "PS"
 layout: archive
 permalink: categories/problem-solving
 author_profile: true
