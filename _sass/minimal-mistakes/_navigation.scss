@@ -239,6 +239,9 @@
   
       &:hover {
         @include yiq-contrasted($muted-text-color);
+        .prev_next {
+          @include yiq-contrasted($muted-text-color);
+        }
       }
   
       &:first-child {
@@ -266,9 +269,6 @@
 
   .prev_next {
     color: #525252;
-    &:hover {
-      color: #FFFFFF; // 마우스를 올렸을 때 변경할 색상
-    }
   }
   
   .page__content + .pagination,
