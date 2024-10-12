@@ -240,7 +240,7 @@
       &:hover {
         @include yiq-contrasted($muted-text-color);
         .prev_next {
-          @include yiq-contrasted($muted-text-color);
+          color: #FFFFFF;
         }
       }
   
