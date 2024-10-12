@@ -265,15 +265,11 @@
   // }
 
   .prev_next {
-    color: #646769;
-    &:hover {
-      @include yiq-contrasted($muted-text-color);
-    }
-    &.current,
-    &.current.disabled {
-      color: #fff;
-      background: $primary-color;
-    }
+    color: #525252;
+  }
+
+  .prev_next:hover {
+    color: #FFFFFF;
   }
   
   .page__content + .pagination,
