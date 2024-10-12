@@ -1,0 +1,116 @@
+---
+title:  "[Baekjoon] 11659. 구간 합 구하기 4"
+excerpt: " "
+
+categories:
+  - Baekjoon
+
+toc: true
+toc_sticky: true
+ 
+date: 2024-09-29
+---
+
+## 문제 링크: [11659번: 구간 합 구하기 4](https://www.acmicpc.net/problem/11659)
+
+## 입력 값
+
+- 배열 크기 `N`
+- 반복 횟수 `M`
+- 더해야 하는 값의 범위 `i`, `j`
+
+$$
+1 \le N \le 100000\\
+1 \le M \le 100000\\
+1 \le i \le j \le N
+$$
+
+## 입출력 예시
+
+**입력**
+
+```
+5 3
+5 4 3 2 1
+1 3
+2 4
+5 5
+```
+
+**출력**
+
+```
+12
+9
+1
+```
+
+## 풀이
+
+처음에는 단순하게 반복문을 통해서 다음과 같이 풀고 우선 제출해봤다. 역시 시간초과가 발생했다.
+
+```java
+int[] arr = new int[N];
+
+// 입력 과정 생략
+
+StringBuilder sb = new StringBuilder();
+for (int i < 0; i < M; i++) {
+	// br 변수는 BufferedReader의 인스턴스
+	StringTokenizer st = new StringTokenizer(br.readLine());
+	int start = Integer.parseInt(st.nextToken());
+	int end = Integer.parseInt(st.nextToken());
+	int result = 0;
+	
+	for (int x = start; x < end + 1; x++) {
+		result += arr[x];	
+	}
+	sb.append(result).append('\n');
+}
+```
+
+`N`의 값이 100000이고, `end`는 최대 `N`까지 될 수 있으므로 시간 복잡도는 $O(100000^2)$가 된다. 하지만 이 문제의 제한 시간은 1초이고, 컴퓨터가 1초에 수행할 수 있는 최대의 경우는 1억($10000^2$)이다.  
+아무리 생각이 나지 않아 알고리즘 유형을 살펴보니 **누적 합**이라는 문제였다. 인터넷을 찾아보니 어느 블로그를 발견하였고 이 블로그의 표를 통해 누적 합이 무엇인지 알게 되었다.  
+누적 합은 단순하게 입력 값을 받는 배열(`arr`) 이외에도 다른 하나의 배열(`sum`)을 생성하여 해당 배열 인덱스에 현재까지 입력받은 입력 값의 총합을 저장하는 방식이다. 따라서 `{5, 4, 3, 2, 1}` 배열에 대한 누적 합은 다음과 같다.
+
+| 배열\인덱스 | 0 | 1 | 2 | 3 | 4 |
+| --- | --- | --- | --- | --- | --- |
+| arr | 5 | 4 | 3 | 2 | 1 |
+| sum | 5 | 9 | 12 | 14 | 15 |
+
+입력값에 따라서 인덱스 범위의 합을 구한다고 해보자. 백준에서는 입력 값과 인덱스 값이 다르므로 -1씩 해야 한다.
+
+- 0 ~ 2
+
+```java
+arr[0] + arr[1] + arr[2] = sum[2]
+```
+
+- 1 ~ 3
+
+```java
+arr[1] + arr[2] + arr[3] = sum[3] - sum[0]
+```
+
+- 4 ~ 4
+
+```java
+arr[4] = sum[4] - sum[3]
+```
+
+누적 합 `sum`을 이용해서 답을 쉽게 구할 수 있다. `i`가 0이 아니라면 `sum[i - 1]`값을 `sum[j]`값에 뺄셈을 하면 된다. 따라서 이 문제의 핵심 코드는 다음과 같다.
+
+```java
+if (i != 0) sum[j] - sum[i - 1];
+else sum[j];
+```
+
+## 구현 코드
+
+<script src="https://gist.github.com/sehako/73561893c00b05d411a0f58c19d41198.js"></script>
+
+`start`가 `i`값, `end`가 `j`값이라고 보면 된다. 
+
+## 참고 자료
+
+[누적합(Prefix Sum / Cumulative Sum) 알고리즘](https://ji-musclecode.tistory.com/38)
