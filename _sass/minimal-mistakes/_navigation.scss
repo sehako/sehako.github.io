@@ -266,6 +266,9 @@
 
   .prev_next {
     color: #646769;
+    &:hover {
+      @include yiq-contrasted($muted-text-color);
+    }
   }
   
   .page__content + .pagination,
