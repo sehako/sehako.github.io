@@ -269,6 +269,11 @@
     &:hover {
       @include yiq-contrasted($muted-text-color);
     }
+    &.current,
+    &.current.disabled {
+      color: #fff;
+      background: $primary-color;
+    }
   }
   
   .page__content + .pagination,
