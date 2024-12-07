@@ -464,6 +464,31 @@
 
 .pagination {
   display: flex;
-  justify-content: center;
-  align-items: center;
+  justify-content: center; /* 가운데 정렬 */
+  align-items: center; /* 세로 가운데 정렬 */
+  margin: 1em 0; /* 필요시 여백 조정 */
+  
+  ul {
+    list-style: none;
+    display: flex;
+    padding: 0;
+    margin: 0;
+  }
+
+  li {
+    margin: 0 5px; /* 항목 간 여백 */
+  }
+  
+  a {
+    text-decoration: none;
+  }
+
+  .disabled {
+    opacity: 0.5; /* 비활성화된 버튼 */
+  }
+  
+  .current {
+    font-weight: bold; /* 현재 페이지 강조 */
+  }
 }
+
