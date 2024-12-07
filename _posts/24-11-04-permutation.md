@@ -1,5 +1,5 @@
 ---
-title:  완전탐색 - 순열 (Permutation)
+title: 순열 (Permutation)
 excerpt: 완전 탐색 기초
 
 categories:
