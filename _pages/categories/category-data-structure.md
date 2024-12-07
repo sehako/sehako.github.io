@@ -7,5 +7,5 @@ sidebar_main: true
 ---
 
 
-{% assign posts = site.categories["Data Structure"] %}
+{% assign posts = site.categories.Data %}
 {% for post in posts %} {% include archive-single.html type=page.entries_layout %} {% endfor %}
