@@ -1,6 +1,5 @@
 ---
 title: 조합 (Combination)
-excerpt: 완전 탐색 기초
 
 categories:
   - Algorithm

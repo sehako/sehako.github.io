@@ -1,6 +1,5 @@
 ---
 title: 순열 (Permutation)
-excerpt: 완전 탐색 기초
 
 categories:
   - Algorithm
