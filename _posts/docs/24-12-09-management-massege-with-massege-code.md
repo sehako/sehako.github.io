@@ -143,13 +143,11 @@ public class CommonExceptionHandler {
     public ResponseEntity<JSONResponse<Object>> handleMethodArgumentNotValidException(final MethodArgumentNotValidException e) {
         List<FieldError> fieldErrors = e.getBindingResult().getFieldErrors();
         List<String> errorMessages = fieldErrors
-                                        .stream()
-                                        .map(fieldError -> MessageUtil
-                                        .getMessage(
-                                        fieldError.getCode(),
-                                        new Object[] { fieldError.getField() }
-                                        ))
-                                        .collect(Collectors.toList());
+        .stream()
+        .map(fieldError -> MessageUtil.getMessage(
+            fieldError.getCode(),
+            new Object[] { fieldError.getField() }))
+        .collect(Collectors.toList());
 
         return ResponseEntity
                 .status(BAD_REQUEST)
@@ -202,10 +200,10 @@ public class UserController {
 
 ```java
 public record UserRegisterRequest(
-		@NotNull
-		Long id,
-		@NotBlank
-		String name
+        @NotNull
+        Long id,
+        @NotBlank
+        String name
 ) {
 }
 ```
