@@ -222,9 +222,9 @@ GET http://localhost:8080/api/user/test/string
 
 ```
 {
-		"isSuccess": false,
-		"code": 4000,
-		"message": "잘못된 요청"
+    "isSuccess": false,
+    "code": 4000,
+    "message": "잘못된 요청"
 }
 ```
 
@@ -235,15 +235,15 @@ POST http://localhost:8080/api/user/test
 
 BODY
 {
-		"name": "123"
+    "name": "123"
 }
 ```
 
 ```
 {
-		"isSuccess": false,
-		"code": 4000,
-		"message": "잘못된 요청"
+    "isSuccess": false,
+    "code": 4000,
+    "message": "잘못된 요청"
 }
 ```
 
@@ -254,20 +254,20 @@ BODY
 ```
 POST http://localhost:8080/api/user/test
 {
-		"id": null,
+    "id": null,
     "name": ""
 }
 ```
 
 ```
 {
-		"isSuccess": false,
-		"code": 4000,
-		"message": "잘못된 요청",
-		"result":[
-				"id 값이 null로 전달됨",
-				"name 값이 주어지지 않음."
-		]
+    "isSuccess": false,
+    "code": 4000,
+    "message": "잘못된 요청",
+    "result":[
+        "id 값이 null로 전달됨",
+        "name 값이 주어지지 않음."
+    ]
 }
 ```
 
@@ -278,23 +278,23 @@ POST http://localhost:8080/api/user/test
 POST http://localhost:8080/api/user/test
 
 header: {
-		"Accept-Language": "en-US",
+    "Accept-Language": "en-US",
 }
 {
-		"id": null,
+    "id": null,
     "name": "",
 }
 ```
 
 ```
 {
-		"isSuccess": false,
-		"code": 4000,
-		"message": "Invalid Request",
-		"result":[
-				"id value cannot be null",
-				"name value cannot be empty."
-		]
+    "isSuccess": false,
+    "code": 4000,
+    "message": "Invalid Request",
+    "result":[
+        "id value cannot be null",
+        "name value cannot be empty."
+    ]
 }
 ```
 
