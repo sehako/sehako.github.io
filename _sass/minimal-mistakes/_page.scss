@@ -32,10 +32,10 @@ body {
           flex-direction: column;
 }
 
-.initial-content,
-.search-content {
-  flex: 1 0 auto;
-}
+// .initial-content,
+// .search-content {
+//   flex: 1 0 auto;
+// }
 
 .page {
   @include breakpoint($large) {
