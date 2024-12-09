@@ -59,7 +59,6 @@ static void combination(int index, int depth) {
 		// 이미 선택한 인덱스는 고려할 필요가 없으므로 i + 1
 		combination(index + 1, i + 1);
 	}
-	
 }
 ```
 
