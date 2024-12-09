@@ -4,8 +4,8 @@
 
 #main {
   @include clearfix;
-//   margin-left: auto;
-//   margin-right: auto;
+  margin-left: auto;
+  margin-right: auto;
   padding-left: 1em;
   padding-right: 1em;
   -webkit-animation: $intro-transition;
@@ -13,8 +13,6 @@
   max-width: 100%;
   -webkit-animation-delay: 0.15s;
   animation-delay: 0.15s;
-  // add
-  box-sizing: border-box;
 
   @include breakpoint($x-large) {
     max-width: $max-width;
@@ -32,10 +30,10 @@ body {
           flex-direction: column;
 }
 
-// .initial-content,
-// .search-content {
-//   flex: 1 0 auto;
-// }
+.initial-content,
+.search-content {
+  flex: 1 0 auto;
+}
 
 .page {
   @include breakpoint($large) {
