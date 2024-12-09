@@ -140,7 +140,9 @@ public class CommonException extends RuntimeException {
 public class CommonExceptionHandler {
     // Valid 실패 시 발생하는 예외
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<JSONResponse<Object>> handleMethodArgumentNotValidException(final MethodArgumentNotValidException e) {
+    public ResponseEntity<JSONResponse<Object>> handleMethodArgumentNotValidException(
+            final MethodArgumentNotValidException e
+    ) {
         List<FieldError> fieldErrors = e.getBindingResult().getFieldErrors();
         List<String> errorMessages = fieldErrors
                                             .stream()
@@ -184,7 +186,7 @@ public class CommonExceptionHandler {
 
 ### 테스트
 
-테스트를 위해 컨트롤러와 요청 DTO를 만든다.
+테스트를 위해 컨트롤러와 요청 객체를 만든다.
 
 ```java
 @RestController
