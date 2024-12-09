@@ -55,6 +55,7 @@ body {
     // width: 100%;
     width: auto;
     clear: both;
+    align-self: stretch; // 부모 컨텍스트에서 자식 요소가 늘어나도록 설정
 
     .page__content,
     .page__meta,
