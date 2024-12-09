@@ -140,18 +140,16 @@ public class CommonException extends RuntimeException {
 public class CommonExceptionHandler {
     // Valid 실패 시 발생하는 예외
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<JSONResponse<Object>> handleMethodArgumentNotValidException(
-            final MethodArgumentNotValidException e
-    ) {
+    public ResponseEntity<JSONResponse<Object>> handleMethodArgumentNotValidException(final MethodArgumentNotValidException e) {
         List<FieldError> fieldErrors = e.getBindingResult().getFieldErrors();
         List<String> errorMessages = fieldErrors
-                                            .stream()
-                                            .map(fieldError -> MessageUtil
-                                            .getMessage(
-                                            fieldError.getCode(),
-                                            new Object[] { fieldError.getField() }
-                                            ))
-                                            .collect(Collectors.toList());
+                                        .stream()
+                                        .map(fieldError -> MessageUtil
+                                        .getMessage(
+                                        fieldError.getCode(),
+                                        new Object[] { fieldError.getField() }
+                                        ))
+                                        .collect(Collectors.toList());
 
         return ResponseEntity
                 .status(BAD_REQUEST)
