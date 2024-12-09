@@ -13,6 +13,8 @@
   max-width: 100%;
   -webkit-animation-delay: 0.15s;
   animation-delay: 0.15s;
+  // add
+  box-sizing: border-box;
 
   @include breakpoint($x-large) {
     max-width: $max-width;
@@ -52,10 +54,8 @@ body {
     margin-top: 1em;
     margin-left: 0;
     margin-right: 0;
-    // width: 100%;
-    width: auto;
+    width: 100%;
     clear: both;
-    align-self: stretch; // 부모 컨텍스트에서 자식 요소가 늘어나도록 설정
 
     .page__content,
     .page__meta,
