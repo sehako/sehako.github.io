@@ -79,17 +79,17 @@ public enum ErrorCode {
 @Component
 @RequiredArgsConstructor
 public class MessageUtil {
-	private static MessageSource messageSource;
+    private static MessageSource messageSource; 
 
-	@Autowired
-		public void setMessageSource(MessageSource messageSource) {
-		MessageUtil.messageSource = messageSource;
-	}
+    @Autowired
+        public void setMessageSource(MessageSource messageSource) {
+        MessageUtil.messageSource = messageSource;
+    }
 
-	public static String getMessage(String code) {
-		Locale locale = LocaleContextHolder.getLocale();  // 현재 스레드의 locale을 자동으로 가져옴
-		return messageSource.getMessage(code, null, locale);
-	}
+    public static String getMessage(String code) {
+        Locale locale = LocaleContextHolder.getLocale();  // 현재 스레드의 locale을 자동으로 가져옴
+        return messageSource.getMessage(code, null, locale);
+    }
 }
 ```
 
@@ -100,21 +100,21 @@ public class MessageUtil {
 ```java
 @JsonPropertyOrder({"isSuccess", "code", "message", "result"})
 public record JSONResponse<T>(
-		@JsonProperty(value = "isSuccess") boolean isSuccess,
-		int code,
-		String message,
-		@JsonInclude(Include.NON_NULL) T result
+        @JsonProperty(value = "isSuccess") boolean isSuccess,
+        int code,
+        String message,
+        @JsonInclude(Include.NON_NULL) T result
 ) {
 
-	public static <T> JSONResponse<T> onSuccess(SuccessCode successCode, T data) {
-		String message = MessageUtil.getMessage(successCode.getMessageCode());
-		return new JSONResponse<>(true, successCode.getCode(), message, data);
-	}
+    public static <T> JSONResponse<T> onSuccess(SuccessCode successCode, T data) {
+        String message = MessageUtil.getMessage(successCode.getMessageCode());
+        return new JSONResponse<>(true, successCode.getCode(), message, data);
+    }
 
-	public static <T> JSONResponse<T> onFailure(ErrorCode errorCode, T data) {
-		String message = MessageUtil.getMessage(errorCode.getMessageCode());
-		return new JSONResponse<>(false, errorCode.getCode(), message, data);
-	}
+    public static <T> JSONResponse<T> onFailure(ErrorCode errorCode, T data) {
+        String message = MessageUtil.getMessage(errorCode.getMessageCode());
+        return new JSONResponse<>(false, errorCode.getCode(), message, data);
+    }
 }
 ```
 
@@ -127,56 +127,56 @@ public record JSONResponse<T>(
 ```java
 @Getter
 public class CommonException extends RuntimeException {
-	private final ErrorCode errorCode;
+    private final ErrorCode errorCode;
 
-	public CommonException(ErrorCode errorCode) {
-		this.errorCode = errorCode;
-	}
+    public CommonException(ErrorCode errorCode) {
+        this.errorCode = errorCode;
+    }
 }
 ```
 
 ```java
 @RestControllerAdvice
 public class CommonExceptionHandler {
-	// Valid 실패 시 발생하는 예외
-	@ExceptionHandler(MethodArgumentNotValidException.class)
-	public ResponseEntity<JSONResponse<Object>> handleMethodArgumentNotValidException(final MethodArgumentNotValidException e) {
-		List<FieldError> fieldErrors = e.getBindingResult().getFieldErrors();
-		List<String> errorMessages = fieldErrors
-		.stream()
-		.map(fieldError -> MessageUtil.getMessage(
-			fieldError.getCode(),
-			new Object[] { fieldError.getField() }))
-		.collect(Collectors.toList());
+    // Valid 실패 시 발생하는 예외
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<JSONResponse<Object>> handleMethodArgumentNotValidException(final MethodArgumentNotValidException e) {
+        List<FieldError> fieldErrors = e.getBindingResult().getFieldErrors();
+        List<String> errorMessages = fieldErrors
+                                        .stream()
+                                        .map(fieldError -> MessageUtil.getMessage(
+                                            fieldError.getCode(),
+                                            new Object[] { fieldError.getField() }))
+                                        .collect(Collectors.toList());
 
-		return ResponseEntity
-					.status(BAD_REQUEST)
-					.body(JSONResponse.onFailure(ErrorCode.INVALID_REQUEST, errorMessages));
-	}
+        return ResponseEntity
+                .status(BAD_REQUEST)
+                .body(JSONResponse.onFailure(ErrorCode.INVALID_REQUEST, errorMessages));
+    }
 
-	// @PathVariable 잘못 입력 또는 요청 메시지 바디에 아무 값도 전달되지 않았을 때
-	@ExceptionHandler({MethodArgumentTypeMismatchException.class, HttpMessageNotReadableException.class})
-	public ResponseEntity<JSONResponse<Object>> handlerMethodArgumentTypeMismatchException(final Exception e) {
-		return ResponseEntity
-					.status(BAD_REQUEST)
-					.body(JSONResponse.onFailure(ErrorCode.INVALID_REQUEST, null));
-	}
+    // @PathVariable 잘못 입력 또는 요청 메시지 바디에 아무 값도 전달되지 않았을 때
+    @ExceptionHandler({MethodArgumentTypeMismatchException.class, HttpMessageNotReadableException.class})
+    public ResponseEntity<JSONResponse<Object>> handlerMethodArgumentTypeMismatchException(final Exception e) {
+        return ResponseEntity
+                .status(BAD_REQUEST)
+                .body(JSONResponse.onFailure(ErrorCode.INVALID_REQUEST, null));
+    }
 
-	// 그 외 CommonException 상속받은 모든 예외를 이 메소드에서 처리
-	@ExceptionHandler(CommonException.class)
-	public ResponseEntity<JSONResponse<Object>> handlerCommonException(final CommonException e) {
-		return ResponseEntity
-					.status(e.getErrorCode().getHttpStatus())
-					.body(JSONResponse.onFailure(e.getErrorCode(), null));
-	}
+    // 그 외 CommonException 상속받은 모든 예외를 이 메소드에서 처리
+    @ExceptionHandler(CommonException.class)
+    public ResponseEntity<JSONResponse<Object>> handlerCommonException(final CommonException e) {
+        return ResponseEntity
+                .status(e.getErrorCode().getHttpStatus())
+                .body(JSONResponse.onFailure(e.getErrorCode(), null));
+    }
 
-	// 서버 내부 오류 (SQL 연결 오류 등) 처리
-	@ExceptionHandler(Exception.class)
-	public ResponseEntity<JSONResponse<Object>> handlerException(final Exception e) {
-		return ResponseEntity
-					.status(INTERNAL_SERVER_ERROR)
-					.body(JSONResponse.onFailure(ErrorCode.SERVER_ERROR, null));
-	}
+    // 서버 내부 오류 (SQL 연결 오류 등) 처리
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<JSONResponse<Object>> handlerException(final Exception e) {
+        return ResponseEntity
+                .status(INTERNAL_SERVER_ERROR)
+                .body(JSONResponse.onFailure(ErrorCode.SERVER_ERROR, null));
+    }
 }
 ```
 
@@ -188,22 +188,22 @@ public class CommonExceptionHandler {
 @RestController
 @RequestMapping("/api/user")
 public class UserController {
-	@GetMapping("/test/{param}")
-	public void paramTypeMisMatch(@PathVariable int param) throws Exception {
-	}
+    @GetMapping("/test/{param}")
+    public void paramTypeMisMatch(@PathVariable int param) throws Exception {
+    }
 
-	@PostMapping("/test")
-	public void validFailure(@RequestBody @Valid UserRegisterRequest request) {
-	}
+    @PostMapping("/test")
+    public void validFailure(@RequestBody @Valid UserRegisterRequest request) {
+    }
 }
 ```
 
 ```java
 public record UserRegisterRequest(
-		@NotNull
-		Long id,
-		@NotBlank
-		String name
+        @NotNull
+        Long id,
+        @NotBlank
+        String name
 ) {
 }
 ```
@@ -218,9 +218,9 @@ GET http://localhost:8080/api/user/test/string
 
 ```
 {
-	"isSuccess": false,
-	"code": 4000,
-	"message": "잘못된 요청"
+    "isSuccess": false,
+    "code": 4000,
+    "message": "잘못된 요청"
 }
 ```
 
@@ -231,15 +231,15 @@ POST http://localhost:8080/api/user/test
 
 BODY
 {
-	"name": "123"
+    "name": "123"
 }
 ```
 
 ```
 {
-	"isSuccess": false,
-	"code": 4000,
-	"message": "잘못된 요청"
+    "isSuccess": false,
+    "code": 4000,
+    "message": "잘못된 요청"
 }
 ```
 
@@ -250,20 +250,20 @@ BODY
 ```
 POST http://localhost:8080/api/user/test
 {
-	"id": null,
-	"name": ""
+    "id": null,
+    "name": ""
 }
 ```
 
 ```
 {
-	"isSuccess": false,
-	"code": 4000,
-	"message": "잘못된 요청",
-	"result":[
-		"id 값이 null로 전달됨",
-		"name 값이 주어지지 않음."
-	]
+    "isSuccess": false,
+    "code": 4000,
+    "message": "잘못된 요청",
+    "result":[
+        "id 값이 null로 전달됨",
+        "name 값이 주어지지 않음."
+    ]
 }
 ```
 
@@ -274,23 +274,23 @@ POST http://localhost:8080/api/user/test
 POST http://localhost:8080/api/user/test
 
 header: {
-	"Accept-Language": "en-US",
+    "Accept-Language": "en-US",
 }
 {
-	"id": null,
-	"name": "",
+    "id": null,
+    "name": "",
 }
 ```
 
 ```
 {
-	"isSuccess": false,
-	"code": 4000,
-	"message": "Invalid Request",
-	"result":[
-		"id value cannot be null",
-		"name value cannot be empty."
-	]
+    "isSuccess": false,
+    "code": 4000,
+    "message": "Invalid Request",
+    "result":[
+        "id value cannot be null",
+        "name value cannot be empty."
+    ]
 }
 ```
 

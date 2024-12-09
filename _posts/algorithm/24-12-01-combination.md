@@ -30,11 +30,11 @@ $$
 ```java
 int[] arr = {1, 2, 3, 4};
 for (int i = 0; i < 4; i++) {
-	for (int j = i + 1; j < 4; j++) {
-		for (int k = j + 1; k < 4; k++) {
-			System.out.printf("[%d, %d, %d]\n", arr[i], arr[j], arr[k]);
-		}
-	}
+    for (int j = i + 1; j < 4; j++) {
+        for (int k = j + 1; k < 4; k++) {
+            System.out.printf("[%d, %d, %d]\n", arr[i], arr[j], arr[k]);
+        }
+    }
 }
 ```
 
@@ -48,17 +48,17 @@ int[] arr = {1, 2, 3, 4};
 int[] result = new int[3];
 
 static void combination(int index, int depth) {
-	// 원소 3개를 선택했을 때
-	if (index == 3) {
-		System.out.println(Arrays.toString(result));
-		return;
-	}
-	
-	for (int i = depth; i < 4; i++) {
-		result[index] = arr[i];
-		// 이미 선택한 인덱스는 고려할 필요가 없으므로 i + 1
-		combination(index + 1, i + 1);
-	}
+    // 원소 3개를 선택했을 때
+    if (index == 3) {
+        System.out.println(Arrays.toString(result));
+        return;
+    }
+
+    for (int i = depth; i < 4; i++) {
+        result[index] = arr[i];
+        // 이미 선택한 인덱스는 고려할 필요가 없으므로 i + 1
+        combination(index + 1, i + 1);
+    }
 }
 ```
 
@@ -76,15 +76,15 @@ $$
 int[] arr = {1, 2, 3, 4};
 int[] result = new int[3];
 void combinationWithDuplication(int index, int start) {
-	if (index == 3) {
-		System.out.println(Arrays.toString(result));
-		return;
-	}
-	
-	for (int i = start; i < 4; i++) {
-		result[index] = arr[i];
-		// 현재 선택한 인덱스를 다음 start 값으로 넘겨주어 중복을 유도
-		combinationWithDuplication(index + 1, i);
-	}
+    if (index == 3) {
+        System.out.println(Arrays.toString(result));
+        return;
+    }
+
+    for (int i = start; i < 4; i++) {
+        result[index] = arr[i];
+        // 현재 선택한 인덱스를 다음 start 값으로 넘겨주어 중복을 유도
+        combinationWithDuplication(index + 1, i);
+    }
 }
 ```

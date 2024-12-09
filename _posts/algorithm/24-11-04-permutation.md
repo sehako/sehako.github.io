@@ -35,19 +35,19 @@ $$
 
 ```java
 for (int i = 0; i < N; i++) {
-	// 두 번째 원소 선택
-	for (int j = 0; j < N; j++) {
-		// 첫 번째 원소와 중복되는 원소 제거
-		if (i != j) {
-			// 세 번째 원소 선택
-			for (int k = 0; k < N; k++) {
-				// 첫 번째 및 두 번째 원소와 중복되는 원소는 뽑지 않음
-				if (k != i && k != j) {
-					System.out.printf("%d %d %d\n", data[i], data[j], data[k]);	
-				}
-			}
-		}
-	}
+    // 두 번째 원소 선택
+    for (int j = 0; j < N; j++) {
+        // 첫 번째 원소와 중복되는 원소 제거
+        if (i != j) {
+            // 세 번째 원소 선택
+            for (int k = 0; k < N; k++) {
+                // 첫 번째 및 두 번째 원소와 중복되는 원소는 뽑지 않음
+                if (k != i && k != j) {
+                    System.out.printf("%d %d %d\n", data[i], data[j], data[k]);	
+                }
+            }
+        }
+    }
 }
 ```
 
@@ -64,21 +64,21 @@ int[] data = {1, 2, 3};
 
 // 3개를 선택하는 순열 예시
 void permutation(int depth) {
-	// 기저 조건 (재귀 탈출 조건)
-	//배열은 0부터 시작하므로 R-1개가 모든 원소를 뽑은 상황. 
-	//depth가 R과 동일한 상황은 순열 하나의 모든 원소를 다 뽑은 상황
-	if(depth == 3) return;
-	
-	for (int i = 0; i <N; i++) {
-		//중복 검사
-		if(ch[i]) continue;
-		// 중복이 되면 안되므로 boolean 배열을 통해 중복값을 관리
-		ch[i] = true;
-		// 유도 부분(재귀 호출 부분)
-		permutation(depth + 1);
-		// 재귀 호출을 빠져나오면 해당 숫자는 선택을 끝난 상태이므로 중복값 체크 해제
-		ch[i] = false;
-	}
+    // 기저 조건 (재귀 탈출 조건)
+    //배열은 0부터 시작하므로 R-1개가 모든 원소를 뽑은 상황. 
+    //depth가 R과 동일한 상황은 순열 하나의 모든 원소를 다 뽑은 상황
+    if(depth == 3) return;
+
+    for (int i = 0; i <N; i++) {
+        //중복 검사
+        if(ch[i]) continue;
+        // 중복이 되면 안되므로 boolean 배열을 통해 중복값을 관리
+        ch[i] = true;
+        // 유도 부분(재귀 호출 부분)
+        permutation(depth + 1);
+        // 재귀 호출을 빠져나오면 해당 숫자는 선택을 끝난 상태이므로 중복값 체크 해제
+        ch[i] = false;
+    }
 }
 ```
 
@@ -101,15 +101,15 @@ void permutation(int depth) {
 
 ```java
 void permutation(int depth, int flag) { 
-	if(depth == R) return;
-	
-	//원소를 선택
-	for (int i = 0; i < N; i++) {
-		count++;
-		//중복 검사
-		if((flag & 1 << i) != 0) continue;
-		permutation(depth+1, flag | 1 << i);
-	}
+    if(depth == R) return;
+
+    //원소를 선택
+    for (int i = 0; i < N; i++) {
+        count++;
+        //중복 검사
+        if((flag & 1 << i) != 0) continue;
+        permutation(depth+1, flag | 1 << i);
+    }
 }
 ```
 
@@ -125,20 +125,18 @@ void permutation(int depth, int flag) {
 int[] data = {1, 2, 3, 4, 5};
 
 void permutation(int depth) {
-
-	if(depth == data.length - 1) return;
-	
-	for (int i = depth; i < N; i++) {
-		swap(i, depth);
-		permutation(depth + 1);
-		swap(i, depth);
-	}
+    if(depth == data.length - 1) return;
+    for (int i = depth; i < N; i++) {
+        swap(i, depth);
+        permutation(depth + 1);
+        swap(i, depth);
+    }
 }
 
 void swap(int a, int b) {
-	int temp = data[a];
-	data[a] = data[b];
-	data[b] = temp;
+    int temp = data[a];
+    data[a] = data[b];
+    data[b] = temp;
 }
 ```
 
@@ -154,11 +152,11 @@ $$
 
 ```java
 void permutation(int depth) {
-	if(depth == 3) return;
-	
-	for (int i = 0; i <N; i++) {
-		data[depth] = input[i];
-		permutation(depth + 1);
-	}
+    if(depth == 3) return;
+
+    for (int i = 0; i <N; i++) {
+        data[depth] = input[i];
+        permutation(depth + 1);
+    }
 }
 ```
