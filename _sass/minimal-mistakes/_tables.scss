@@ -1,39 +1,86 @@
-/* ==========================================================================
-   TABLES
+// /* ==========================================================================
+//    TABLES
+//    ========================================================================== */
+
+// table {
+//   display: block;
+//   margin-bottom: 1em;
+//   width: 100%;
+//   font-family: $global-font-family;
+//   font-size: $type-size-6;
+//   border-collapse: collapse;
+//   overflow-x: auto;
+
+//   & + table {
+//     margin-top: 1em;
+//   }
+// }
+
+// thead {
+//   background-color: $border-color;
+//   border-bottom: 2px solid mix(#000, $border-color, 25%);
+// }
+
+// th {
+//   padding: 0.5em;
+//   font-weight: bold;
+//   text-align: left;
+//   text-align: center;
+//   padding-left: auto;
+// }
+
+// td {
+//   padding-left: auto;
+//   padding: 0.5em;
+//   border-bottom: 1px solid mix(#000, $border-color, 25%);
+// }
+
+// tr,
+// td,
+// th {
+//   vertical-align: middle;
+// }
+  
+/* ==========================================================================  
+   TABLES  
    ========================================================================== */
 
-table {
-  display: block;
-  margin-bottom: 1em;
-  width: 100%;
-  font-family: $global-font-family;
-  font-size: $type-size-6;
-  border-collapse: collapse;
-  overflow-x: auto;
-
-  & + table {
-    margin-top: 1em;
+   table {
+    display: table; /* 기본 테이블 레이아웃 */
+    margin-bottom: 1em;
+    width: 100%; /* 부모 요소의 너비를 채움 */
+    font-family: $global-font-family;
+    font-size: $type-size-6;
+    border-collapse: collapse;
+    table-layout: fixed; /* 고정된 테이블 레이아웃 */
+    overflow-x: auto;
+  
+    & + table {
+      margin-top: 1em;
+    }
   }
-}
-
-thead {
-  background-color: $border-color;
-  border-bottom: 2px solid mix(#000, $border-color, 25%);
-}
-
-th {
-  padding: 0.5em;
-  font-weight: bold;
-  text-align: left;
-}
-
-td {
-  padding: 0.5em;
-  border-bottom: 1px solid mix(#000, $border-color, 25%);
-}
-
-tr,
-td,
-th {
-  vertical-align: middle;
-}
+  
+  thead {
+    background-color: $border-color;
+    border-bottom: 2px solid mix(#000, $border-color, 25%);
+  }
+  
+  th, td {
+    padding: 0.5em;
+    text-align: left; /* 텍스트 왼쪽 정렬 */
+    border-bottom: 1px solid mix(#000, $border-color, 25%);
+    word-wrap: break-word; /* 텍스트 줄바꿈 */
+    overflow-wrap: break-word; /* 긴 단어 줄바꿈 */
+  }
+  
+  tr,
+  td,
+  th {
+    vertical-align: middle; /* 세로 중앙 정렬 */
+  }
+  
+  /* 긴 텍스트를 처리하기 위한 추가 스타일 */
+  td, th {
+    white-space: pre-wrap; /* 텍스트 줄바꿈 */
+  }
+  

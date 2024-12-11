@@ -106,11 +106,6 @@ public record JSONResponse<T>(
         @JsonInclude(Include.NON_NULL) T result
 ) {
 
-    public static <T> JSONResponse<T> onSuccess(SuccessCode successCode, T data) {
-        String message = MessageUtil.getMessage(successCode.getMessageCode());
-        return new JSONResponse<>(true, successCode.getCode(), message, data);
-    }
-
     public static <T> JSONResponse<T> onFailure(ErrorCode errorCode, T data) {
         String message = MessageUtil.getMessage(errorCode.getMessageCode());
         return new JSONResponse<>(false, errorCode.getCode(), message, data);
@@ -294,10 +289,28 @@ header: {
 }
 ```
 
+
 ### 정리
 
 메시지 파일을 이용하여 메시지 관리를 하는 방법을 알아보았다. 쳇 GPT나 여러 강의 정리를 참고하면서 만든거긴 한데 여러 개선 사항이 보이긴 한다.  
 예를 들어 수정자 주입을 통해 현재 객체의 의존성을 설정했는데, 이는 `MessageUtil`을 정적 메소드를 사용하려고 `MessageSource`를 정적 필드로 선언했기 때문이다. 좀 더 설계를 잘한다면 메시지 파일을 관리하는 특정한 컴포넌트를 응답 객체가 아닌 다른 객체에서 어떻게 할 수 있지 않을까 생각한다.  
 이상으로 메시지 파일을 이용한 메시지 관리를 알아보았다. 국제화를 할 일이 많지 않을 것 같긴 한데 뭔가 해보고 싶었다. 
+
+### 리팩토링(24-12-11)
+
+`ErrorCode`를 살펴보던 도중 굳이 메시지 코드를 입력하지 않아도 된다는 생각이 들었다. 왜냐면 `enum`에 정의된 값들은 기본적으로 `name()`메소드를 가지게 되는데, 이 메소드들은 정의된 `enum`값을 문자열 형태로 출력할 수 있기 때문이다. 따라서 `JSONResponse`를 다음과 같이 수정하였다.
+
+```java
+public static <T> JSONResponse<T> onFailure(ErrorCode errorCode, T data) {
+    String message = MessageUtil.getMessage(errorCode.name());
+    return new JSONResponse<>(false, errorCode.getCode(), message, data);
+}
+```
+
+```
+# errors.properties
+SERVER_ERROR=서버 내부 오류 발생
+INVALID_REQUEST=잘못된 요청
+```
 
 **[전체 코드 참고](https://github.com/sehako/playground/tree/exception)**
