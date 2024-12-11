@@ -32,6 +32,7 @@ words_per_minute         : 200
 enable_copy_code_button  : # true, false (default)
 copyright                : # "copyright" name, defaults to site.title
 copyright_url            : # "copyright" URL, defaults to site.url
+date_format: "%Y-%m-%d"
 comments:
   provider               : utterances # false (default), "disqus", "discourse", "facebook", "staticman", "staticman_v2", "utterances", "giscus", "custom"
   disqus:
@@ -299,6 +300,7 @@ defaults:
       read_time: false
       show_date: true
       comments: true
+      show_modified_date: true
       share: true
       related: true
       sidebar_main: true

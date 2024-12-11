@@ -9,6 +9,7 @@ toc_sticky: true
 published: true
  
 date: 2024-12-09
+last_modified_at: 2024-12-11
 ---
 
 OAuth 관련 미니 프로젝트를 시작하려고 프로젝트의 사전 설정을 하던 도중에 응답에 관한 메시지를 스프링의 메시지 기능으로 관리하고 싶어졌다. 
@@ -299,6 +300,19 @@ header: {
 ### 리팩토링(24-12-11)
 
 `ErrorCode`를 살펴보던 도중 굳이 메시지 코드를 입력하지 않아도 된다는 생각이 들었다. 왜냐면 `enum`에 정의된 값들은 기본적으로 `name()`메소드를 가지게 되는데, 이 메소드들은 정의된 `enum`값을 문자열 형태로 출력할 수 있기 때문이다. 따라서 `JSONResponse`를 다음과 같이 수정하였다.
+
+```java
+@Getter
+@RequiredArgsConstructor
+public enum ErrorCode {
+    SERVER_ERROR(5000, INTERNAL_SERVER_ERROR),
+    INVALID_REQUEST(4000, BAD_REQUEST),
+    ;
+
+    private final int code;
+    private final HttpStatus httpStatus;
+}
+```
 
 ```java
 public static <T> JSONResponse<T> onFailure(ErrorCode errorCode, T data) {
