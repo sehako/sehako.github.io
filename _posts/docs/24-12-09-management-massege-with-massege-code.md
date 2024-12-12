@@ -328,15 +328,15 @@ INVALID_REQUEST=잘못된 요청
 
 ### 리팩토링(24-12-12)
 
-수정자를 이용해서 스프링 빈을 주입하는 것이 조금 맘에 안들어서 ChatGPT에게 리팩토링을 요청했다. 그랬더니 `ApplicationContextAware`를 구현하는 것을 추천하였다. 이를 좀 더 찾아봤는데 빈이 아닌 객체에 빈을 주입할 때 주로 사용한다고 한다. `ApplicationContextAware`를 사용하는 것은 여러 기준이 있지만, 개인적으로 생각하는 두 개의 기준이 있다.
+수정자를 이용해서 스프링 빈을 주입하는 것이 조금 맘에 안들어서 ChatGPT에게 리팩토링을 요청했다. 그랬더니 `ApplicationContextAware`를 구현하는 것을 추천하였다. 이를 좀 더 찾아봤는데 빈이 아닌 객체에 빈을 주입할 때 주로 사용한다고 한다. `ApplicationContextAware`를 알아보면서 개인적으로 생각하는 두 개의 적용 기준을 세웠다.
 
 - 스프링 빈에 의존하지만, 정적 메소드만을 가지는 클래스를 설계하고 싶을 때
 - 클래스를 사용하는 다른 클래스들이 의존성 주입을 하기에는 설계가 애매할 때
 
-`MessageUtil`을 사용하는 것은 응답 레코드 하나다. 응답 레코드에는 값을 받아서 리턴하는 것 외에는 다른 행위를 최대한 자제해야 한다고 생각하였다. 따라서 이 방법은 `MessageUtil`을 굳이 컴포넌트화 시키지 않고도 `MessageSource` 빈을 주입받을 수 있어 전체적으로 정적 메소드를 관리하는 클래스로 만들기 용이하였다. 물론 이 방법은 스프링 컨텍스트와의 결합도를 매우 높인다. 따라서 특수한 방법이 아니라면 최대한 의존성 주입으로 해결하도록 하자.
+`MessageUtil`을 사용하는 것은 응답 레코드 하나다. 응답 레코드에는 값을 받아서 리턴하는 것 외에는 다른 로직 처리를 최대한 자제해야 한다고 생각하였다. 따라서 이 방법을 사용하면 `MessageUtil`을 만들 때 스프링 컨테이너로부터 스프링 빈을 가져올 수 있다. 이 방법은 스프링 컨테이너와의 결합도를 강하게 만드므로 최대한 자제해야 한다고 한다.
 
 ```java
-@RequiredArgsConstructor
+@Component
 public class MessageUtil implements ApplicationContextAware {
     private static MessageSource messageSource;
 
@@ -348,6 +348,8 @@ public class MessageUtil implements ApplicationContextAware {
     // 메소드 생략
 }
 ```
+
+여전히 맘에 들지 않는 건 정적 메소드를 관리하는 클래스임에도 불구하고 스프링 빈 의존성 때문에 싱글톤으로 객체가 등록되어 있는 것이다. 어떤 방법을 사용해도 결국 스프링 빈에 의존해야 하기 때문이다. 그리고 이 방법이 오히려 수정자 주입보다 별로인 것 같다. 수정자 주입은 이런 별도의 인터페이스 없이 정적 객체 필드에 바로 주입이 가능하기 때문이다.
 
 **[전체 코드 참고](https://github.com/sehako/playground/tree/exception)**
 
