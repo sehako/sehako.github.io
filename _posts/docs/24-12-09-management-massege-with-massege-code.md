@@ -9,7 +9,7 @@ toc_sticky: true
 published: true
  
 date: 2024-12-09
-last_modified_at: 2024-12-11
+last_modified_at: 2024-12-12
 ---
 
 OAuth 관련 미니 프로젝트를 시작하려고 프로젝트의 사전 설정을 하던 도중에 응답에 관한 메시지를 스프링의 메시지 기능으로 관리하고 싶어졌다. 
@@ -290,8 +290,7 @@ header: {
 }
 ```
 
-
-### 정리
+---
 
 메시지 파일을 이용하여 메시지 관리를 하는 방법을 알아보았다. 쳇 GPT나 여러 강의 정리를 참고하면서 만든거긴 한데 여러 개선 사항이 보이긴 한다.  
 예를 들어 수정자 주입을 통해 현재 객체의 의존성을 설정했는데, 이는 `MessageUtil`을 정적 메소드를 사용하려고 `MessageSource`를 정적 필드로 선언했기 때문이다. 좀 더 설계를 잘한다면 메시지 파일을 관리하는 특정한 컴포넌트를 응답 객체가 아닌 다른 객체에서 어떻게 할 수 있지 않을까 생각한다.  
@@ -327,4 +326,31 @@ SERVER_ERROR=서버 내부 오류 발생
 INVALID_REQUEST=잘못된 요청
 ```
 
+### 리팩토링(24-12-12)
+
+수정자를 이용해서 스프링 빈을 주입하는 것이 조금 맘에 안들어서 ChatGPT에게 리팩토링을 요청했다. 그랬더니 `ApplicationContextAware`를 구현하는 것을 추천하였다. 이를 좀 더 찾아봤는데 빈이 아닌 객체에 빈을 주입할 때 주로 사용한다고 한다. `ApplicationContextAware`를 사용하는 것은 여러 기준이 있지만, 개인적으로 생각하는 두 개의 기준이 있다.
+
+- 스프링 빈에 의존하지만, 정적 메소드만을 가지는 클래스를 설계하고 싶을 때
+- 클래스를 사용하는 다른 클래스들이 의존성 주입을 하기에는 설계가 애매할 때
+
+`MessageUtil`을 사용하는 것은 응답 레코드 하나다. 응답 레코드에는 값을 받아서 리턴하는 것 외에는 다른 행위를 최대한 자제해야 한다고 생각하였다. 따라서 이 방법은 `MessageUtil`을 굳이 컴포넌트화 시키지 않고도 `MessageSource` 빈을 주입받을 수 있어 전체적으로 정적 메소드를 관리하는 클래스로 만들기 용이하였다. 물론 이 방법은 스프링 컨텍스트와의 결합도를 매우 높인다. 따라서 특수한 방법이 아니라면 최대한 의존성 주입으로 해결하도록 하자.
+
+```java
+@RequiredArgsConstructor
+public class MessageUtil implements ApplicationContextAware {
+    private static MessageSource messageSource;
+
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        messageSource = applicationContext.getBean(MessageSource.class);
+    }
+
+    // 메소드 생략
+}
+```
+
 **[전체 코드 참고](https://github.com/sehako/playground/tree/exception)**
+
+# 참고자료
+
+[Spring - ApplicationContext,ApplicationContextAware, 빈이 아닌 객체에 빈주입할때!](https://coding-start.tistory.com/124)
