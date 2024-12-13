@@ -9,7 +9,7 @@ toc_sticky: true
 published: true
  
 date: 2024-12-09
-last_modified_at: 2024-12-12
+last_modified_at: 2024-12-13
 ---
 
 OAuth 관련 미니 프로젝트를 시작하려고 프로젝트의 사전 설정을 하던 도중에 응답에 관한 메시지를 스프링의 메시지 기능으로 관리하고 싶어졌다. 
@@ -349,7 +349,32 @@ public class MessageUtil implements ApplicationContextAware {
 }
 ```
 
-여전히 맘에 들지 않는 건 정적 메소드를 관리하는 클래스임에도 불구하고 스프링 빈 의존성 때문에 싱글톤으로 객체가 등록되어 있는 것이다. 어떤 방법을 사용해도 결국 스프링 빈에 의존해야 하기 때문이다. 그리고 이 방법이 오히려 수정자 주입보다 별로인 것 같다. 수정자 주입은 이런 별도의 인터페이스 없이 정적 객체 필드에 바로 주입이 가능하기 때문이다.
+여전히 맘에 들지 않는 건 정적 메소드를 관리하는 클래스임에도 불구하고 스프링 빈 의존성 때문에 컴포넌트 상태로 있는 것이다. 어떤 방법을 사용해도 결국 스프링 빈에 의존해야 하기 때문이다. 그리고 이 방법이 오히려 수정자 주입보다 별로인 것 같다. 수정자 주입은 이런 별도의 인터페이스 없이 정적 객체 필드에 바로 주입이 가능하기 때문이다.
+
+### 리팩토링(24-12-13)
+
+스프링 설정 파일 `@Configuration`을 이용하면 `MessageUtil`을 컴포넌트로 등록시키지 않고도 스프링 빈 의존성 주입을 할 수 있었다.
+
+```java
+@Configuration
+public class MessageUtilConfig {
+    @Autowired
+    public void configureMessageUtil(MessageSource messageSource) {
+        MessageUtil.init(messageSource);
+    }
+}
+```
+
+```java
+public class MessageUtil {
+    private static MessageSource messageSource;
+
+    public static void init(MessageSource messageSource) {
+        MessageUtil.messageSource = messageSource;
+    }
+}
+```
+
 
 **[전체 코드 참고](https://github.com/sehako/playground/tree/exception)**
 
