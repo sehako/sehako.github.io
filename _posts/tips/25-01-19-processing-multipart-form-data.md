@@ -52,7 +52,17 @@ Content-Type: [파일의 MIME 타입]
 
 이는 명시하지 않으면 기본적으로 클라이언트에서 보내준 메시지 형식에 맞춰서 요청 메시지의 폼 데이터를 클래스 또는 레코드로 변환하는 리졸버가 동작한다. 이때 `multipart/form-data` 형식으로 요청을 보내면 파일은 `MultipartFile`이라는 클래스로 변활하여 처리할 수 있다. 
 
-스프링에서는 이를 처리하기 위한 어노테이션으로 `@ModelAttribute`와 `@RequestPart`가 있다.
+스프링에서는 이를 처리하기 위한 어노테이션으로 `@ModelAttribute`와 `@RequestPart`가 있다. 본론으로 들어가기 전에 스프링에서는 요청의 전체 크기와 파일 크기를 정의해야 한다.
+
+```yaml
+spring:
+  servlet:
+    multipart:
+      max-request-size: 150MB  # (1) 전체 HTTP 요청의 최대 크기 제한 (멀티파트 포함)
+      max-file-size: 100MB     # (2) 단일 파일 업로드의 최대 크기 제한
+```
+
+요청의 크기는 파일을 포함한 전체 요청 크기이기 때문에 조금 더 넉넉하게 잡아야 한다. 아직 실무를 경험해보지 않아서 그냥 파일의 크기보다 대강 1.5배로 잡았다.
 
 ## @ModelAttribute
 
@@ -154,6 +164,8 @@ formData.append("image", file);   // 파일을 "image" 필드로 추가
 ```
 
 그 이유는 `Blob`으로 JSON 타입을 직렬화한 문자열과 해당 문자열이 JSON(`application/json`) 타입이라는 것을 명시해주어야 하기 때문이다. 따라서 `@RequestPart`를 사용하기 전에 클라이언트에게 API 명세서 등으로 적절하게 일러두어야 작업을 할 때 클라이언트가 개발 할 때 헷갈리지 않을 것이다.
+
+**[전체 코드 참고](https://github.com/sehako/playground/tree/feature/13)**
 
 ---
 
