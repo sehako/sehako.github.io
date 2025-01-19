@@ -1,7 +1,7 @@
 ---
 title: "SWEA"
 layout: archive
-permalink: categories/swea
+permalink: categories/ps/swea
 author_profile: true
 sidebar_main: true
 ---

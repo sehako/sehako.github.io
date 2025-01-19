@@ -1,7 +1,7 @@
 ---
 title: "Spring"
 layout: archive
-permalink: categories/spring
+permalink: categories/dev/spring
 author_profile: true
 sidebar_main: true
 ---

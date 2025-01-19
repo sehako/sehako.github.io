@@ -1,7 +1,7 @@
 ---
 title: "Algorithm"
 layout: archive
-permalink: categories/algorithm
+permalink: categories/computer-science/algorithm
 author_profile: true
 sidebar_main: true
 ---
