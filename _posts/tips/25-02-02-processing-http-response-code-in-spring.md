@@ -127,9 +127,9 @@ public ResponseEntity<User> createUserV2(
 }
 ```
 
-지금이야 단순한 메소드이기 때문에 이해가 쉽지만, 만약 이런 식의 혼용이 계속해서 이루어진다면, 다른 개발자가 이러한 코드를 봤을 때 헷갈릴 수 있다고 생각한다.
+지금이야 메소드가 두 개 밖에 없기 때문에 이해가 쉽지만, 이런 식의 혼용이 계속해서 이루어진다면 다른 개발자가 이러한 코드를 봤을 때 헷갈릴 수 있다고 생각한다.
 
-또한 `ResponseEntity<T>`를 사용한다면 개발이 용이해질 수 있다고 생각한다. 개발을 하다보면 enum을 이용해서 REST API 별도 정의 코드, HTTP 상태 코드, 메시지를 보여주게 된다.
+또한 `ResponseEntity<T>`를 사용한다면 개발이 용이해질 수 있다고 생각한다. 개발을 하다보면 `enum`을 이용해서 REST API 별도 정의 코드, HTTP 상태 코드, 메시지를 보여주게 된다.
 
 ```java
 @RequiredArgsConstructor
@@ -145,9 +145,9 @@ public enum SuccessCode {
 }
 ```
 
-이런 식으로 enum을 정의할 때, `@ResponseStatus`를 사용하여 응답 구조를 설계하는 것은 상당히 번거로울 것이다. 그 이유는 위의 enum 값에 이미 `HttpStatus.OK`가 정의되어 있는데, 또 다시 `@ResponseStatus`에 별도로 `HttpStatus.OK`를 명시해 줘야 하기 때문이다.
+이런 식으로 `enum`을 정의할 때, `@ResponseStatus`를 사용하여 응답 구조를 설계하는 것은 상당히 번거로울 것이다. 그 이유는 위의 enum 값에 이미 `HttpStatus.OK`가 정의되어 있는데, 또 다시 `@ResponseStatus`에 별도로 `HttpStatus.OK`를 명시해 줘야 하기 때문이다.
 
-이때 이런 enum을 활용하면서 `ResponseEntity`를 사용하여 응답하고자 한다면 다음과 같은 응답 객체를 만들어서 `ResponseEntity<T>`에 정의하여 사용할 수 었다.
+이때 이런 `enum`을 활용하면서 `ResponseEntity`를 사용하여 응답하고자 한다면 다음과 같은 응답 객체를 만들어서 `ResponseEntity<T>`에 정의하여 사용할 수 었다.
 
 ```java
 @JsonPropertyOrder({"isSuccess", "code", "message", "result"})
@@ -204,7 +204,7 @@ public ResponseEntity<ApiResponse<User>> createUserV3(
 
 응답 성공시에는 앞서 봤던 것 처럼 적절한 응답 상태에 따라서 `ApiResponse`의 정적 메소드를 호출하는 방식이다. 
 
-하지만 서버는 응답 도중 발생한 예외로 인한 처리 실패에 대해서 클라이언트에게 알릴 의무가 있는데, 스프링에서는 이런 예외를 한 곳에 모아서 처리할 수 있도록 `@RestControllerAdvice`라는 어노테이션을 지원한다. 그러면 다음 enum과 이를 처리하는 예외를 살펴보자.
+하지만 서버는 응답 도중 발생한 예외로 인한 처리 실패에 대해서 클라이언트에게 알릴 의무가 있는데, 스프링에서는 이런 예외를 한 곳에 모아서 처리할 수 있도록 `@RestControllerAdvice`라는 어노테이션을 지원한다. 그러면 다음 `enum`과 이를 처리하는 예외를 살펴보자.
 
 ```java
 @Getter
