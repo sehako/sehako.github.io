@@ -1,8 +1,8 @@
 ---
-title: 스프링에서 HTTP 상태 코드를 처리하는 방법
+title: HTTP 상태 코드를 처리하는 방법
 
 categories:
-  - Spring Tip
+  - Spring Boot Tip
 
 toc: true
 toc_sticky: true

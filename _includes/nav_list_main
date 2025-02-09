@@ -44,8 +44,8 @@
         <span class="nav__sub-title">DEV DOCS</span> 
         <ul>
             {% for category in site.categories %}
-                {% if category[0] == "Spring" %}
-                    <li><a href="/categories/dev/spring" >Spring ({{category[1].size}})</a></li>
+                {% if category[0] == "Spring Boot" %}
+                    <li><a href="/categories/dev/spring-boot" >Spring ({{category[1].size}})</a></li>
                 {% endif %}
             {% endfor %}
         </ul>
@@ -53,8 +53,8 @@
         <span class="nav__sub-title">DEV TIPS</span> 
         <ul>
             {% for category in site.categories %}
-                {% if category[0] == "Spring Tip" %}
-                    <li><a href="/categories/tip/spring" >Spring ({{category[1].size}})</a></li>
+                {% if category[0] == "Spring Boot Tip" %}
+                    <li><a href="/categories/tip/spring-boot" >Spring ({{category[1].size}})</a></li>
                 {% endif %}
             {% endfor %}
         </ul>

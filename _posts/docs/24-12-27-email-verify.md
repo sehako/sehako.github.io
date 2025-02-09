@@ -2,7 +2,7 @@
 title: SMTP를 활용한 이메일 인증
 
 categories:
-  - Spring
+  - Spring Boot
 
 toc: true
 toc_sticky: true
