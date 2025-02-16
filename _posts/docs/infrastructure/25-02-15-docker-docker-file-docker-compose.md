@@ -483,15 +483,12 @@ services:
       - 443:443
     volumes:
       - ./settings/nginx/nginx.conf:/etc/nginx/nginx.conf
-      - ./dist:/usr/share/nginx/html
-      - /etc/letsencrypt/live/i12a606.p.ssafy.io/fullchain.pem:/etc/nginx/ssl/fullchain.pem:ro
-      - /etc/letsencrypt/live/i12a606.p.ssafy.io/privkey.pem:/etc/nginx/ssl/privkey.pem:ro
+    #   프론트 배포시에 마운트 하는 부분
+    #   - ./dist:/usr/share/nginx/html
+      - /{SSL_PULLCHAIN_PATH}/fullchain.pem:/etc/nginx/ssl/fullchain.pem:ro
+      - /{SSL_PRIVKEY_PATH}/privkey.pem:/etc/nginx/ssl/privkey.pem:ro
     environment:
       - TZ=Asia/Seoul
-    depends_on:
-      - spring
-      - mysql
-      - mongo
     # command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
     restart: always
     networks:
@@ -508,7 +505,7 @@ volumes:
 
 ---
 
-생각보다 포스트가 짧은 것 같지만 할 때는 정말 막막했던 것 같다. 이 글을 보고 배포를 처음 시작하는 사람들에게 좋은 가이드가 되었으면 좋겠다.
+생각보다 포스트가 짧은 것 같지만 할 때는 정말 막막했던 것 같다. 이 글을 보고 배포를 처음 시작하는 사람들에게 좋은 가이드가 되었으면 좋겠다. 다음 포스팅은 nginx 관련 내용이 될 것 같다.
 
 # 참고 자료
 
