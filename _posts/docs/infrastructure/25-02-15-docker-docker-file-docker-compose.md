@@ -16,11 +16,9 @@ last_modified_at: 2024-02-15
 
 # 도커
 
-OAuth관련 프로젝트를 진행할 때, 나는 모든 데이터베이스를 도커를 통해서 띄운다고 하였다. 이는 한창 대학시절 컴퓨터를 사용할 때 백그라운드에서 계속해서 데이터베이스가 동작하는 것이 마음에 안들어서 내가 원할 때 껏다 켰다 하는 데이터베이스를 찾던 도중에 알게된 프로그램이었고, 나에게 도커는 그저 데이터베이스를 띄울 수 있는 어떤 프로그램 그 이상 그 이하도 아니었다.
+우선 도커가 무엇인지부터 간단하게 알고 넘어가도록 하자 도커는 Go 언어로 작성된 오픈소스 프로젝트이다. 기존의 가상화 기술은 일반 호스트에 비해 성능의 손실이 발생하였지만, 도커는 가상화된 공간 생성을 위해 리눅스 자체 기능인 chroot, namespace, cgroup을 사용하여 프로세스 단위의 격리 환경을 만들고 컨테이너에서 커널이 필요하면 호스트와 공유하여 사용한다. 
 
-따라서 도커가 무엇인지부터 간단하게 알고 넘어가도록 하자 도커는 Go 언어로 작성된 오픈소스 프로젝트이다. 기존의 가상화 기술은 일반 호스트에 비해 성능의 손실이 발생하였지만, 도커는 가상화된 공간 생성을 위해 리눅스 자체 기능인 chroot, namespace, cgroup을 사용하여 프로세스 단위의 격리 환경을 만들고 컨테이너에서 커널이 필요하면 호스트와 공유하여 사용한다. 
-
-![도커 vs 가상 머신 ](/assets/images/docker-docker-file-docker-compose_01.png)
+![도커 vs 가상 머신](https://velog.velcdn.com/images/gkrdh99/post/6bf1dd0b-9016-4625-84ba-38b0eea0a273/image.png)
 
 그렇기 때문에 컨테이너에는 어플리케이션 구동을 위한 라이브러리 및 실행 파일만 존재하게 되어 기존의 가상화 기술보다 배포 시간이 빠르고 가상화된 공간을 위한 성능 손실이 거의 없다는 장점이 있다.
 
@@ -102,7 +100,11 @@ RUN aws --version
 CMD ["/usr/local/bin/jenkins.sh"]
 ```
 
-나는 CI/CD를 위해서 빌드한 스프링 부트 jar 파일을 도커 이미지로 만들어 도커 허브에 업로드하는 방식을 선택했는데, 이 과정에서 도커 명령어를 사용하기 위해서 호스트의 도커 소켓 파일을 마운트 시키고, 도커 CLI를 컨테이너 내부에 띄워야 하는데 이를 위해서 `RUN` 명령어를 통해 도커 CLI를 설치하였다. 참고로 이미지 빌드 과정에서는 추가 명령어 입력이 불가능 하기 때문에 모든 설치에 대해서 -y 옵션을 줘야 한다.
+나는 CI/CD를 위해서 빌드한 스프링 부트 jar 파일을 도커 이미지로 만들어 도커 허브에 업로드하는 방식을 선택하였다. 
+
+이 과정에서 도커 명령어를 사용하기 위해서는 컨테이너 내부에 도커 CLI를 설치하고 호스트의 도커 소켓 파일과 젠킨스 컨테이너의 도커 소켓 파일을 마운트 시켜야 하는데, 이를 위해서 `RUN` 명령어를 통해 젠킨스 이미지에 미리 도커 CLI를 설치하였다. 
+
+참고로 이미지 빌드 과정에서는 추가 명령어 입력이 불가능 하기 때문에 모든 설치에 대해서 -y 옵션을 줘야 한다.
 
 - `USER`: 이 명령어를 사용하여 사용자를 지정하면, 이후 실행될 명령어는 해당 사용자의 권한에 따라서 실행된다. 위의 젠킨스 도커 파일의 경우 설치 권한을 얻기 위해서 root 사용자를 명시하였다.
 
@@ -114,7 +116,7 @@ CMD ["/usr/local/bin/jenkins.sh"]
 
 - `WORKDIR`: 명령어를 실행할 디렉터리를 나타낸다. 이는 `cd` 명령어를 입력하는 것이라고 생각하면 된다.
 
-- `EXPOSE`: 생성된 이미지에서 노출할 포트를 설정한다. 그러나 반드시 이 포트가 호스트의 포트와 바인딩 되는 것은 아니고, 컨테이너의 포트를 사용할 것임을 명시하는 것이다. 호스트의 포트와 바인딩 하려면 실행할 때 `-p` 옵션을 사용하면 된다.
+- `EXPOSE`: 생성된 이미지에서 노출할 포트를 설정한다. 그러나 반드시 이 포트가 호스트의 포트와 바인딩 되는 것은 아니고, 컨테이너가 지정하는 포트를 사용할 것임을 명시하는 것이다. 호스트의 포트와 바인딩 하려면 실행할 때 `-p` 옵션을 사용하면 된다.
 
 - `CMD`: 컨테이너가 시작될 때 실행할 기본 명령어를 설정하며, Dockerfile에서 한 번만 사용할 수 있다. 하지만 `docker run` 실행 시 새로운 명령어를 입력하면 CMD는 완전히 덮어씌워진다.
 
@@ -277,7 +279,7 @@ depends_on:
   condition: service_healthy
 ```
 
-단순히 실행되는 순서만을 정의하고 싶다면 다음과 같이 작성하면 된다.
+단순히 실행되는 순서만을 정의하고 싶다면 다음과 같이 작성하면 된다. 이 경우에는 실행의 순서만 보장하고 컨테이너의 준비가 완료되는 순서는 보장되지 않는다.
 
 ```yaml
 depends_on:
@@ -295,7 +297,7 @@ ports:
 
 **volumes**
 
-호스트의 특정 파일을 마운트 시키거나, 도커 볼륨 기능으로 데이터를 영속적으로 저장하게 할 수 있다. 젠킨스의 설정을 보도록 하자.
+호스트의 특정 파일또는 디렉터리를 마운트 시키거나, 도커 볼륨 기능으로 데이터를 영속적으로 저장하게 할 수 있다. 젠킨스의 설정을 보도록 하자.
 
 ```yaml
 volumes:
@@ -303,14 +305,14 @@ volumes:
   - /var/run/docker.sock:/var/run/docker.sock
 ```
 
-볼륨에 지정된 옵션 중에서 첫 번째 부분은 `jenkins_home` 디렉터리를 `jenkins_home`이라는 도커 볼륨에 마운트 시킨 것이다. 만약 그러한 도커 볼륨이 없다면 도커는 해당 이름을 가진 도커 볼륨을 생성하여 저장한다. 그리고 도커 컴포즈 내에 다음과 같은 볼륨 지정 명령어가 있어야 한다.
+볼륨에 지정된 옵션 중에서 첫 번째 부분은 컨테이너에서 `/var/jenkins_home` 경로의 해당 디렉터리를 포함한 하위 파일들을 `jenkins_home`이라는 도커 볼륨에 저장하도록 한 것이다. 만약 그러한 도커 볼륨이 없다면 도커는 해당 이름을 가진 도커 볼륨을 생성하여 저장한다. 그리고 도커 컴포즈 내에 다음과 같은 볼륨 지정 명령어가 있어야 한다.
 
 ```yaml
 volumes:
   jenkins_home:  # Jenkins 홈 디렉터리 저장
 ```
 
-두 번째 줄은 도커 마운트로, 호스트의 특정 파일과 도커 컨테이너 내의 특정 파일을 마운트 시킨다. 이때 호스트에 파일이 없다면 마운트가 제대로 되지 않으므로 호스트에 파일이 있어야 한다. 위 설정은 젠킨스 내에서 도커 명령어를 실행하기 위한 도커 소켓 파일 마운트 설정이다.
+두 번째 줄은 도커 마운트로, 호스트의 특정 파일과 도커 컨테이너 내의 특정 파일을 마운트 시킨다. 이때 호스트에 파일이 없다면 마운트가 제대로 되지 않으므로 호스트에 파일이 있어야 한다. 위 설정이 바로 앞서 언급한 젠킨스 내에서 도커 명령어를 실행하기 위한 도커 소켓 파일 마운트 설정 부분이다.
 
 ### 컨테이너 간의 통신
 
@@ -342,7 +344,7 @@ docker build --rm -t {IMAGE_NAME:TAG} .
 docker push ${IMAGE_NAME}:latest
 ```
 
-도커와 현재 cli 환경이 로그인 되었다고 가정했을 때, 특정 레포지토리의 이미지를 도커 허브에 업로드 하는 명령어다. CI/CD를 할 때 이 명령어를 사용할 것이다. 도커 허브에 업로드하는 자세한 과정은 다음 글을 참고하면 좋을 것 같다. ([[docker] docker hub에 image 올리기](https://velog.io/@eoveol/docker-docker-hub%EC%97%90-image-%EC%98%AC%EB%A6%AC%EA%B8%B0))
+도커와 현재 cli 환경이 로그인 되었다고 가정했을 때, 특정 레포지토리의 이미지를 도커 허브에 업로드 하는 명령어다. CI/CD를 할 때 이 명령어를 사용할 것이다. 도커 허브에 이미지를 업로드하는 자세한 과정은 다음 글을 참고하면 좋을 것 같다. ([[docker] docker hub에 image 올리기](https://velog.io/@eoveol/docker-docker-hub%EC%97%90-image-%EC%98%AC%EB%A6%AC%EA%B8%B0))
 
 ```sh
 docker ps | docker-compose ps
@@ -380,126 +382,13 @@ docker-compose down [SERVICE_NAME]
 
 자주 사용하는 명령어는 아마 이 정도인 것 같다.
 
-## 도커 컴포즈 파일
+## 실습 자료
 
-마지막으로 내가 이번에 배포를 진행하면서 사용한 도커 컴포즈 파일을 조금 다듬어서 공유하도록 하겠다. 컨테이너는 redis, mysql, mongodb, nginx, spring boot, jenkins이다. 아마 백엔드 배포와 CI/CD를 위한 기본적인 틀이지 않을까 싶다.
+마지막으로 내가 이번에 배포를 진행하면서 사용한 파일들을 조금 다듬어서 공유하도록 하겠다. 컨테이너는 nginx, spring boot, mysql, mongodb, redis, jenkins이고, README도 간단하게 작성했으니 앞으로 나올 시리즈를 이 도구를 활용하여 작성할 예정이다.
 
-```yaml
-services:
-  redis:
-    container_name: redis
-    image: redis:latest
-    ports:
-      - 127.0.0.1:6379:6379
-        #      - 6379:6379
-    networks:
-      - compose-network
+이 자료는 백엔드 배포와 CI/CD 입문을 위한 기본적인 틀이지 않을까 싶다.
 
-  mysql:
-    container_name: mysql
-    image: mysql:latest
-    environment:
-      MYSQL_ROOT_PASSWORD: "dkssudgkTpdy902"
-      TZ: Asia/Seoul
-    volumes:
-      - mysql_data:/var/lib/mysql  # MySQL 데이터를 Docker Volume으로 저장
-      - ./ddl.sql:/docker-entrypoint-initdb.d/init.sql
-    ports:
-      #      - 127.0.0.1:3306:3306
-      - 3306:3306
-    healthcheck:
-      test: ['CMD', 'mysqladmin', 'ping', '-h', 'localhost', '-u', 'root', '-proot']
-      interval: 5s
-      timeout: 10s
-      retries: 5
-    networks:
-      - compose-network
-
-  mongo:
-    container_name: mongo
-    image: mongodb/mongodb-community-server:latest
-    environment:
-      #      MONGODB_INITDB_ROOT_USERNAME: root  # 루트 사용자 이름
-      #      MONGODB_INITDB_ROOT_PASSWORD: 1234  # 루트 사용자 비밀번호
-      MONGODB_INITDB_DATABASE: chatdb  # 초기 생성할 데이터베이스 이름
-    volumes:
-      - mongo_data:/data/db  # MongoDB 데이터를 Docker Volume으로 저장
-    ports:
-      - 127.0.0.1:27017:27017
-        #- 27017:27017
-    healthcheck:
-      test: mongosh --eval 'db.runCommand("ping").ok' --quiet
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 10s
-    networks:
-      - compose-network
-
-  spring:
-    container_name: spring
-    image: YOUR_IMAGE:TAG
-    environment:
-      - TZ=Asia/Seoul
-    env_file:
-      - ./.env
-    ports:
-      - 8080:8080
-    restart: always  # <- 컨테이너 자동 재시작 설정
-    depends_on:
-      mysql:
-        condition: service_healthy
-      mongo:
-        condition: service_healthy
-    networks:
-      - compose-network
-
-  jenkins:
-    container_name: jenkins
-      #    image: jenkins/jenkins:2.492.1-lts-jdk17
-    build:
-      context: .
-      dockerfile: jenkins.Dockerfile
-    restart: unless-stopped
-    environment:
-      - TZ=Asia/Seoul
-      - JENKINS_OPTS=--httpPort=9000 --prefix=/jenkins
-    ports:
-      - 9000:9000
-    volumes:
-      - jenkins_home:/var/jenkins_home  # Jenkins 데이터를 Docker Volume으로 저장
-      - /var/run/docker.sock:/var/run/docker.sock
-      # - ~/.ssh:/root/.ssh  # SSH 키 공유
-    networks:
-      - compose-network
-
-  nginx:
-    container_name: nginx
-    image: nginx:stable-alpine3.20-perl
-    ports:
-      - 80:80
-      - 443:443
-    volumes:
-      - ./settings/nginx/nginx.conf:/etc/nginx/nginx.conf
-    #   SPA 정적 파일 배포할 때 마운트 하는 부분
-    #   - ./dist:/usr/share/nginx/html
-      - /{SSL_PULLCHAIN_PATH}/fullchain.pem:/etc/nginx/ssl/fullchain.pem:ro
-      - /{SSL_PRIVKEY_PATH}/privkey.pem:/etc/nginx/ssl/privkey.pem:ro
-    environment:
-      - TZ=Asia/Seoul
-    # command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
-    restart: always
-    networks:
-      - compose-network
-
-networks:
-  compose-network:
-    driver: bridge
-volumes:
-  mysql_data:    # MySQL 데이터를 저장하는 Docker Volume
-  mongo_data:    # MongoDB 데이터를 저장하는 Docker Volume
-  jenkins_home:  # Jenkins 홈 디렉터리 저장
-```
+[다운로드 링크](https://drive.google.com/file/d/1WaVRYkistIRGLThTEQ6F8Pp8Wy0_X2MO/view)
 
 ---
 
