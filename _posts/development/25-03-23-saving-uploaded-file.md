@@ -14,8 +14,6 @@ last_modified_at: 2025-03-23
 
 # 파일 업로드 처리
 
-작성일: 2025년 3월 23일
-
 개발을 하다보면 클라이언트에서 전송한 파일을 서버에서 적절하게 처리해야 할 때가 있다. 문서나 사진, 동영상 같은 파일은 스프링 부트에서 어떻게 처리하는 지 알아보도록 하자. 
 
 # 데이터베이스에 저장
@@ -121,11 +119,11 @@ public class FileService {
 
 그럼 이제 테스트를 해보자. 테스트를 위해서 도커 이미지를 서버에 업로드 할 것이다.
 
-![image.png](/assets/images/saving-uploaded-file_01.png)
+![시스템 저장 - POST 요청](/assets/images/saving-uploaded-file_01.png)
 
 업로드에 성공하면 다음과 같은 응답이 반환된다.
 
-![image.png](/assets/images/saving-uploaded-file_02.png)
+![반환 값 확인](/assets/images/saving-uploaded-file_02.png)
 
 잘 보면 `Location`에 도커 이미지가 어떻게 저장되었는 지 볼 수 있을 것이다. 그렇다면 `http://localhost:8080/files/1742721700502.png`로 접속하면 실제로 도커 이미지를 볼 수 있을 것이다. 데이터베이스에 저장할 때도 서버 주소를 제외한 값 만 저장하면 된다. 즉 위의 경우에는 `files/1742721700502.png`를 저장하게 되는 것이다.
 
@@ -141,11 +139,11 @@ public class FileService {
 
 먼저 파일을 저장해둘 S3 버킷을 생성하도록 하자.
 
-![image.png](/assets/images/saving-uploaded-file_03.png)
+![S3 버킷 생성](/assets/images/saving-uploaded-file_03.png)
 
 여기서 퍼블릭 엑세스 차단을 해제해야 한다.
 
-![image.png](/assets/images/saving-uploaded-file_04.png)
+![퍼블릭 엑세스 차단 설정](/assets/images/saving-uploaded-file_04.png)
 
 그리고 버킷 정책을 다음과 같이 작성하자.
 
@@ -170,13 +168,13 @@ public class FileService {
 
 파일 업로드를 위해서는 S3에 접근할 수 있는 권한을 가진 사용자가 필요하다 AWS IAM에서 다음과 같이 사용자를 생성하도록 하자.
 
-![image.png](/assets/images/saving-uploaded-file_05.png)
+![IAM 사용자 생성 - 1](/assets/images/saving-uploaded-file_05.png)
 
-![image.png](/assets/images/saving-uploaded-file_06.png)
+![IAM 사용자 생성 - 2](/assets/images/saving-uploaded-file_06.png)
 
 사용자를 생성한 다음에는 엑세스 키를 발급받아야 한다. 엑세스 키는 AWS 외부에서 실행되는 어플리케이션을 사용 사례로 선택하자.
 
-![image.png](/assets/images/saving-uploaded-file_07.png)
+![엑세스 키 발급](/assets/images/saving-uploaded-file_07.png)
 
 사용자가 생성되면 엑세스 키와 비밀 엑세스 키를 발급받는다.
 
@@ -292,7 +290,7 @@ public class FileService {
 
 이제 테스트를 해보면 `Location` 헤더에 aws s3에 접근할 수 있는 경로가 나올 것이다. 
 
-![image.png](/assets/images/saving-uploaded-file_08.png)
+![S3 업로드 반환](/assets/images/saving-uploaded-file_08.png)
 
 ---
 
