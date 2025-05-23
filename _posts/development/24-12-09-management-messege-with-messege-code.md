@@ -2,7 +2,7 @@
 title: 메시지 기능으로 응답 메시지 관리
 
 categories:
-  - Spring Boot Tip
+  - Spring Boot
 
 toc: true
 toc_sticky: true
