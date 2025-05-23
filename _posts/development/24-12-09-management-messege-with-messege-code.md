@@ -382,4 +382,4 @@ public class MessageUtil {
 
 # 참고자료
 
-[Spring - ApplicationContext,ApplicationContextAware, 빈이 아닌 객체에 빈주입할때!](https://coding-start.tistory.com/124)
+[**Spring - ApplicationContext,ApplicationContextAware, 빈이 아닌 객체에 빈주입할때!**](https://coding-start.tistory.com/124)

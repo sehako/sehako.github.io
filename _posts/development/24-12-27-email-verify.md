@@ -234,4 +234,4 @@ public class SmtpService {
 
 # 참고자료
 
-### [SMTP](https://velog.io/@hwaya2828/SMTP)
+[**SMTP**](https://velog.io/@hwaya2828/SMTP)

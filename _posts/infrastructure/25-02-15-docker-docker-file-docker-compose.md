@@ -397,8 +397,8 @@ docker-compose down [SERVICE_NAME]
 
 # 참고 자료
 
-### [시작하세요! 도커/쿠버네티스 - 용찬호](https://product.kyobobook.co.kr/detail/S000001766450)
+[**시작하세요! 도커/쿠버네티스 - 용찬호**](https://product.kyobobook.co.kr/detail/S000001766450)
 
-### [Docker Vs Virtual Machines](https://www.linkedin.com/pulse/docker-vs-virtual-machines-ashish-yadav)
+[**Docker Vs Virtual Machines**](https://www.linkedin.com/pulse/docker-vs-virtual-machines-ashish-yadav)
 
-### [[docker] docker hub에 image 올리기](https://velog.io/@eoveol/docker-docker-hub%EC%97%90-image-%EC%98%AC%EB%A6%AC%EA%B8%B0)
+[**[docker] docker hub에 image 올리기**](https://velog.io/@eoveol/docker-docker-hub%EC%97%90-image-%EC%98%AC%EB%A6%AC%EA%B8%B0)

@@ -159,4 +159,4 @@ class Node implements Comparable<Node> {
 
 # 참고 자료
 
-### [최단경로 - 다익스트라 (Dijkstra) 알고리즘](https://yganalyst.github.io/concept/algo_cc_book_7/)
+[**최단경로 - 다익스트라 (Dijkstra) 알고리즘**](https://yganalyst.github.io/concept/algo_cc_book_7/)

@@ -2,7 +2,7 @@
 title: 서로소 집합 (Disjoint Set & Union-Find)
 
 categories:
-  - Data Structure
+  - Algorithm
 
 toc: true
 toc_sticky: true

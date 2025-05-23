@@ -174,6 +174,23 @@ formData.append("image", file);   // 파일을 "image" 필드로 추가
 
 그 이유는 `Blob`으로 JSON 타입을 직렬화한 문자열과 해당 문자열이 JSON(`application/json`) 타입이라는 것을 명시해주어야 하기 때문이다. 따라서 `@RequestPart`를 사용하기 전에 클라이언트에게 API 명세서 등으로 적절하게 일러두어야 작업을 할 때 클라이언트가 개발 할 때 헷갈리지 않을 것이다.
 
+### 수정 사항 추가 (2025-05-11)
+
+파일 관련 API 테스트를 진행하는데, 위 방법이 지극히 JS 중심적인 것을 깨달아 버렸다. 또한 최근 스프링 부트가 업데이트 되어서 그런 건지 잘 모르겠는데 굳이 저런 식으로 하지 않고 단순히 multipart/form-data로 보내고 컨트롤러에서 다음과 같이 선언하면 요청을 잘 받는 것을 알게 되었다.
+
+```java
+@PostMapping(value = "/upload/record")
+public void upload(
+        MultipartRequest request,
+        @RequestPart("image") List<MultipartFile> images
+) {
+    log.info("request = {}", request);
+    log.info("images = {}", images);
+}
+```
+
+이렇게 선언하면 multipart/form-data로 보낸 요청에 대해서 해당 요청 메소드가 제대로 처리하였다.
+
 **[전체 코드 참고](https://github.com/sehako/playground/tree/feature/13)**
 
 ---

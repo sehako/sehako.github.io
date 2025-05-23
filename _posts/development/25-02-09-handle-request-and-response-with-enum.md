@@ -167,6 +167,7 @@ public static Membership of(String value) {
 최종 코드는 다음과 같다.
 
 ```java
+@RequiredArgsConstructor
 public enum Membership {
     FREE("Free"), 
     BASIC("Basic"), 
@@ -178,7 +179,7 @@ public enum Membership {
     }
 
     @JsonValue
-    public getValue() {
+    public String getValue() {
         return value;
     }
 
