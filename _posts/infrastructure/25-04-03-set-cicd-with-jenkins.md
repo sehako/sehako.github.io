@@ -8,8 +8,8 @@ toc: true
 toc_sticky: true
 published: true
  
-date: 2025-02-25
-last_modified_at: 2024-02-22
+date: 2025-04-03
+last_modified_at: 2025-04-03
 ---
 
 CI/CD는 지속적 통합(Continuous Integration)과 지속적인 전달 혹은 배포(Continuous Delivery and/or Deployment)를 뜻한다. 전달과 배포의 차이점은 변경된 어플리케이션이 프로덕션 환경까지 반영되는 지 안되는 지 이다. 
