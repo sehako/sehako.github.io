@@ -1,7 +1,7 @@
 ---
 title: "Infrastructure"
 layout: archive
-permalink: categories/dev/infrastructure
+permalink: categories/infrastructure
 author_profile: true
 sidebar_main: true
 ---

@@ -1,7 +1,7 @@
 ---
 title: "Data Structure"
 layout: archive
-permalink: categories/computer-science/data-structure
+permalink: categories/data-structure
 author_profile: true
 sidebar_main: true
 ---

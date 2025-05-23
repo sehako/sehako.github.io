@@ -1,7 +1,7 @@
 ---
 title: "Spring Boot"
 layout: archive
-permalink: categories/dev/spring-boot
+permalink: categories/spring
 author_profile: true
 sidebar_main: true
 ---
