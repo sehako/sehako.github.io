@@ -2,7 +2,7 @@
 title: multipart/form-data 처리하기
 
 categories:
-  - Spring Boot
+  - Spring
 
 toc: true
 toc_sticky: true

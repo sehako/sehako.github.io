@@ -2,7 +2,7 @@
 title: CORS에 대해 알아보자
 
 categories:
-  - Spring Boot
+  - Spring
 
 toc: true
 toc_sticky: true

@@ -2,7 +2,7 @@
 title: HTTP 상태 코드를 처리하는 방법
 
 categories:
-  - Spring Boot
+  - Spring
 
 toc: true
 toc_sticky: true

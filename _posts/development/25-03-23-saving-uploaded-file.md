@@ -2,7 +2,7 @@
 title: 서버에 업로드된 파일을 저장하는 방법
 
 categories:
-  - Spring Boot
+  - Spring
 
 toc: true
 toc_sticky: true
