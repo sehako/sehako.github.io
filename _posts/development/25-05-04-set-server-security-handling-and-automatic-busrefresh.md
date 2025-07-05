@@ -2,6 +2,7 @@
 title: 설정 서버 보안 처리 및 자동 busrefresh
 
 categories:
+  - Spring
   - Infrastructure
 
 toc: true

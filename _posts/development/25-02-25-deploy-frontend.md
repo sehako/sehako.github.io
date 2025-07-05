@@ -9,7 +9,7 @@ toc_sticky: true
 published: true
  
 date: 2025-02-25
-last_modified_at: 2024-02-25
+last_modified_at: 2025-02-25
 ---
 
 프론트앤드 개발자가 리액트나 Vue 같은 프레임워크로 개발을 하고 빌드를 하면 프로젝트 내에 Vue 프로젝트 기준으로 dist라는 디렉터리가 하나 생기게 된다. 이 디렉터리를 들어가면 index.html 하나가 있는데, 이 파일이 바로 프론트앤드 개발자가 열심히 개발한 결과물이다.

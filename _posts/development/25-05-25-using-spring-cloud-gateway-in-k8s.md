@@ -2,6 +2,7 @@
 title: 쿠버네티스 환경에서 Spring Cloud Gateway 사용하기
 
 categories:
+  - Spring
   - Infrastructure
 
 toc: true

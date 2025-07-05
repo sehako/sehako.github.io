@@ -1,7 +1,8 @@
 ---
-title: 개발 및 배포 환경 분리 및 스웨거 설정
+title: MSA 환경에서 발 및 배포 환경 분리 및 스웨거 설정
 
 categories:
+  - Spring
   - Infrastructure
 
 toc: true
