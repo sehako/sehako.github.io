@@ -22,13 +22,6 @@
         </ul>
         <ul>
             {% for category in site.categories %}
-                {% if category[0] == "Data Structure" %}
-                    <li><a href="/categories/data-structure">Data Structure ({{category[1].size}})</a></li>
-                {% endif %}
-            {% endfor %}
-        </ul>
-        <ul>
-            {% for category in site.categories %}
                 {% if category[0] == "Spring" %}
                     <li><a href="/categories/spring" >Spring ({{category[1].size}})</a></li>
                 {% endif %}
@@ -38,6 +31,13 @@
             {% for category in site.categories %}
                 {% if category[0] == "Infrastructure" %}
                     <li><a href="/categories/infrastructure" >Infrastructure ({{category[1].size}})</a></li>
+                {% endif %}
+            {% endfor %}
+        </ul>
+        <ul>
+            {% for category in site.categories %}
+                {% if category[0] == "Note" %}
+                    <li><a href="/categories/note" >Note ({{category[1].size}})</a></li>
                 {% endif %}
             {% endfor %}
         </ul>

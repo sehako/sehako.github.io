@@ -1,6 +1,9 @@
 ---
 title: 프로젝트 회고 방법
 
+categories:
+  - Note
+
 toc: true
 toc_sticky: true
 published: true
