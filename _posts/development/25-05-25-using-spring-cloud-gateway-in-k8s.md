@@ -62,7 +62,8 @@ last_modified_at: 2025-05-25
 
 ### 의존성 설정
 
-```jsx
+{% include code-header.html %}
+```groovy
 implementation 'org.springframework.cloud:spring-cloud-kubernetes-client-discovery:3.2.1'
 ```
 
@@ -101,6 +102,7 @@ s.c.k.c.d.KubernetesDiscoveryClientUtils : service labels from properties are em
 
 ### 게이트웨이 라우팅 설정
 
+{% include code-header.html %}
 ```yaml
 server:
   port: 8080
@@ -138,6 +140,7 @@ spring:
 
 만약 member-service를 유레카 서버에 등록하고, 게이트웨이를 통해서 해당 서비스에 접근 한다면 다음과 같이 처리해주면 됐을 것이다.
 
+{% include code-header.html %}
 ```yaml
 routes:
   - id: member-service

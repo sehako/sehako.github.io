@@ -28,6 +28,7 @@ last_modified_at: 2025-02-09
 
 또한 이 두 테이블을 JPA 엔티티로 표현하고 연관관계를 맺으면 다음과 같은 구조가 완성된다. 변수 타입은 귀찮아서 명시를 안했으므로 변수명에만 집중해서 보자
 
+{% include code-header.html %}
 ```java
 @Entity
 @Table(name = "membership")
@@ -37,6 +38,7 @@ public class Membership {
 }
 ```
 
+{% include code-header.html %}
 ```java
 @Entity
 @Table(name = "user")
@@ -62,6 +64,7 @@ public class Category {
 
 이렇게 ERD를 구성하면 엔티티도 하나만 필요하게 되고, 연관관계도 맺을 필요가 없다.
 
+{% include code-header.html %}
 ```java
 @Entity
 @Table(name = "user")
@@ -86,6 +89,7 @@ public class Category {
 
 그 이유는 클라이언트에서 잘못 전송한 멤버십에 대해서 서버에서 알 길이 없기에 검증하는 로직을 추가로 작성해야 한다. 하지만 `enum` 타입을 사용하여 요청을 받으면 사용자의 멤버십에 대해서 클라이언트에게 3개의 멤버십 타입만을 강제할 수 있게 된다.
 
+{% include code-header.html %}
 ```java
 public enum Membership {
     FREE, BASIC, PREMIUM
@@ -94,6 +98,7 @@ public enum Membership {
 
 그리고 이에 맞춰서 엔티티 구조 또한 다음과 같이 변경하면 된다.
 
+{% include code-header.html %}
 ```java
 @Entity
 @Table(name = "user")
@@ -128,6 +133,7 @@ Content-Type: application/json
 
 `enum` 타입에는 필드를 선언할 수 있는데, `value`라는 문자열 필드를 선언하여 문자열을 `enum` 타입에 저장할 수 있게 된다. 이때 `@JsonValue`라는 어노테이션을 `getter`에 선언하면 클라이언트에게 응답할 때 해당되는 필드를 선택하여 리턴하도록 명시할 수 있다.
 
+{% include code-header.html %}
 ```java
 public enum Membership {
     FREE("Free"), 
@@ -154,6 +160,7 @@ public enum Membership {
 
 또한 클라이언트에서 잘못된 문자열을 보냈을 경우에는 예외를 던지는 식으로 구성하여 적절한 예외 처리도 수행할 수 있다.
 
+{% include code-header.html %}
 ```java
 @JsonCreator
 public static Membership of(String value) {
@@ -166,6 +173,7 @@ public static Membership of(String value) {
 
 최종 코드는 다음과 같다.
 
+{% include code-header.html %}
 ```java
 @RequiredArgsConstructor
 public enum Membership {

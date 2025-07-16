@@ -36,6 +36,7 @@ location / {
 
 복습을 할 겸 nginx의 도커 컴포즈 설정을 다시 보도록 하자.
 
+{% include code-header.html %}
 ```yaml
 nginx:
   container_name: nginx
@@ -62,7 +63,8 @@ nginx:
 
 이때 만약에 백엔드 서버도 하나의 서버에서 띄운다면 다음과 같이 백엔드 서버를 리버스 프록시 하면 된다.
 
-```yaml
+{% include code-header.html %}
+```
 location /api/ {
     proxy_pass http://spring:8080;
     proxy_set_header Host $host;
@@ -152,7 +154,6 @@ CloudFront는 짧은 지연 시간과 빠른 전송 속도로 전세계에 신�
 마지막 부분이 잘 이해가 안되서 chatGPT에게 물어보니 다음과 같은 답변을 주었다.
 
 > *특정 요청에 대한 동적 처리 가능 (예: URL 리다이렉트, 헤더 수정)*
-> 
 
 따라서 사실 지역이 한정된 서비스의 경우에는 웹 서버에 그냥 배포해도 된다고 생각한다. 아무튼 시작해보도록 하자.
 

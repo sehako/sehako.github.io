@@ -62,6 +62,7 @@ implementation 'org.springframework.boot:spring-boot-starter-websocket'
 
 연결 설정도 설정 빈 하나를 등록하면서 끝이다. 다음 코드를 보도록 하자.
 
+{% include code-header.html %}
 ```java
 @Configuration
 @EnableWebSocketMessageBroker
@@ -83,6 +84,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
 이렇게 작성하면 `{서버주소}/ws`로 연결 요청을 보내면 연결이 된다. 참고로 `registerStompEndpoints`메소드에서 다음과 같이 등록할 수도 있다.
 
+{% include code-header.html %}
 ```java
 @Override
 public void registerStompEndpoints(StompEndpointRegistry registry) {
@@ -98,6 +100,7 @@ public void registerStompEndpoints(StompEndpointRegistry registry) {
 
 본론에 앞서, 채팅 구현에 대한 테스트는 다음 [페이지](https://jiangxy.github.io/websocket-debug-tool/)에서 진행할 것이다. 간단하게 웹 소켓을 테스트 할 수 있는 사이트이다. 스프링에서 STOMP를 활용하여 채팅 서버를 구현하는 방법은 매우 간단하다. 우선 다음 의존성이 필요하다. 
 
+{% include code-header.html %}
 ```groovy
 implementation 'org.springframework.boot:spring-boot-starter-websocket'
 ```
@@ -106,6 +109,7 @@ implementation 'org.springframework.boot:spring-boot-starter-websocket'
 
 연결 설정도 설정 빈 하나를 등록하면서 끝이다. 다음 코드를 보도록 하자.
 
+{% include code-header.html %}
 ```java
 @Configuration
 @EnableWebSocketMessageBroker
@@ -131,6 +135,7 @@ public class StompConfig implements WebSocketMessageBrokerConfigurer {
 
 채팅도 매우 간단하다. 
 
+{% include code-header.html %}
 ```java
 public record MessageRequest(
         Long userId
@@ -139,6 +144,7 @@ public record MessageRequest(
 }
 ```
 
+{% include code-header.html %}
 ```java
 public record MessageResponse(
         Long userId,
@@ -151,6 +157,7 @@ public record MessageResponse(
 }
 ```
 
+{% include code-header.html %}
 ```java
 @Slf4j
 @Controller
@@ -180,6 +187,7 @@ public class StompController {
 
 이런 경우에는 `@SendTo`를 사용하지 않고 `SimpMessagingTemplate`을 사용하여 특정 토픽에만 메시지를 발행하도록 처리해야 한다.
 
+{% include code-header.html %}
 ```java
 @Slf4j
 @Controller
@@ -217,6 +225,7 @@ REST에서는 주로 `/`를 이용해 리소스를 구분한다. 물론 STOMP에
 
 이제 테스트를 진행해보자. 각각 일반 창과 시크릿 창으로 테스트 사이트에 접속하여 `ws://localhost:8080/ws`으로 소켓 연결을 하였고, 하나는 `/pub/chat.1`에 발행을, 다른 하나는 `/topic/chat.1`을 구독한 상태에서 다음 메시지를 전송해보았다.
 
+{% include code-header.html %}
 ```json
 {"userId": 1, "message": "Hello"}
 ```

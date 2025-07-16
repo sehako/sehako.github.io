@@ -25,6 +25,7 @@ Nginx를 통해 경유하기 때문에 `{SERVER_URL}/service/`에 요청을 보�
 
 각각의 마이크로 서비스들을 로컬에서 개발할 때 다음 라이브러리들이 굳이 필요하지 않다.
 
+{% include code-header.html %}
 ```groovy
 ext {
     set('springCloudVersion', "2024.0.0")
@@ -45,6 +46,7 @@ dependencies {
 
 따라서 이러한 라이브러리들을 로컬 환경에서 개발할 때에는 의도적으로 동작하지 않도록 해야 한다. 이는 간단하게 조건문을 추가하여 해결할 수 있었다.
 
+{% include code-header.html %}
 ```groovy
 dependencies {
     if (project.hasProperty("profile") && project.profile == "prod") {
@@ -57,6 +59,7 @@ dependencies {
 
 그리고 빌드 명령어를 다음과 같이 작성하면 된다.
 
+{% include code-header.html %}
 ```bash
 ./gradlew clean bootJar -Pprofile=prod
 ```
@@ -69,12 +72,14 @@ dependencies {
 
 게이트웨이에서 스웨거를 사용하려면 다음 라이브러리를 선언해야 한다.
 
-```bash
+{% include code-header.html %}
+```groovy
 implementation 'org.springdoc:springdoc-openapi-starter-webflux-ui:2.8.6'
 ```
 
 또한 설정 파일에 다음과 같은 설정을 선언하도록 하자.
 
+{% include code-header.html %}
 ```yaml
 springdoc:
   api-docs:
@@ -97,6 +102,7 @@ springdoc:
 
 마지막으로 마이크로 서비스에 스웨거 설정 빈을 등록해야 한다.
 
+{% include code-header.html %}
 ```java
 @OpenAPIDefinition
 @Configuration
@@ -119,6 +125,7 @@ public class SwaggerConfig {
 
 그리고 마이크로 서비스에서는 다음과 같이 설정하도록 하자.
 
+{% include code-header.html %}
 ```yaml
 springdoc:
   api-docs:

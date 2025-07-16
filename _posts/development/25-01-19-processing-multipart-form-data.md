@@ -55,6 +55,7 @@ Content-Type: [파일의 MIME 타입]
 
 스프링에서는 이를 처리하기 위한 어노테이션으로 `@ModelAttribute`와 `@RequestPart`가 있다. 이 두 어노테이션을 소개하기 전에 요청의 전체 크기와 파일 크기를 먼저 설정한다.
 
+{% include code-header.html %}
 ```yaml
 spring:
   servlet:
@@ -92,6 +93,7 @@ Content-Disposition: form-data; name="content"
 
 스프링에서 위와 같은 `multipart/form-data`를 `@ModelAttribute`로 처리하면 받은 요청에 대해서 내부적으로 기본 생성자 + `setter`를 호출하여 값을 매핑한다. 
 
+{% include code-header.html %}
 ```java
 @Setter
 @Getter
@@ -102,6 +104,7 @@ public class MultipartRequestNoRecord {
 }
 ```
 
+{% include code-header.html %}
 ```java
 @PostMapping(value = "/upload/model-attribute")
 public void uploadModelAttribute(
@@ -141,6 +144,7 @@ Content-Type: application/pdf
 ------WebKitFormBoundary7MA4YWxkTrZu0gW
 ```
 
+{% include code-header.html %}
 ```java
 @PostMapping(value = "/upload/record")
 public void upload(
@@ -154,6 +158,7 @@ public void upload(
 
 이렇게 함으로써 모든 DTO를 `record`로 관리할 수 있게 되어 통일성과 혹시 모를 `setter` 호출을 방지할 수 있다. 하지만 이 방식은 클라이언트 입장에서 추가적인 처리가 필요하다. `title`과 `content`라는 변수로 사용자 입력 값을 받았다고 가정하면 클라이언트에서 요청을 보내기 전에 다음과 같이 값들을 정리해야 한다.
 
+{% include code-header.html %}
 ```js
 const jsonData = JSON.stringify({ title: title, content: content });
 const jsonBlob = new Blob([jsonData], { type: "application/json" });
@@ -170,6 +175,7 @@ formData.append("image", file);   // 파일을 "image" 필드로 추가
 
 파일 관련 API 테스트를 진행하는데, 위 방법이 지극히 JS 중심적인 것을 깨달아 버렸다. 또한 최근 스프링 부트가 업데이트 되어서 그런 건지 잘 모르겠는데 굳이 저런 식으로 하지 않고 단순히 multipart/form-data로 보내고 컨트롤러에서 다음과 같이 선언하면 요청을 잘 받는 것을 알게 되었다.
 
+{% include code-header.html %}
 ```java
 @PostMapping(value = "/upload/record")
 public void upload(

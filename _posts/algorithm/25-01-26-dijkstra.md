@@ -29,6 +29,7 @@ date: 2025-01-26
 
 위와 같은 그래프를 구현하기 위해서 간이 노드 그래프를 구성하도록 하자. 
 
+{% include code-header.html %}
 ```java
 class Node implements Comparable<Node> {
     int to;
@@ -50,6 +51,7 @@ class Node implements Comparable<Node> {
 
 `Comparable<>`은 우선순위 큐를 구현할 때 `Comparator<>`를 구현하기 귀찮아서 미리 구현을 해두었다. 정렬 기준은 현재 노드가 가진 가중치(구현 시에는 가중치의 합이 된다.)의 오름차순으로 정렬 기준을 설정한다. 그리고 입력은 아래와 같다.
 
+{% include code-header.html %}
 ```java
 Node[] graph = new Node[9];
 graph[1] = new Node(2, 3, new Node(3, 4, null));
@@ -101,6 +103,7 @@ while(!pq.isEmpty()) {
 
 ### 전체 코드
 
+{% include code-header.html %}
 ```java
 import java.util.*;
 

@@ -44,6 +44,7 @@ implementation group: 'org.springframework.boot', name: 'spring-boot-starter-mai
 
 설정 파일에 `spring.mail`로 시작하는 다양한 옵션이 존재하는데, 이를 이용하여 SMTP 서버에 대한 다양한 정보를 설정하면 된다.
 
+{% include code-header.html %}
 ```yaml
 # application.yml
 spring:
@@ -66,6 +67,7 @@ spring:
 
 ### 컨트롤러 작성
 
+{% include code-header.html %}
 ```java
 @RestController
 @RequestMapping("/api/email")
@@ -93,6 +95,7 @@ public class SmtpController {
 
 ### 서비스 작성
 
+{% include code-header.html %}
 ```java
 @Service
 @RequiredArgsConstructor
@@ -142,6 +145,7 @@ public class SmtpService {
 
 여기서 `TokenGenerator`는 신경 쓸 필요 없다. UUID를 만들 때 뭔가 암호화 해야 하나 싶어서 챗 GPT에게 부탁해서 코드를 받긴 했는데 생각해보면 어차피 레디스를 통해서 사용자 이메일이 관리되기 때문에 단순한 UUID 값이 쿼리 파라미터로 구성될 거라서 굳이 이렇게 할 이유가 없는 것 같다. 그래도 코드는 붙여넣도록 하겠다.
 
+{% include code-header.html %}
 ```java
 public class TokenGenerator {
     // Key for AES encryption (256-bit key)
@@ -185,6 +189,7 @@ public class TokenGenerator {
 
 이를 위해 스프링에서 제공하는 `AsyncConfigurer`를 구현하여 스프링 빈으로 등록하자.
 
+{% include code-header.html %}
 ```java
 @Slf4j
 @EnableAsync
@@ -219,6 +224,7 @@ public class AsyncConfig implements AsyncConfigurer {
 
 이렇게 등록해두면 비동기를 처리하는 스레드 풀을 만들어서 스프링 컨테이너에 관리해둔다. 이를 적용하는 방법은 아주 간단한데 비동기가 필요한 메소드에 `@Async` 어노테이션을 붙이면 된다.
 
+{% include code-header.html %}
 ```java
 public class SmtpService {
     private final JavaMailSender mailSender;

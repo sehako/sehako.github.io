@@ -14,6 +14,7 @@ last_modified_at: 2025-02-02
 
 # 스프링에서의 응답
 
+{% include code-header.html %}
 ```java
 public record User(
     String username,
@@ -23,6 +24,7 @@ public record User(
 
 다음 객체가 존재할 때 이 객체를 반환한다고 가정해보자. 이때 이 객체를 반환하는 간단한 요청 메소드를 만들면 다음과 같다.
 
+{% include code-header.html %}
 ```java
 @RestController
 public class RequestController {
@@ -52,6 +54,7 @@ public class RequestController {
 
 스프링에서는 이런 문제를 `@ResponseStatus`라는 어노테이션을 통해서 해결할 수 있다.
 
+{% include code-header.html %}
 ```java
 @ResponseStatus(HttpStatus.CREATED)
 @PostMapping("/create-user")
@@ -91,6 +94,7 @@ Content-Length: 41
 
 이런 상황에서는 단순하게 `@ResponseStatus`를 사용하는 것으로 해결할 수 없다. 이때에는 `ResponseEntity<T>`를 사용한다. 사용 방법은 다음과 같다.
 
+{% include code-header.html %}
 ```java
 @PostMapping("/create-user/v2")
 public ResponseEntity<User> createUserV2(
@@ -110,6 +114,7 @@ public ResponseEntity<User> createUserV2(
 
 물론 단순한 응답에는 `@ResponseStatus`를, 자세한 응답에는 `ResponseEntity<T>`를 사욯하는 것도 좋은 선택일 수는 있지만, 이는 코드의 통일성을 망친다고 생각한다. 위의 두 요청 메소드를 모아서 보도록하자.
 
+{% include code-header.html %}
 ```java
 @ResponseStatus(HttpStatus.CREATED)
 @PostMapping("/create-user")
@@ -131,6 +136,7 @@ public ResponseEntity<User> createUserV2(
 
 또한 `ResponseEntity<T>`를 사용한다면 개발이 용이해질 수 있다고 생각한다. 개발을 하다보면 `enum`을 이용해서 REST API 별도 정의 코드, HTTP 상태 코드, 메시지를 보여주게 된다.
 
+{% include code-header.html %}
 ```java
 @RequiredArgsConstructor
 public enum SuccessCode {
@@ -149,6 +155,7 @@ public enum SuccessCode {
 
 이때 이런 `enum`을 활용하면서 `ResponseEntity`를 사용하여 응답하고자 한다면 다음과 같은 응답 객체를 만들어서 `ResponseEntity<T>`에 정의하여 사용할 수 었다.
 
+{% include code-header.html %}
 ```java
 @JsonPropertyOrder({"isSuccess", "code", "message", "result"})
 public record ApiResponse<T>(
@@ -175,6 +182,7 @@ public record ApiResponse<T>(
 
 위의 객체를 이용하여 다음과 같은 요청 메소드를 작성할 수 있다.
 
+{% include code-header.html %}
 ```java
 @PostMapping("/create-user/v3")
 public ResponseEntity<ApiResponse<User>> createUserV3(
@@ -206,6 +214,7 @@ public ResponseEntity<ApiResponse<User>> createUserV3(
 
 하지만 서버는 응답 도중 발생한 예외로 인한 처리 실패에 대해서 클라이언트에게 알릴 의무가 있는데, 스프링에서는 이런 예외를 한 곳에 모아서 처리할 수 있도록 `@RestControllerAdvice`라는 어노테이션을 지원한다. 그러면 다음 `enum`과 이를 처리하는 예외를 살펴보자.
 
+{% include code-header.html %}
 ```java
 @Getter
 @RequiredArgsConstructor
@@ -221,8 +230,7 @@ public enum FailureCode {
 }
 ```
 
-예외
-
+{% include code-header.html %}
 ```java
 @Getter
 public class CommonException extends RuntimeException {
@@ -237,6 +245,7 @@ public class CommonException extends RuntimeException {
 
 그러면 서버에서 예외를 처리하는 코드의 예시를 살펴보자.
 
+{% include code-header.html %}
 ```java
 @Slf4j
 @RestControllerAdvice
@@ -261,6 +270,7 @@ public class GlobalExceptionHandler {
 
 예를 들어 어떤 사용자를 검색했는데 해당 사용자가 없다고 가정해보자. 이때 개발자는 단순히 `CommonException`을 상속받은 `UserNotFoundException`을 던지기만 하면 된다.
 
+{% include code-header.html %}
 ```java
 public class UserNotFoundException extends CommonException {
     public UserNotFoundException(FailureCode failureCode) {
@@ -269,6 +279,7 @@ public class UserNotFoundException extends CommonException {
 }
 ```
 
+{% include code-header.html %}
 ```java
 @GetMapping("/find-user")
 public ResponseEntity<ApiResponse<User>> findUser(
@@ -287,6 +298,7 @@ public ResponseEntity<ApiResponse<User>> findUser(
 
 이 부분은 완전히 개인 의견으로 넘어가도 무방하다.(사실 나도 잘 안쓸 것 같다) 개인적으로 `ApiResponse`는 어중간하다고 생각하는데, 그 이유는 컨트롤러에서 매번 `ResponseEntity<T>`를 작성해야 하기 때문이다. 요청 메소드의 반환 부분을 보자.
 
+{% include code-header.html %}
 ```java
 @PostMapping("/create-user/v3")
 public ResponseEntity<ApiResponse<User>> createUserV3(
@@ -300,6 +312,7 @@ public ResponseEntity<ApiResponse<User>> createUserV3(
 
 이는 메소드가 많아질 수록 개발적 피곤함으로 다가올 수 있을 것이다. 따라서 `ResponseEntityHelper` 같은 이름의 클래스를 만들어서 `ResponseEntity<T>`를 반환하도록 하면 어떨까 하는 생각이 들었다.
 
+{% include code-header.html %}
 ```java
 @JsonPropertyOrder({"isSuccess", "code", "message", "result"})
 public record ResponseEntityHelper<T>(
@@ -363,6 +376,7 @@ public record ResponseEntityHelper<T>(
 
 대충 이런식으로 짜면 어떨까 싶었다. 이를 사용한 컨틀롤러 예시는 다음과 같다.
 
+{% include code-header.html %}
 ```java
 @GetMapping("/find-user")
 public ResponseEntity<ResponseEntityHelper<User>> findUser(

@@ -44,6 +44,7 @@ last_modified_at: 2025-02-15
 
 다음은 스프링 애플리케이션을 배포할 때 사용한 Dockerfile의 예시다.
 
+{% include code-header.html %}
 ```Dockerfile
 FROM openjdk:17-jdk
 LABEL maintainer "sehako"
@@ -72,8 +73,9 @@ ENTRYPOINT ["java", "-jar", "/app.jar"]
 LABEL maintainer "sehako <dhtpgkr1999@gmail.com>"
 ```
 
-- `RUN`: 이미지를 만들기 위해서 컨테이너 내부에서 실행시킬 명령어를 정의할 수 있다. 이를 설명하기 위해서 내가 정의한 젠킨스 도커 파일을 보여주도록 하겠다.
+- `RUN`: 이미지를 만들기 위해서 컨테이너 내부에서 실행시킬 명령어를 정의할 수 있다. 이를 설명하기 위해서 젠킨스 도커 파일을 보도록 하자.
 
+{% include code-header.html %}
 ```Dockerfile
 FROM jenkins/jenkins:2.492.1-lts-jdk17
 
@@ -130,6 +132,7 @@ CMD ["/usr/local/bin/jenkins.sh"]
 
 윈도우나 맥OS X의 경우에는 도커 데스크탑을 다운받으면 자동으로 도커 컴포즈도 설치되지만, 우분투의 CLI 환경에서는 다음 명령어를 사용해야 한다.
 
+{% include code-header.html %}
 ```sh
 sudo apt-get update
 sudo apt-get install docker-compose-plugin
@@ -137,6 +140,7 @@ sudo apt-get install docker-compose-plugin
 
 도커 컴포즈는 기본적으로 정의된 yaml 파일을 읽어들여 여러 컨테이너를 실행할 수 있다. mysql, 스프링 부트, 젠킨스를 도커 컴포즈에 정의한 예시를 보자.
 
+{% include code-header.html %}
 ```yaml
 services:
   mysql:
@@ -203,12 +207,14 @@ version: 3.0
 
 하지만 도커 컴포즈가 최신화 되면서 이제는 yaml 파일에 버전을 명시하지 않고 바로 `services`로 시작할 수 있다. 위와 같이 yaml 파일을 정의한 다음에는 해당 파일이 위치한 디렉토리에서 다음과 같은 명령어를 입력하면 된다.
 
+{% include code-header.html %}
 ```sh
 docker-compose up -d
 ```
 
 또한 특정 컨테이너만 지정해서 실행시킬 수 있다. 
 
+{% include code-header.html %}
 ```sh
 docker-compose up -d spring
 ```
@@ -326,6 +332,7 @@ volumes:
 
 도커와 도커 컴포즈 기능을 사용할 때 자주 사용한 명령어들을 적어보았다.
 
+{% include code-header.html %}
 ```sh
 docker run --name {CONTAINER_NAME} --net {CONTAINER_NETWORK} -p {HOST_PORT:PORT} -d {IMAGE_NAME:TAG}
 ```
@@ -334,22 +341,26 @@ docker run --name {CONTAINER_NAME} --net {CONTAINER_NETWORK} -p {HOST_PORT:PORT}
 
 만약 현재 호스트에 지정된 도커 이미지가 없다면 자동으로 이미지를 가져와 컨테이너를 생성한다.
 
+{% include code-header.html %}
 ```sh
 docker build --rm -t {IMAGE_NAME:TAG} .
 ```
 
 현재 디렉터리에 위치한 도커 파일을 이용하여 이미지를 빌드하는 명령어이다. 위 명령어는 현재 디렉터리에 위치한 도커 파일을 이미지로 만드는 명령어이다. `--rm` 옵션의 경우에는 이미지 생성에 성공했을 경우에 임시 컨테이너를 삭제하는 옵션이다.
 
+{% include code-header.html %}
 ```sh
 docker push ${IMAGE_NAME}:latest
 ```
 
 도커와 현재 cli 환경이 로그인 되었다고 가정했을 때, 특정 레포지토리의 이미지를 도커 허브에 업로드 하는 명령어다. CI/CD를 할 때 이 명령어를 사용할 것이다. 도커 허브에 이미지를 업로드하는 자세한 과정은 다음 글을 참고하면 좋을 것 같다. ([[docker] docker hub에 image 올리기](https://velog.io/@eoveol/docker-docker-hub%EC%97%90-image-%EC%98%AC%EB%A6%AC%EA%B8%B0))
 
+{% include code-header.html %}
 ```sh
 docker ps | docker-compose ps
 ```
 
+{% include code-header.html %}
 ```sh
 docker rmi {IMAGE_ID}
 ```
@@ -358,12 +369,14 @@ docker rmi {IMAGE_ID}
 
 현재 실행 중인 도커 컨테이너의 목록을 볼 수 있다.
 
+{% include code-header.html %}
 ```sh
 docker logs [-f] [CONTAINER_NAME] | docker-compose logs [-f] [SERVICE_NAME]
 ```
 
 현재 실행중인 컨테이너의 터미널 출력 로그를 볼 수 있다. 이때 아무런 컨테이너 이름을 주지 않으면 현재 실행되는 컨테이너들의 모든 로그가 출력되고, `-f` 옵션을 주면 현재 실행 중인 컨테이너의 실시간 출력 로그를 볼 수 있게 된다.
 
+{% include code-header.html %}
 ```sh
 docker-compose up [-d] [--no-deps] [--build] [SERVICE_NAME]
 ```
@@ -372,6 +385,7 @@ docker-compose up [-d] [--no-deps] [--build] [SERVICE_NAME]
 
 그리고 `--build` 옵션은 전체 서비스 또는 특정 컨테이너를 실행할 때 빌드를 수행하도록 하는 옵션이다. 이 명령어도 CI/CD를 할 때 활용할 것이다.
 
+{% include code-header.html %}
 ```sh
 docker-compose down [SERVICE_NAME]
 ```

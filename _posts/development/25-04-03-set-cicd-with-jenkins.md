@@ -24,6 +24,7 @@ CI/CD를 쉽게 말하자면 어플리케이션의 변경 사항을 감지하고
 
 참고로 프로젝트의 원할한 CICD 목적으로 gradle bootjar를 실행시키면 app.jar가 나오도록 설정하였다.
 
+{% include code-header.html %}
 ```groovy
 bootJar {
     archiveFileName = 'app.jar'
@@ -32,6 +33,7 @@ bootJar {
 
 jar 파일의 이름을 프로젝트의 이름으로 빌드되도록 설정할 수도 있다.
 
+{% include code-header.html %}
 ```groovy
 bootJar {
     archiveFileName = "${rootProject.name}.jar"
@@ -79,6 +81,7 @@ LABEL=SWAP      /swapfile       swap    swap defaults 0 0
 
 EC2에 띄우기에 앞서 nginx나 데이터베이스는 필요가 없으니 컴포즈 파일을 다음과 같이 수정하였다.
 
+{% include code-header.html %}
 ```yaml
 services:
   spring:
@@ -126,6 +129,7 @@ volumes:
 
 스프링은 각자 테스트 목적의 깃허브 레포지토리를 생성하여 사용하도록 하자. 그리고 젠킨스 도커 파일은 다음과 같다.
 
+{% include code-header.html %}
 ```dockerfile
 FROM jenkins/jenkins:2.492.1-lts-jdk17
 
@@ -156,6 +160,7 @@ CMD ["/usr/local/bin/jenkins.sh"]
 
 변경한 실습 자료 전체를 EC2에 전송하도록 하자. (scp 명령어 [블로그](https://dejavuqa.tistory.com/358) 참고) 
 
+{% include code-header.html %}
 ```bash
 scp -i {EC2 pem 키} -r ./DeploySet {사용자이름}@{서버주소}:{경로}
 ```
@@ -164,28 +169,34 @@ scp -i {EC2 pem 키} -r ./DeploySet {사용자이름}@{서버주소}:{경로}
 
 EC2를 우분투로 생성하였을 거라고 가정하고 다음 명령어들을 입력하여 도커와 도커 컴포즈를 설치하도록 하자.
 
+{% include code-header.html %}
 ```bash
 sudo apt update
 ```
 
+{% include code-header.html %}
 ```bash
 sudo apt install apt-transport-https ca-certificates curl software-properties-common -y
 ```
 
+{% include code-header.html %}
 ```bash
 sudo wget -qO- http://get.docker.com/ | sh
 ```
 
+{% include code-header.html %}
 ```bash
 sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
 ```
 
+{% include code-header.html %}
 ```bash
 sudo chmod +x /usr/local/bin/docker-compose
 ```
 
 이제 다음 명령어를 실행하면 nginx, 스프링 부트, 젠킨스가 컨테이너로 생성될 것이다.
 
+{% include code-header.html %}
 ```bash
 sudo docker-compose up -d
 ```
@@ -198,6 +209,7 @@ sudo docker-compose up -d
 
 젠킨스에 최초로 접속하면 관리자 비밀번호를 요구한다. 이는 젠킨스를 최초 실행할 때 나오는 값이므로 다음 명령어를 입력하여 확인하도록 하자.
 
+{% include code-header.html %}
 ```bash
 sudo docker-compose logs jenkins
 ```
@@ -308,6 +320,7 @@ CI/CD를 위해 젠킨스에서 지원하는 플러그인을 설치하도록 하
 
 이제 webhook이 전달되면 처리할 파이프라인을 구축하도록 하자. 파이프라인은 두 가지로 관리할 수 있는데, 하나는 젠킨스 파일을 특정 레포지토리에 보관하여 관리하는 방법이 있고, 다른 하나는 젠킨스의 job에 직접 정의하는 방법이 있다.
 
+{% include code-header.html %}
 ```groovy
 pipeline {
     agent any
@@ -394,6 +407,7 @@ def buildSpringboot() {
 
 여기서 위 파이프라인을 테스트 하면 오류가 발생할 것이다. 현재 서버에 `deploy_backend.sh` 파일이 없기 때문이다. 이를 다음과 같이 정의하도록 하자.
 
+{% include code-header.html %}
 ```bash
  #!/bin/bash
 
@@ -410,6 +424,7 @@ sudo docker-compose up -d --build
 
 이제 내 프로젝트를 변경해보도록 하겠다.
 
+{% include code-header.html %}
 ```java
 @RestController
 public class Controller {
@@ -427,6 +442,7 @@ public class Controller {
 
 초기에는 다음과 같은 코드가 있는데, 여기에 다음 요청 메소드를 추가하도록 해보자.
 
+{% include code-header.html %}
 ```java
   @GetMapping("/api/v1/test")
   public ResponseEntity<Return> test() {
@@ -448,6 +464,7 @@ public class Controller {
 
 앞서 작성한 파이프라인에서 `buildSpringBoot()` 부분을 다음과 같이 수정하도록 하자.
 
+{% include code-header.html %}
 ```groovy
 def buildSpringboot() {
     dir(BACKEND_DIR) {
@@ -506,6 +523,7 @@ def buildSpringboot() {
 
 파이프라인 코드는 간단하게 작성하도록 하겠다.
 
+{% include code-header.html %}
 ```groovy
 pipeline {
     agent any
@@ -568,7 +586,7 @@ pipeline {
 
 ![도커 아이디 비밀번호 캡쳐](/assets/images/set-cicd-with-jenkins_19.png)
 
-
+{% include code-header.html %}
 ```groovy
 def buildSpringboot() {
     dir(BACKEND_DIR) {
@@ -600,6 +618,7 @@ def buildSpringboot() {
 
 사실 기억이 가물가물하다. 아무튼 젠킨스에서 빌드한 이미지를 자신이 구축한 도커 허브에 업로드하고. `deploy_backend.sh`를 실행시키면 된다. 해당 쉘 스크립트는 다음과 같다.
 
+{% include code-header.html %}
 ```sh
 #!/bin/bash
 

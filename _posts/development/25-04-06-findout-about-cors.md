@@ -49,7 +49,8 @@ CORS(Cross-Origin Resource Sharing)는 서로 다른 출처(origin) 간의 리�
 
 나는 nginx를 사용하여 어플리케이션을 리버스 프록시를 하는 방법만 알기 때문에 이를 기준으로 설명하도록 하겠다. nginx에서는 다음과 같이 작성하면 된다.
 
-```bash
+{% include code-header.html %}
+```
  http {
 		# ...
 
@@ -121,6 +122,7 @@ CORS(Cross-Origin Resource Sharing)는 서로 다른 출처(origin) 간의 리�
 
 ### 모놀로식 어플리케이션
 
+{% include code-header.html %}
 ```java
 @Configuration
 public class CorsConfig implements WebMvcConfigurer {
@@ -147,6 +149,7 @@ public class CorsConfig implements WebMvcConfigurer {
 
 물론 톰캣 서블릿 기반의 게이트웨이도 있긴 하지만, 게이트웨이는 수 많은 요청을 중계해야 하기 때문에 대체로 Netty 기반의 게이트웨이를 채택한다고 한다. 아무튼 클라이언트는 이러한 게이트웨이에 최초로 요청을 보내기 때문에 게이트웨이에서만 CORS 설정을 해주면 된다. 코드를 통해 살펴보자.
 
+{% include code-header.html %}
 ```java
 import java.util.List;
 import org.springframework.context.annotation.Bean;
@@ -185,6 +188,7 @@ public class CorsConfig {
 
 참고로 STOMP를 사용한 웹 소켓 CORS 설정도 있다.
 
+{% include code-header.html %}
 ```java
 @Configuration
 @EnableWebSocketMessageBroker

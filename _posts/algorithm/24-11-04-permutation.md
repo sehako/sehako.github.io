@@ -35,6 +35,7 @@ $$
 
 만약 n개의 숫자 중에서 3개의 숫자를 순서를 고려하여 선택하면 다음과 같은 코드가 완성된다.
 
+{% include code-header.html %}
 ```java
 for (int i = 0; i < N; i++) {
     // 두 번째 원소 선택
@@ -61,6 +62,7 @@ for (int i = 0; i < N; i++) {
 
 따라서 재귀 호출을 통해서 순열을 구현하는 것이 일반적이다. 3개를 선택하는 순열을 재귀로 구현한 코드를 통해 확인해보자.
 
+{% include code-header.html %}
 ```java
 int[] data = {1, 2, 3};
 
@@ -87,20 +89,19 @@ void permutation(int depth) {
 이렇게 순열을 구성하면 `depth`의 기저 조건만 조정해주면 된다. 
 
 <aside>
-💡
-
 **재귀 구조 시각화 하기**
 
 재귀 함수를 처음 접하면 코드가 잘 이해가 안된다. 개인적으로 재귀 함수의 호출을 트리 형식으로 그려나가는 식으로 학습했을 때 도움이 많이 되었다. 위 순열 코드를 기반으로 재귀 함수의 호출 구조를 시각화 하면 다음과 같다.
 
-![image.png](/docs_images/permutation_01.png)
+![image.png](/assets/images/permutation_01.png)
 
-이렇게 해서 $3! = 6$개의 순열이 나오는 것을 확인할 수 있다. 지금은 간단한 구조라 모양이 조금 단순하지만 조금 복잡한 재귀일수록 이해가 잘 안되면 그려나가는 것이 도움이 많이 되므로 그려보는 것을 추천한다.
+이렇게 해서 $3! = 6$개의 순열이 나오는 것을 확인할 수 있다. 지금은 간단한 구조라 모양이 단순하지만 복잡한 재귀일수록 이해가 잘 안되면 그려나가는 것이 도움이 많이 되므로 그려보는 것을 추천한다.
 
 </aside>
 
 **비트마스킹**
 
+{% include code-header.html %}
 ```java
 void permutation(int depth, int flag) { 
     if(depth == R) return;
@@ -123,6 +124,7 @@ void permutation(int depth, int flag) {
 
 이 방법은 n개의 숫자에서 n개를 선택하는 $_nP_n(n!)$ 상황일 때, 원본 배열만으로 순열을 구성할 수 있는 방법이다.
 
+{% include code-header.html %}
 ```java
 int[] data = {1, 2, 3, 4, 5};
 
@@ -152,6 +154,7 @@ $$
 
 구현은 간단하게 순열에서 선택 여부에 관한 플래그 변수를 없애면 된다.
 
+{% include code-header.html %}
 ```java
 void permutation(int depth) {
     if(depth == 3) return;

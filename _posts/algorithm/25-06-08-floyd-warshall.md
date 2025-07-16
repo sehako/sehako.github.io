@@ -29,7 +29,7 @@ last_modified_at: 2025-06-08
 
 이를 의사 코드로 보면 다음과 같다.
 
-```
+```c
 let dist // 모든 요소의 값이 INF인 |V| x |V| 배열
 for each edge (u,v)
    dist[u][v] ← w(u,v)  // 변 (u,v)의 가중치
@@ -138,6 +138,7 @@ private static void getDist(int n) {
 
 문제 풀이에 대한 전체 코드를 살펴보도록 하자.
 
+{% include code-header.html %}
 ```java
 import java.util.*;
 import java.io.*;

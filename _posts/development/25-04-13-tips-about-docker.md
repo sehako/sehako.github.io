@@ -42,6 +42,7 @@ ENTRYPOINT ["java", "-jar", "/app.jar"]
 
 `ARG` 부분이 바로 외부에서 전달한 인자가 되는 것이다. 이를 컴포즈 파일에서 전달하는 것은 다음과 같다. spring-auth.jar 라는 파일을 도커 이미지로 빌드한다고 가정하면 다음과 같이 정의해주면 된다.
 
+{% include code-header.html %}
 ```yaml
 services:
   spring-auth:
@@ -73,6 +74,7 @@ services:
 
 이러던 중 알게 된 것이 바로 도커 컴포즈의 명령어 중에 `-f` 옵션이다. `-f` 옵션은 특정 컴포즈 파일을 특정하여 실행할 수 있는 옵션인데, 만약에 내가 `docker-compose.mq.yml`로 컴포즈 파일 이름을 지었으면 다음과 같은 명령어를 통해서 해당 컴포즈 파일을 올릴 수 있다.
 
+{% include code-header.html %}
 ```bash
 docker-compose -f docker-compose.mq.yml up -d
 ```
@@ -81,12 +83,14 @@ docker-compose -f docker-compose.mq.yml up -d
 
 또한 컴포즈 파일에서 외부 네트워크를 사용하도록 설정하였다. 컴포즈를 띄울 때 네트워크를 자동으로 만들어주지 말고, 다음과 같이 도커 네트워크를 정의하자.
 
+{% include code-header.html %}
 ```bash
 docker network create compose-network
 ```
 
 그러면 해당되는 네트워크를 다음과 같이 사용하도록 설정하면 된다.
 
+{% include code-header.html %}
 ```yaml
 networks:
   compose-network:
@@ -97,6 +101,7 @@ networks:
 
 또한 스프링 부트의 경우 데이터베이스 같은 필요한 외부 프로그램이 준비가 되지 않으면 아예 실행이 안되는 경우가 있는데, 이를 위해서 다음과 같이 실행 순서를 명시해야만 했다.
 
+{% include code-header.html %}
 ```yaml
 services:
   spring-eureka:

@@ -40,6 +40,7 @@ last_modified_at: 2025-03-23
 
 `application.yml` 파일에 다음과 같이 설정하도록 하자.
 
+{% include code-header.html %}
 ```yaml
 spring:
   application:
@@ -54,6 +55,7 @@ spring:
 
 이를 위해서 스프링에서는 시스템 내부에 존재하는 정적 파일을 처리할 수 있게 지원해준다. `WebMvcConfigurer` 객체를 구현하면 `addResourceHandlers`를 재정의할 수 있는데, 여기서 다음과 같이 설정해주면 된다.
 
+{% include code-header.html %}
 ```java
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
@@ -74,6 +76,7 @@ public class WebConfig implements WebMvcConfigurer {
 
 **컨트롤러**
 
+{% include code-header.html %}
 ```java
 @RestController
 @RequiredArgsConstructor
@@ -95,6 +98,7 @@ public class RequestController {
 
 서비스에서는 원본 파일의 이름을 받으면 확장자를 추출하여 `현재 시간.확장자 이름`의 형식으로 저장하도록 할 것이다.
 
+{% include code-header.html %}
 ```java
 @Service
 public class FileService {
@@ -188,6 +192,7 @@ implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE
 
 그리고 `application.yml`에 다음과 같이 설정하도록 하자.
 
+{% include code-header.html %}
 ```yaml
 cloud:
   aws:
@@ -206,6 +211,7 @@ cloud:
 
 S3에 접근하기 위해서는 `AmazonS3` 스프링 빈을 생성해야 한다. 내가 찾아봤던 레퍼런스는 설정 파일 하나로 어떻게 끝내는 참고자료도 있던데 같은 의존성 버전임에도 S3를 설정으로 접근하는 부분이 나는 없었다. 따라서 다른 자료를 참고하였다.
 
+{% include code-header.html %}
 ```java
 @Configuration
 public class S3Config {
@@ -235,6 +241,7 @@ public class S3Config {
 
 **컨트롤러**
 
+{% include code-header.html %}
 ```java
 @RestController
 @RequiredArgsConstructor
@@ -255,6 +262,7 @@ public class RequestController {
 
 **서비스**
 
+{% include code-header.html %}
 ```java
 @Slf4j
 @Service
