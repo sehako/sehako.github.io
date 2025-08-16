@@ -62,7 +62,6 @@ implementation 'org.springframework.boot:spring-boot-starter-websocket'
 
 연결 설정도 설정 빈 하나를 등록하면서 끝이다. 다음 코드를 보도록 하자.
 
-{% include code-header.html %}
 ```java
 @Configuration
 @EnableWebSocketMessageBroker
@@ -74,17 +73,18 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
-		    // 토픽 구독을 위한 접두사
+        // 토픽 구독을 위한 접두사
         registry.enableSimpleBroker("/topic", "/queue");
         // 어플리케이션에 요청을 보낼 때 작성해야 하는 접두사
-        registry.setApplicationDestinationPrefixes("/pub");
+        registry.setApplicationDestinationPrefixes("/app");
+        // 사용자 세션 접근을 위한 접두사
+        registry.setUserDestinationPrefix("/user");
     }
 }
 ```
 
 이렇게 작성하면 `{서버주소}/ws`로 연결 요청을 보내면 연결이 된다. 참고로 `registerStompEndpoints`메소드에서 다음과 같이 등록할 수도 있다.
 
-{% include code-header.html %}
 ```java
 @Override
 public void registerStompEndpoints(StompEndpointRegistry registry) {
@@ -100,7 +100,6 @@ public void registerStompEndpoints(StompEndpointRegistry registry) {
 
 본론에 앞서, 채팅 구현에 대한 테스트는 다음 [페이지](https://jiangxy.github.io/websocket-debug-tool/)에서 진행할 것이다. 간단하게 웹 소켓을 테스트 할 수 있는 사이트이다. 스프링에서 STOMP를 활용하여 채팅 서버를 구현하는 방법은 매우 간단하다. 우선 다음 의존성이 필요하다. 
 
-{% include code-header.html %}
 ```groovy
 implementation 'org.springframework.boot:spring-boot-starter-websocket'
 ```
@@ -109,7 +108,6 @@ implementation 'org.springframework.boot:spring-boot-starter-websocket'
 
 연결 설정도 설정 빈 하나를 등록하면서 끝이다. 다음 코드를 보도록 하자.
 
-{% include code-header.html %}
 ```java
 @Configuration
 @EnableWebSocketMessageBroker
@@ -124,18 +122,17 @@ public class StompConfig implements WebSocketMessageBrokerConfigurer {
 		    // 토픽 구독을 위한 접두사
         registry.enableSimpleBroker("/topic", "/queue");
         // 어플리케이션에 요청을 보낼 때 작성해야 하는 접두사
-        registry.setApplicationDestinationPrefixes("/pub");
+        registry.setApplicationDestinationPrefixes("/app");
     }
 }
 ```
 
-이렇게 작성하면 `{서버주소}/ws`로 연결 요청을 보내면 제대로 연결이 되고, 클라이언트가 요청을 보내려고 하면 요청 주소 앞에 `/pub`을, 구독을 하고자 하면 구독 주소 앞에 `/topic` 이나 `/queue`를 명시하면 된다. `/topic`은 브로드캐스트 용도, `/queue`는 요청을 보낸 사용자에게 응답하는 용도라고 생각하면 된다.
+이렇게 작성하면 `{서버주소}/ws`로 연결 요청을 보내면 제대로 연결이 되고, 클라이언트가 요청을 보내려고 하면 요청 주소 앞에 `/app`을, 구독을 하고자 하면 구독 주소 앞에 `/topic` 이나 `/queue`를 명시하면 된다. `/topic`은 브로드캐스트 용도, `/queue`는 요청을 보낸 사용자에게 응답하는 용도라고 생각하면 된다.
 
 ## 채팅 구현
 
 채팅도 매우 간단하다. 
 
-{% include code-header.html %}
 ```java
 public record MessageRequest(
         Long userId
@@ -144,7 +141,6 @@ public record MessageRequest(
 }
 ```
 
-{% include code-header.html %}
 ```java
 public record MessageResponse(
         Long userId,
@@ -157,7 +153,6 @@ public record MessageResponse(
 }
 ```
 
-{% include code-header.html %}
 ```java
 @Slf4j
 @Controller
@@ -179,7 +174,7 @@ public class StompController {
 
 `Message` 객체로 한 번 감싸준 것을 볼 수 있다. 사실 그냥 `MessageRequest`를 그대로 사용해도 무방하지만, 나중에 요청을 보낸 클라이언트의 세션 ID 값을 알아야 할 때에는 저런 식으로 처리하여 `MessageHeader`를 추출하던가, 인자에 `MessageHeader`를 명시해야 한다.
 
-아무튼 중요한 것은 클라이언트가 `/pub/chat`으로 채팅 메시지를 전송하면 `/topic/chat`으로 브로드 캐스트 한다는 것이다.
+아무튼 중요한 것은 클라이언트가 `/app/chat`으로 채팅 메시지를 전송하면 `/topic/chat`으로 브로드 캐스트 한다는 것이다.
 
 ### 특정 토픽에만 브로드 캐스트 하기
 
@@ -187,7 +182,6 @@ public class StompController {
 
 이런 경우에는 `@SendTo`를 사용하지 않고 `SimpMessagingTemplate`을 사용하여 특정 토픽에만 메시지를 발행하도록 처리해야 한다.
 
-{% include code-header.html %}
 ```java
 @Slf4j
 @Controller
@@ -223,9 +217,8 @@ REST에서는 주로 `/`를 이용해 리소스를 구분한다. 물론 STOMP에
 
 ## 테스트
 
-이제 테스트를 진행해보자. 각각 일반 창과 시크릿 창으로 테스트 사이트에 접속하여 `ws://localhost:8080/ws`으로 소켓 연결을 하였고, 하나는 `/pub/chat.1`에 발행을, 다른 하나는 `/topic/chat.1`을 구독한 상태에서 다음 메시지를 전송해보았다.
+이제 테스트를 진행해보자. 각각 일반 창과 시크릿 창으로 테스트 사이트에 접속하여 `ws://localhost:8080/ws`으로 소켓 연결을 하였고, 하나는 `/app/chat.1`에 발행을, 다른 하나는 `/topic/chat.1`을 구독한 상태에서 다음 메시지를 전송해보았다.
 
-{% include code-header.html %}
 ```json
 {"userId": 1, "message": "Hello"}
 ```
@@ -236,7 +229,7 @@ REST에서는 주로 `/`를 이용해 리소스를 구분한다. 물론 STOMP에
 
 ```
 $ _INFO_:Connect STOMP server success, url = ws://localhost:8080/ws, connectHeader = 
-$ _INFO_:send STOMP message, destination = /pub/chat.1, content = {"userId": 1, "message": "Hello"}, header = 
+$ _INFO_:send STOMP message, destination = /app/chat.1, content = {"userId": 1, "message": "Hello"}, header = 
 ```
 
 **구독자**
@@ -257,8 +250,18 @@ content-length:65
 서버에서 헤더와 메시지에 대한 로그는 다음과 같이 출력되었다.
 
 ```
-headers: {simpMessageType=MESSAGE, stompCommand=SEND, nativeHeaders={destination=[/pub/chat.1], content-length=[33]}, DestinationVariableMethodArgumentResolver.templateVariables={chatroom-id=1}, simpSessionAttributes={}, simpHeartbeat=[J@754a838, lookupDestination=/chat.1, simpSessionId=b64bd69d-4f12-d14c-8494-b9b12d698b5c, simpDestination=/pub/chat.1}
-message: GenericMessage [payload=MessageRequest[userId=1, message=Hello], headers={simpMessageType=MESSAGE, stompCommand=SEND, nativeHeaders={destination=[/pub/chat.1], content-length=[33]}, DestinationVariableMethodArgumentResolver.templateVariables={chatroom-id=1}, simpSessionAttributes={}, simpHeartbeat=[J@754a838, lookupDestination=/chat.1, simpSessionId=b64bd69d-4f12-d14c-8494-b9b12d698b5c, simpDestination=/pub/chat.1}]
+headers: {simpMessageType=MESSAGE, stompCommand=SEND, 
+nativeHeaders={destination=[/app/chat.1], content-length=[33]}, 
+DestinationVariableMethodArgumentResolver.templateVariables={chatroom-id=1}, 
+simpSessionAttributes={}, simpHeartbeat=[J@754a838, lookupDestination=/chat.1, 
+simpSessionId=b64bd69d-4f12-d14c-8494-b9b12d698b5c, simpDestination=/app/chat.1}
+
+message: GenericMessage [payload=MessageRequest[userId=1, message=Hello], 
+headers={simpMessageType=MESSAGE, stompCommand=SEND, 
+nativeHeaders={destination=[/app/chat.1], content-length=[33]}, 
+DestinationVariableMethodArgumentResolver.templateVariables={chatroom-id=1}, 
+simpSessionAttributes={}, simpHeartbeat=[J@754a838, lookupDestination=/chat.1, 
+simpSessionId=b64bd69d-4f12-d14c-8494-b9b12d698b5c, simpDestination=/app/chat.1}]
 ```
 
 여기서 `simpSessionId`를 확인할 수 있는데, 이것이 바로 현재 요청을 보낸 클라이언트의 접속 세션 ID 값이다.
