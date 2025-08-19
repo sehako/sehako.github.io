@@ -89,16 +89,19 @@ public class StompConfig implements WebSocketMessageBrokerConfigurer {
 }
 ```
 
-`StompHeaderAccessor` 객체를 확인하기 위해서 로그를 작성해봤다. 그 다음 다음과 같이 연결 하여 로그를 확인해보도록 하자.
+`StompHeaderAccessor` 객체를 확인하기 위해서 로그를 작성해봤다. 서버에 연결하여 로그를 확인해보도록 하자.
 
-![image.png](https://velog.velcdn.com/images/gkrdh99/post/01361241-281f-4d32-ad25-3e6f7938ad81/image.png)
+``` 
+$ _INFO_:Connect STOMP server success, 
+url = ws://localhost:8080/ws, connectHeader = {"Authorization": "TOKEN"}
+```
 
-헤더에서 JSON의 키-값 구조로 토큰을 보냈다는 것을 확인할 수 있다. 애플리케이션에서는 다음과 같은 로그를 출력하였다.
+`connectHeader`에서 JSON의 키-값 구조로 토큰을 보냈다는 것을 확인할 수 있다. 애플리케이션에서는 다음과 같은 로그를 출력하였다.
 
 ```
 accessor: StompHeaderAccessor 
 [headers={simpMessageType=CONNECT, stompCommand=CONNECT, 
-nativeHeaders={Authorization=[EXAMPLE_TOKN], accept-version=[1.1,1.0], 
+nativeHeaders={Authorization=[TOKEN], accept-version=[1.1,1.0], 
 heart-beat=[10000,10000]}, simpSessionAttributes={}, 
 simpHeartbeat=[J@566f4bc8, simpSessionId=26f313e8-87b7-e0b0-04cf-765c038e6067}]
 ```
@@ -114,17 +117,20 @@ public void configureClientInboundChannel(ChannelRegistration registration) {
             StompHeaderAccessor accessor = MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
             // 설정된 요청이 CONNECT일 때
             if (StompCommand.CONNECT.equals(accessor.getCommand())) {
-                String token = Objects.requireNonNull(
-		                accessor.getNativeHeader("Authorization")).get(0);
-
-                if (token == null || !"EXAMPLE_TOKEN".equals(token)) {
-                    log.info("비정상 토큰 감지: {}", token);
-                    throw new RuntimeException("Invalid token");
+                String token = getToken(accessor);
+                if (!"EXAMPLE_TOKEN".equals(token)) {
+	                  log.info("토큰 검증 과정에서 문제 발생");
                 }
             }
             return message;
         }
     });
+}
+
+private String getToken(StompHeaderAccessor accessor) {
+    List<String> tokenList = accessor.getNativeHeader("Authorization");
+
+    return tokenList == null || tokenList.size() != 1 ? null : tokenList.get(0);
 }
 ```
 
@@ -132,12 +138,15 @@ public void configureClientInboundChannel(ChannelRegistration registration) {
 
 우선 EXAMPLE_TOKEN을 전달하면 정상적으로 연결이 진행되는 것을 확인할 수 있었다.
 
-![image.png](https://velog.velcdn.com/images/gkrdh99/post/ee655022-82e9-4a01-adce-95dda0395d96/image.png)
+```java
+$ _INFO_:Connect STOMP server success, 
+url = ws://localhost:8080/ws, connectHeader = {"Authorization": "EXAMPLE_TOKEN"}
+```
 
-하지만 그 외에 토큰값을 전달하면 애플리케이션에서 에러가 발생하여 제대로 연결이 되지 않고 서버에서 다음과 같은 로그가 출력되는 것을 확인하였다.
+하지만 그 외에 토큰을 전달하지 않거나 잘못된 토큰을 전달하면 애플리케이션에서 에러가 발생하여 제대로 연결이 되지 않고 다음과 같은 로그가 출력되는 것을 확인하였다.
 
 ```java
-비정상 토큰 감지: EXAMPLE
+토큰 검증 과정에서 문제 발생
 ```
 
 ## 적절한 예외 처리 구현
@@ -146,7 +155,7 @@ public void configureClientInboundChannel(ChannelRegistration registration) {
 
 ```java
 if (token == null || !"EXAMPLE_TOKEN".equals(token)) {
-    log.info("비정상 토큰 감지: {}", token);
+    log.info("토큰 검증 과정에서 문제 발생");
     throw new RuntimeException("Invalid token");
 }
 ```
@@ -159,7 +168,7 @@ if (token == null || !"EXAMPLE_TOKEN".equals(token)) {
 
 ```java
 if (token == null || !"EXAMPLE_TOKEN".equals(token)) {
-    log.info("비정상 토큰 감지: {}", token);
+    log.info("토큰 검증 과정에서 문제 발생");
     throw new MessageDeliveryException("UNAUTHORIZED");
 }
 ```
@@ -195,14 +204,13 @@ if (token == null || !"EXAMPLE_TOKEN".equals(token)) {
 이를 `Throwable.getCause()`를 통해 다음과 같이 예외 발생 시 상황에 맞는 오류 메시지를 클라이언트에게 전달할 수 있다.
 
 ```java
-@Configuration
 public class StompErrorHandler extends StompSubProtocolErrorHandler {
 
     @Override
     public Message<byte[]> handleClientMessageProcessingError(
             Message<byte[]> clientMessage, Throwable ex) {
 
-        // preSend에서 던진 "UNAUTHORIZED" 메시지 처리
+        // preSend에서 던진 예외가 AuthenticationFailedException인지 확인
         if (ex.getCause() instanceof AuthenticationFailedException) {
             return createErrorMessage("토큰 인증에 실패했습니다.");
         }
@@ -270,7 +278,7 @@ public class StompAuthConfig implements WebSocketMessageBrokerConfigurer {
 
 ---
 
-토큰 인증 처리에 대해서 살펴보았다. 다음 포스팅은 채팅방에서 클라이언트가 전송한 채팅을 MongoDB에 저장하고, 다른 사용자가 접속하면 이를 읽음 처리하는 기능을 구현해나갈 것이다.
+토큰 인증 처리에 대해서 간단하게 짚어보았다. 다음 포스팅은 채팅방에서 클라이언트가 전송한 채팅을 데이터베이스에 저장하고, 예외 처리를 구현하는 방법을 알아볼 것이다.
 
 # 참고 자료
 
@@ -279,7 +287,5 @@ public class StompAuthConfig implements WebSocketMessageBrokerConfigurer {
 [**Token Authentication**](https://docs.spring.io/spring-framework/reference/web/websocket/stomp/authentication-token-based.html)
 
 [**RFC 6455**](https://datatracker.ietf.org/doc/html/rfc6455#section-10.5)
-
-[**웹 소켓 테스트 사이트**](https://jiangxy.github.io/websocket-debug-tool/)
 
 [**Spring WebSocket 예외 처리 - @MessageExceptionHandler, StompSubProtocolErrorHandler**](http://shout-to-my-mae.tistory.com/434#%EB%B9%84%EC%A6%88%EB%8B%88%EC%8A%A4%20%EB%A1%9C%EC%A7%81%EC%97%90%20%EB%8C%80%ED%95%9C%20%EA%B2%80%EC%A6%9D%20%EC%98%88%EC%99%B8%20%EC%B2%98%EB%A6%AC-1)

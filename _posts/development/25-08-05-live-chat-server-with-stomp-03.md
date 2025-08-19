@@ -20,7 +20,7 @@ last_modified_at: 2025-08-16
 
 ## ERD
 
-![image.png](https://velog.velcdn.com/images/gkrdh99/post/7edcb29c-d60a-45b8-9f55-34d137fdeb08/image.png)
+![image.png](/assets/images/live-chat-server-with-stomp-03_01.png)
 
 간단한 학습을 위해서 정말 필요한 테이블과 컬럼만 구상하였다. 지금 와서 생각해보면 채팅 내역 테이블만 있어도 됐을 것 같다.
 
@@ -196,7 +196,7 @@ public class ChatLog {
 }
 ```
 
-역시 채팅 기능에 대한 구현에 집중하기 위해 각 엔티티의 연관관계는 일부러 정의하지 않고 각 테이블의 `id` 값을 외래키로 명시하였다. 이제 드디어 기능 구현을 할 차례이다.
+채팅 기능 구현에 집중하기 위해 각 엔티티의 연관관계는 일부러 정의하지 않고 각 테이블의 `id` 값을 외래키로 명시하였다. 이제 드디어 기능 구현을 할 차례이다.
 
 # 채팅 저장
 
@@ -577,9 +577,173 @@ content-length:1491
 
 80번 채팅 ID 부터 61번 채팅 ID까지 조회된 것을 통해 정상적으로 페이지네이션 기능이 동작하는 것을 확인할 수 있다.
 
+# 예외 처리 구현
+
+애플리케이션은 항상 성공 케이스뿐 아니라 예외 케이스가 존재한다. 예를 들어 채팅 저장 과정에서 데이터베이스가 다운되어 채팅 서버와의 커넥션이 유실되면, 사용자는 자신의 메시지가 왜 채팅방에 표시되지 않는지 알기 어렵다. 따라서 서버에서 예외가 발생했을 때 이를 사용자에게 명확히 전달하는 예외 처리가 필요하다.
+
+이때 앞서 토큰 인증 처리에서 구현했던 `StompSubProtocolErrorHandler`로 `ERROR` 프레임을 보내는 방법은 적절하지 않다. STOMP 1.2 명세는 서버가 `ERROR` 프레임을 전송한 직후 연결을 닫아야 한다(MUST)고 규정한다. 
+
+> 서버는 무언가 잘못되었을 경우 `ERROR` 프레임을 전송할 수 있다. 이렇게 `ERROR` 프레임을 전송한 이후에는 반드시(MUST) 연결을 종료해야 한다.
+> 
+
+이는 스프링 관련 객체를 다룬 Javadoc 역시 언급하고 있는 부분이다.
+
+> Note that the STOMP protocol requires a server to close the connection after sending an ERROR frame. To prevent an ERROR frame from being sent, a handler could return `null` and send a notification message through the broker instead, for example, via a user destination.
+> 
+
+하지만 단순 저장 실패 같은 애플리케이션 예외에 대해 세션을 끊어버리면 사용자 경험이 나빠진다고 생각한다.
+
+또한 `StompSubProtocolErrorHandler`는 클라이언트 STOMP 프레임 처리 중 발생한 예외를 `ERROR` 프레임으로 조립하거나 억제하는 용도로 설계된 컴포넌트다. 애플리케이션 레벨 예외 알림 채널로 쓰기보다는, 프로토콜 수준 오류에 한정해 사용하는 편이 적합하다.
+
+## @MessageExceptionHandler
+
+따라서 나는 이 문제에 대해서 스프링이 제공하는 `@MessageExceptionHandler`를 사용해 예외를 잡고, 사용자 전용 목적지(`/user/**`)로 안내 메시지를 보내 연결은 유지하는 방식을 사용하였다. 기본적인 사용법은 다음과 같다.
+
+```java
+@ControllerAdvice
+@RequiredArgsConstructor
+public class StompExceptionHandler {
+    @MessageExceptionHandler
+    public void handleException(Exception exception) {
+		    // 예외 처리 로직 구현
+    }
+}
+```
+
+여기서 인자에 정의한 예외가 발생하면 해당 예외에 대해서 적절하게 처리하도록 코드를 작성하면 된다. 메서드의 인자로 전달 받을 수 있는 객체를 공식문서를 참고하여 다음과 같이 정리하였다.
+
+| 메서드 인자 | 설명 |
+| --- | --- |
+| `Message<?>`  | 전체 메시지 객체 |
+| `MessageHeaders` | 메시지 헤더 |
+| `MessageHeaderAccessor` / `SimpMessageHeaderAccessor` / `StompHeaderAccessor` | 타입 안전한 메시지 헤더 |
+| `@Payload` | 메시지 페이로드 |
+| `@Header("name")` | 특정 헤더 값 |
+| `@Headers` | 모든 헤더에 대한 `Map` 자료구조 (따라서 인자는 `java.util.Map` 타입이어야 함) |
+| `@DestinationVariable` | 메시지 목적지 경로에서 추출된 템플릿 변수 |
+| `java.security.Principal` | 웹소켓 HTTP 핸드셰이크 시점의 로그인 사용자 정보 |
+
+대부분의 STOMP 처리에서 사용되는 객체를 사용할 수 있는 것을 볼 수 있다. 이를 활용하여 예외가 발생하면 특정 사용자에게 현재 데이터베이스가 문제가 생겼다는 메시지를 전송하도록 하자. 
+
+서버 구동 중 데이터베이스가 꺼지면 HikariPool이 없다는 경고 로그가 뜨고, 일정 시간이 지나면 `TransactionException`의 하위 클래스인 `CannotCreateTransactionException`이 발생하는 것을 확인하였다. 이를 참고하여 다음과 같이 예외 처리를 하는 메서드를 작성하였다.
+
+```java
+@Slf4j
+@ControllerAdvice
+@RequiredArgsConstructor
+public class StompExceptionHandler {
+
+    private final SimpMessagingTemplate messagingTemplate;
+
+    @MessageExceptionHandler
+    public void handleTransactionException(
+            TransactionException e,
+            @Header(name = "simpSessionId") String simpSessionId
+    ) {
+        log.info("DB 예외 발생!!");
+
+        messagingTemplate.convertAndSendToUser(
+                simpSessionId,
+                "/queue/chat.error",
+                "데이터베이스 에러 발생",
+                createHeaders(simpSessionId)
+        );
+    }
+
+    private MessageHeaders createHeaders(@Nullable String sessionId) {
+        SimpMessageHeaderAccessor headerAccessor = SimpMessageHeaderAccessor
+                .create(SimpMessageType.MESSAGE);
+
+        if (sessionId != null) {
+            headerAccessor.setSessionId(sessionId);
+        }
+        headerAccessor.setLeaveMutable(true);
+        return headerAccessor.getMessageHeaders();
+    }
+}
+```
+
+이제 `/user/queue/chat.error`에 클라이언트를 구독하고, `/app/chat.1`으로 1번 채팅방에 메시지를 보내보고 기다려보면 서버에서 `CannotCreateTransactionException` 이 발생하고, 이에 대해서 다음과 같이 클라이언트에게 메시지가 전송된 것을 확인할 수 있다.
+
+```
+$ _INFO_:send STOMP message, destination = /app/chat.1, content = {"userId": "1", "message": "ERROR"}, header = 
+$ _INFO_:subscribe destination /user/queue/chat.error success
+$ _INFO_:Receive subscribed message from destination /user/queue/chat.error, content = MESSAGE
+content-length:13
+message-id:88f01019-1716-8aca-e091-64a14c64649c-0
+subscription:sub-0
+content-type:text/plain;charset=UTF-8
+destination:/user/queue/chat.error
+content-length:13
+
+데이터베이스 에러 발생
+```
+
+## 참고: 멀티플랙싱을 통한 토픽 관리
+
+현재 애플리케이션은 채팅용 토픽, 채팅 내역 전송용 토픽, 채팅 중 발생한 오류 처리용 토픽 이렇게 3개를 구독해야 정상적으로 채팅 서비스를 이용할 수 있다. 하지만 채팅 애플리케이션은 여기서 끝이 아니다. 
+
+카카오톡을 생각해보자. 단적으로 사용자가 소속된 채팅방의 가장 최근 채팅 내역을 보여주고, 또 사용자가 읽지 않은 채팅 개수를 표기하기도 한다. 심지어 개인적으로는 좋아하지 않는 기능이지만 사용자가 채팅을 입력중이면 해당 사용자가 입력중이라는 표시도 최근에 구현되었다.
+
+이렇게 여러 필수 / 부가 기능들을 각 기능별로 토픽을 생성하여 처리하면, 채팅 서비스에 소켓 관련 기능이 점점 많아질수록 관리해야할 토픽의 개수가 증가할 것이고, 이는 유지보수의 어려움으로 될 가능성이 높다.
+
+이를 위해 멀티플랙싱을 고려할 수 있다. 멀티플랙싱은 네트워크 용어인데, 쉽게 정리하면 여러 개의 입력을 하나의 출력으로 변환한다는 것이다. 이를 채팅 애플리케이션으로 보면 여러 요청을 하나의 토픽에 발행한다는 것으로 생각할 수 있다. 
+
+그렇다면 현재 서비스에서는 어떤 토픽을 하나의 토픽으로 관리할 수 있을까? 이에 대해서 나는 채팅 내역을 전송하기 위한 토픽과 채팅 시 발생하는 예외를 전송하기 위한 토픽을 `/chat.info`로 처리하면 어떨까 생각하였다. 또한 하나의 토픽으로 합쳐진만큼 클라이언트에서는 해당 토픽을 통해 발행된 메시지가 어떤 타입인지 알아야 해당 타입에 따른 적절한 처리를 할 수 있다고 생각하였다. 따라서 다음과 같은 객체를 작성해보았다.
+
+```java
+public record QueueIntegrationResponse<T>(
+        Type type,
+        T data
+) {
+    public static <T> QueueIntegrationResponse<T> onError(T data) {
+        return new QueueIntegrationResponse<>(Type.ERROR, data);
+    }
+}
+
+enum Type {
+    LOG, ERROR
+}
+```
+
+그리고 예외 처리 부분에서 단순히 문자열을 담아 메시지를 보낸 것을 다음과 같이 변경하였다. 
+
+```java
+@MessageExceptionHandler
+public void handleTransactionException(
+        TransactionException e,
+        @Header(name = "simpSessionId") String simpSessionId
+) {
+    log.info("DB 예외 발생!!");
+
+    messagingTemplate.convertAndSendToUser(
+            simpSessionId,
+            "/queue/chat.error",
+            QueueIntegrationResponse.onError("데이터베이스 에러 발생"),
+            createHeaders(simpSessionId)
+    );
+}
+```
+
+이제 클라이언트 로그를 살펴보자.
+
+```
+$ _INFO_:Receive subscribed message from destination /user/queue/chat.error, content = MESSAGE
+content-length:39
+message-id:02ff56a7-8711-4b3e-b7bd-56b5754c181d-0
+subscription:sub-0
+content-type:application/json
+destination:/user/queue/chat.error
+content-length:39
+
+{"type":"ERROR","data":"데이터베이스 에러 발생"}
+```
+
+이렇게 클라이언트에게 해당 메시지 타입은 어떤 것인지 알리면 클라이언트가 해당 타입을 확인하여 전송한 데이터를 적절하게 처리할 것이다. 
+
 ---
 
-이렇게 사용자 채팅을 저장하고, 채팅 내역을 조회할 수 있게 만들었다. 다음 포스팅에서는 카카오톡에서 사용되는 채팅을 읽지 않은 인원을 표시하기 위한 방법을 알아보고, 이벤트 리스너를 통해서 채팅방에 접속한 사용자 정보를 조회할 수 있도록 할 것이다.
+채팅 저장 관련 기능과 이에 따른 예외 처리까지 알아보았다. 다음 포스팅에서는 카카오톡 기능 중 하나인 채팅을 읽지 않은 인원을 표시하기 위한 방법을 알아보고, 이벤트 리스너를 통해서 채팅방에 접속한 사용자 정보를 조회할 수 있도록 할 것이다.
 
 # 참고 자료
 
@@ -590,3 +754,11 @@ content-length:1491
 [**Events**](https://docs.spring.io/spring-framework/reference/web/websocket/stomp/application-context-events.html)
 
 [**커서 기반 페이지네이션(Cursor-based-pagination) vs 오프셋 기반 페이지 네이션(offset-based-pagination**](https://0soo.tistory.com/130)
+
+[**STOMP Protocol Specification, Version 1.2**](https://stomp.github.io/stomp-specification-1.2.html)
+
+[**Class StompSubProtocolErrorHandler**](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/socket/messaging/StompSubProtocolErrorHandler.html?utm_source=chatgpt.com)
+
+[**Annotated Controllers**](https://docs.spring.io/spring-framework/reference/web/websocket/stomp/handle-annotations.html)
+
+[**[네트워크] 멀티플렉싱(Multiplexing)**](https://12bme.tistory.com/741)
