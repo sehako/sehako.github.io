@@ -689,7 +689,7 @@ content-length:13
 
 이를 위해 멀티플랙싱을 고려할 수 있다. 멀티플랙싱은 네트워크 용어인데, 쉽게 정리하면 여러 개의 입력을 하나의 출력으로 변환한다는 것이다. 이를 채팅 애플리케이션으로 보면 여러 요청을 하나의 토픽에 발행한다는 것으로 생각할 수 있다. 
 
-그렇다면 현재 서비스에서는 어떤 토픽을 하나의 토픽으로 관리할 수 있을까? 이에 대해서 나는 채팅 내역을 전송하기 위한 토픽과 채팅 시 발생하는 예외를 전송하기 위한 토픽을 `/chat.info`로 처리하면 어떨까 생각하였다. 또한 하나의 토픽으로 합쳐진만큼 클라이언트에서는 해당 토픽을 통해 발행된 메시지가 어떤 타입인지 알아야 해당 타입에 따른 적절한 처리를 할 수 있다고 생각하였다. 따라서 다음과 같은 객체를 작성해보았다.
+그렇다면 현재 서비스에서는 어떤 토픽을 하나의 토픽으로 관리할 수 있을까? 이에 대해서 나는 채팅 내역을 전송하기 위한 토픽과 채팅 시 발생하는 예외를 전송하기 위한 토픽을 `/user/queue/chat.info`로 처리하면 어떨까 생각하였다. 또한 하나의 토픽으로 합쳐진만큼 클라이언트에서는 해당 토픽을 통해 발행된 메시지가 어떤 타입인지 알아야 해당 타입에 따른 적절한 처리를 할 수 있다고 생각하였다. 따라서 다음과 같은 객체를 작성해보았다.
 
 ```java
 public record QueueIntegrationResponse<T>(
@@ -718,7 +718,7 @@ public void handleTransactionException(
 
     messagingTemplate.convertAndSendToUser(
             simpSessionId,
-            "/queue/chat.error",
+            "/queue/chat.info",
             QueueIntegrationResponse.onError("데이터베이스 에러 발생"),
             createHeaders(simpSessionId)
     );
@@ -728,12 +728,12 @@ public void handleTransactionException(
 이제 클라이언트 로그를 살펴보자.
 
 ```
-$ _INFO_:Receive subscribed message from destination /user/queue/chat.error, content = MESSAGE
+$ _INFO_:Receive subscribed message from destination /user/queue/chat.info, content = MESSAGE
 content-length:39
 message-id:02ff56a7-8711-4b3e-b7bd-56b5754c181d-0
 subscription:sub-0
 content-type:application/json
-destination:/user/queue/chat.error
+destination:/user/queue/chat.info
 content-length:39
 
 {"type":"ERROR","data":"데이터베이스 에러 발생"}
