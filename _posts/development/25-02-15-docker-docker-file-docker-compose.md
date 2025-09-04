@@ -403,7 +403,7 @@ docker-compose down [SERVICE_NAME]
 
 이 자료는 백엔드 배포와 CI/CD 입문을 위한 기본적인 틀이지 않을까 싶다.
 
-[다운로드 링크](https://drive.google.com/file/d/1WaVRYkistIRGLThTEQ6F8Pp8Wy0_X2MO/view)
+[다운로드 링크](https://drive.google.com/file/d/1VXV2NcuAlLBAIjb8ES7JsfAng0AEo2VL/view?usp=sharing)
 
 ---
 
