@@ -1,5 +1,5 @@
 ---
-title: STOMP를 활용한 실시간 채팅 서버 구축 - 2
+title: 실시간 채팅 개발 - 인증 / 인가 처리
 
 categories:
   - Spring
