@@ -562,7 +562,21 @@ public class HistoryBatchConfig {
 
 ## 배치 작업 실행
 
-배치 작업을 실행 하는 방법은 몇 가지 존재하지만, 여기서는 가장 무난하게 IDE의 gradlew 명령어로 작업을 실행하여 결과를 확인해보도록 하겠다. 다음 명령어를 입력하면 된다.
+배치 작업을 실행 하는 방법은 몇 가지 존재하지만, 여기서는 가장 무난하게 IDE의 gradlew 명령어로 작업을 실행하여 결과를 확인해보도록 하겠다. 그 전에 `@EnableScheduling`을 비활성화 하여 기존 작업의 실행을 방지하자.
+
+```java
+// @EnableScheduling
+@SpringBootApplication
+public class SpringBatchApplication {
+
+    public static void main(String[] args) {
+        SpringApplication.run(SpringBatchApplication.class, args);
+    }
+
+}
+```
+
+그리고 다음 명령어를 입력하면 배치 작업이 실행된다.
 
 ```bash
 ./gradlew bootRun --args='--spring.batch.job.name=writeHistoryJob targetDate=2025-10-02,java.time.LocalDate'
