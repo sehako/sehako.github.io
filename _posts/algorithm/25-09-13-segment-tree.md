@@ -23,7 +23,7 @@ last_modified_at: 2025-09-13
 
 기본 구상은 매우 간단한데, 전체 10개의 배열 요소에 대해서 구간합을 구하는 세그먼트 트리를 그림으로 표현하면 다음과 같다.
 
-![image.png](/assets/images/segment-tree_01.png)
+![image.png](https://velog.velcdn.com/images/gkrdh99/post/22ec6115-9639-4c50-95a6-41d42c5c161b/image.png)
 
 세그먼트 트리는 이진 트리의 형태를 가진다. 만약 주어진 배열의 개수가 2의 제곱꼴인 경우에는 완전 이진 트리의 형태가 된다. 리프 노드에는 배열의 수가 담겨져 있고, 부모 노드에는 두 노드에 대한 연산을 수행한 결과가 담겨져 있는 것을 확인할 수 있다. 
 
@@ -237,6 +237,35 @@ public void update(int n, int s, int e, int idx, long diff) {
 
 이를 개선하기 위해서 범위를 가지는 업데이트 연산에 대해서 느리게 업데이트되는 세그먼트 트리를 활용할 수 있다. 느리게 업데이트되는 세그먼트 트리는 업데이트를 위한 별도의 트리를 하나 만들고, 여기에 각 노드가 업데이트되어야 하는 값을 저장해두는 기법이다. 이를 통해 구간에 대한 업데이트 연산을 $O(logN)$으로 처리할 수 있다. 코드를 통해 살펴보자.
 
+### 범위 업데이트
+
+```java
+private static void updateRange(int n, int s, int e, int l, int r, long diff) {
+	applyUpdate(n, s, e);
+	if (s > r || e < l) return;
+	if (l <= s && e <= r) {
+		tree[n] += (e - s + 1) * diff;
+		
+		if (s != e) {
+			update[n * 2] += diff;
+			update[n * 2 + 1] += diff;
+
+		}
+		
+		return;
+	}
+	
+	updateRange(n * 2, s, (s + e) / 2, l, r, diff);
+	updateRange(n * 2 + 1, (s + e) / 2 + 1, e, l, r, diff);
+	
+	tree[n] = tree[n * 2] + tree[n * 2 + 1];
+}
+```
+
+트리의 시작과 끝이 주어진 범위 이내에 존재하면 앞서 업데이트 반영 메서드와 마찬가지로 업데이트 값에 `(e - s + 1)`을 곱하여 트리를 업데이트하는 것을 볼 수 있다.
+
+이후에 시작과 끝이 같지 않다면 `update` 배열에 업데이트 값을 전파하면서 수정해나간다.
+
 ### 업데이트 적용
 
 ```java
@@ -271,37 +300,6 @@ private static long query(int n, int s, int e, int l, int r) {
 	// ...
 }
 ```
-
-### 범위 업데이트
-
-이제 주어진 범위만큼 값을 업데이트 하는 코드를 살펴보자.
-
-```java
-private static void updateRange(int n, int s, int e, int l, int r, long diff) {
-	applyUpdate(n, s, e);
-	if (s > r || e < l) return;
-	if (l <= s && e <= r) {
-		tree[n] += (e - s + 1) * diff;
-		
-		if (s != e) {
-			update[n * 2] += diff;
-			update[n * 2 + 1] += diff;
-
-		}
-		
-		return;
-	}
-	
-	updateRange(n * 2, s, (s + e) / 2, l, r, diff);
-	updateRange(n * 2 + 1, (s + e) / 2 + 1, e, l, r, diff);
-	
-	tree[n] = tree[n * 2] + tree[n * 2 + 1];
-}
-```
-
-트리의 시작과 끝이 주어진 범위 이내에 존재하면 앞서 업데이트 반영 메서드와 마찬가지로 업데이트 값에 `(e - s + 1)`을 곱하여 트리를 업데이트하는 것을 볼 수 있다.
-
-이후에 시작과 끝이 같지 않다면 `update` 배열에 업데이트 값을 전파하면서 수정해나간다.
 
 ## 전체 코드
 
