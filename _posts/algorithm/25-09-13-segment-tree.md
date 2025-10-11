@@ -303,7 +303,7 @@ private static void updateRange(int n, int s, int e, int l, int r, long diff) {
 
 ## 전체 코드
 
-세그먼트 트리를 자바 코드로 구현한 전체 코드는 다음과 같다.
+세그먼트 트리를 자바로 구현한 전체 코드는 다음과 같다.
 
 ```java
 public class SegmentTree {
