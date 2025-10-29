@@ -95,7 +95,7 @@ public class Main {
 				break;
 			}
 			System.out.println(Arrays.toString(input));
-			plag = makeNP(input);
+			plag = nextPermutation(input);
 		}
 	}
 
