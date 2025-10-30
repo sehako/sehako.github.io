@@ -297,8 +297,32 @@ public class ItemWriterConfig {
         return new JdbcBatchItemWriterBuilder<HistoryRow>()
                 .dataSource(dataSource)
                 .sql("""
-                        INSERT INTO history (management_id, member_id, taking_date, morning, lunch, dinner, sleep, morning_taking, lunch_taking, dinner_taking, sleep_taking) 
-                        VALUES (:managementId, :memberId, :takingDate, :morning, :lunch, :dinner, :sleep, :morningTaking, :lunchTaking, :dinnerTaking, :sleepTaking)
+                        INSERT INTO history (
+                            management_id, 
+                            member_id, 
+                            taking_date, 
+                            morning, 
+                            lunch, 
+                            dinner, 
+                            sleep, 
+                            morning_taking, 
+                            lunch_taking, 
+                            dinner_taking, 
+                            sleep_taking
+                        ) 
+                        VALUES (
+                            :managementId, 
+                            :memberId, 
+                            :takingDate, 
+                            :morning, 
+                            :lunch, 
+                            :dinner, 
+                            :sleep, 
+                            :morningTaking, 
+                            :lunchTaking, 
+                            :dinnerTaking, 
+                            :sleepTaking
+                        )
                         """)
                 .itemSqlParameterSourceProvider(new BeanPropertyItemSqlParameterSourceProvider<>())
                 .assertUpdates(false)
@@ -317,8 +341,19 @@ public class ItemWriterConfig {
         return new JdbcBatchItemWriterBuilder<HistoryRow>()
                 .dataSource(dataSource)
                 .sql("""
-                        INSERT INTO history (management_id, member_id, taking_date, morning, lunch, dinner, sleep, morning_taking, lunch_taking, dinner_taking, sleep_taking)
-                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                        INSERT INTO history(
+                            management_id,
+                            member_id,
+                            taking_date,
+                            morning,
+                            lunch,
+                            dinner,
+                            sleep,
+                            morning_taking,
+                            lunch_taking,
+                            dinner_taking,
+                            sleep_taking
+                        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                         """)
                 .itemPreparedStatementSetter((item, ps) -> {
                     ps.setLong(1, item.managementId());
@@ -333,6 +368,7 @@ public class ItemWriterConfig {
                     ps.setBoolean(10, item.dinnerTaking());
                     ps.setBoolean(11, item.sleepTaking());
                 })
+                .assertUpdates(false)
                 .build();
     }
 }
