@@ -2,8 +2,8 @@
 title: Spring Security 아키텍처 이해하기
 
 categories:
-	- Spring
-	- Spring Security
+  - Spring
+  - Spring Security
 
 toc: true
 toc_sticky: true
@@ -554,7 +554,7 @@ public class AuthorizationFilter extends GenericFilterBean {
 
 ```java
 private static final AuthorizationDecision DENY
-																= new AuthorizationDecision(false);
+                        = new AuthorizationDecision(false);
 
 @Override
 public @Nullable AuthorizationResult authorize(
