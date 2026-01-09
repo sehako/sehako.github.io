@@ -7,7 +7,7 @@ categories:
 toc: true
 toc_sticky: true
 published: true
- 
+
 date: 2025-07-28
 last_modified_at: 2025-07-28
 ---
@@ -30,7 +30,7 @@ last_modified_at: 2025-07-28
 
 # TestContainers
 
-그렇다면 TestContainers가 어떠한 기능을 지원하기에 이러한 문제들을 해결할 수 있다고 하는 것일까? 그 이유는 테스트 컨테이너는 통합 테스트를 위해 필요한 인프라들을 도커 컨테이너로 제공하는 라이브러리이기 때문이다. 
+그렇다면 TestContainers가 어떠한 기능을 지원하기에 이러한 문제들을 해결할 수 있다고 하는 것일까? 그 이유는 테스트 컨테이너는 통합 테스트를 위해 필요한 인프라들을 도커 컨테이너로 제공하는 라이브러리이기 때문이다.
 
 이 라이브러리를 사용하면 테스트 시작 전에 필요한 컨테이너들을 띄우고, 이러한 컨테이너들을 통해 테스트를 진행하고, 테스트가 종료된 이후에는 컨테이너를 삭제시킨다. 공식문서에 따르면 TestContainers를 활용하여 다음과 같은 이점을 얻을 수 있다.
 
@@ -60,9 +60,9 @@ dependencies {
 }
 ```
 
-여기서 `org.testcontainers:mysql`은 MySQL에 특화된 설정을 할 수 있는 컨테이너 객체를 사용하기 위해서 불러오는 것이다. 
+여기서 `org.testcontainers:mysql`은 MySQL에 특화된 설정을 할 수 있는 컨테이너 객체를 사용하기 위해서 불러오는 것이다.
 
-이것이 없으면 `GenericContainer<?>`라는 객체로 컨테이너를 만들어서 직접 설정해야 하는 것 같았다. 왠만한 것들은 모두 지원 되니 필요한 것은 Maven Repository에서 찾아보도록 하자. 
+이것이 없으면 `GenericContainer<?>`라는 객체로 컨테이너를 만들어서 직접 설정해야 하는 것 같았다. 왠만한 것들은 모두 지원 되니 필요한 것은 Maven Repository에서 찾아보도록 하자.
 
 코드는 임베디드 라이브러리 때 작성했던 비즈니스 코드와 테스트 코드를 그대로 사용할 것이다.
 
@@ -111,18 +111,16 @@ public interface ContainersForIntegrationTest {
 ```
 
 > 컨테이너 설정 메서드에 `withReuse(boolean)` 이 존재하는데, 해당 메서드에 `true`를 전달하게 되면 다음 테스트 실행시에도 컨테이너가 재사용되어 컨테이너 삭제 및 생성에 소모되는 비용을 줄일 수 있다.
-> 
-> 
+>
 > 모든 컨테이너가 재사용되도록 만들고자 한다면 **src/test/resources/testcontainers.properties**에 다음과 같이 설정하면 된다.
-> 
+>
 > ```
 > testcontainers.reuse.enable=true
 > ```
-> 
+>
 > 공식 문서에 따르면 이는 실험적인 기능이므로 이런 게 있다 정도의 참고만 하도록 하자.
-> 
 
-`@Container` 어노테이션은 테스트의 시작과 끝에 선언하는 `start()`와 `stop()` 메서드를 자동으로 처리해주는 어노테이션이다. 
+`@Container` 어노테이션은 테스트의 시작과 끝에 선언하는 `start()`와 `stop()` 메서드를 자동으로 처리해주는 어노테이션이다.
 
 해당 어노테이션이 선언되어 있지 않다면 테스트를 진행하는 클래스에 `@BeforeAll` 과 `@AfterAll` 을 활용하여 다음과 같이 컨테이너의 시작과 끝을 호출해야 한다.
 
@@ -130,39 +128,39 @@ public interface ContainersForIntegrationTest {
 
 ```java
 class Example {
-  static MySQLContainer<?> mysqlContainer = new MySQLContainer<>("mysql:8.4.5")
-          .withUsername("root")
-          .withPassword("1234")
-          .withDatabaseName("testdb");
+    static MySQLContainer<?> mysqlContainer = new MySQLContainer<>("mysql:8.4.5")
+            .withUsername("root")
+            .withPassword("1234")
+            .withDatabaseName("testdb");
 
-  @BeforeAll
-  static void beforeAll() {
-    mysqlContainer.start();
-  }
+    @BeforeAll
+    static void beforeAll() {
+        mysqlContainer.start();
+    }
 
-  @AfterAll
-  static void afterAll() {
-    mysqlContainer.stop();
-  }
+    @AfterAll
+    static void afterAll() {
+        mysqlContainer.stop();
+    }
 }
 ```
 
-`@ServiceConnection` 어노테이션은 컨테이너의 사전 설정과 연결에 대한 설정을 자동화 해준다. 해당 어노테이션을 명시하지 않는다면 `@DynamicPropertySource` 어노테이션으로 다음과 같은 설정을 개발자가 직접 작성해야 한다. 
+`@ServiceConnection` 어노테이션은 컨테이너의 사전 설정과 연결에 대한 설정을 자동화 해준다. 해당 어노테이션을 명시하지 않는다면 `@DynamicPropertySource` 어노테이션으로 다음과 같은 설정을 개발자가 직접 작성해야 한다.
 
 ```java
 class Example {
-	@Container
-  static MySQLContainer<?> mysqlContainer = new MySQLContainer<>("mysql:8.4.5")
-          .withUsername("root")
-          .withPassword("1234")
-          .withDatabaseName("testdb");
-          
-		@DynamicPropertySource
-		static void configureProperties(DynamicPropertyRegistry registry) {
-		    registry.add("spring.datasource.url",      mysqlContainer::getJdbcUrl);
-		    registry.add("spring.datasource.username", mysqlContainer::getUsername);
-		    registry.add("spring.datasource.password", mysqlContainer::getPassword);
-		}
+    @Container
+    static MySQLContainer<?> mysqlContainer = new MySQLContainer<>("mysql:8.4.5")
+            .withUsername("root")
+            .withPassword("1234")
+            .withDatabaseName("testdb");
+
+    @DynamicPropertySource
+    static void configureProperties(DynamicPropertyRegistry registry) {
+        registry.add("spring.datasource.url",      mysqlContainer::getJdbcUrl);
+        registry.add("spring.datasource.username", mysqlContainer::getUsername);
+        registry.add("spring.datasource.password", mysqlContainer::getPassword);
+    }
 }
 ```
 
@@ -232,7 +230,6 @@ class TestContainersTest {
                 .nickname("tester")
                 .build();
     }
-
 }
 ```
 
@@ -240,7 +237,7 @@ class TestContainersTest {
 
 ## 추상 클래스로 컨테이너 설정하기
 
-Redis, Kafka등 여러 인프라들이 함께 사용되기 시작하면 마찬가지로 테스트에 필요한 시간이 많이 필요해질 것이다. 이를 따로 따로 설정하여 환경이 미묘하게 달라지면 컨텍스트 초기화 횟수는 늘어나게 될 것이고 그에 따라서 테스트를 위한 컨테이너의 생성 및 삭제가 빈번하게 일어나 결과적으로 테스트를 수행하는 데 상당한 시간이 소요될 것이다. 
+Redis, Kafka등 여러 인프라들이 함께 사용되기 시작하면 마찬가지로 테스트에 필요한 시간이 많이 필요해질 것이다. 이를 따로 따로 설정하여 환경이 미묘하게 달라지면 컨텍스트 초기화 횟수는 늘어나게 될 것이고 그에 따라서 테스트를 위한 컨테이너의 생성 및 삭제가 빈번하게 일어나 결과적으로 테스트를 수행하는 데 상당한 시간이 소요될 것이다.
 
 따라서 이를 추상 클래스 하나로 만들어 통합 테스트에 필요한 모든 컨테이너를 로드하고 공통된 컨텍스트에서 사용하도록 유도하면 어떨까 생각하였다.
 
@@ -261,7 +258,7 @@ class TestContainersTest extends IntegrationTestContainers {...}
 
 ---
 
-TestContainers를 활용하는 방법을 알아보았다. 사실 저번처럼 모든 인프라들을 하나하나 해보면 어떨까 싶었지만 도커 컨테이너라서 몇몇 설정만 잘해주면 실제 테스트 코드는 이전 포스팅과 차이가 없거나 오히려 더 간단하다고 생각하기 때문에 MySQL만 예시로 테스트해보았다. 
+TestContainers를 활용하는 방법을 알아보았다. 사실 저번처럼 모든 인프라들을 하나하나 해보면 어떨까 싶었지만 도커 컨테이너라서 몇몇 설정만 잘해주면 실제 테스트 코드는 이전 포스팅과 차이가 없거나 오히려 더 간단하다고 생각하기 때문에 MySQL만 예시로 테스트해보았다.
 
 # 참고자료
 

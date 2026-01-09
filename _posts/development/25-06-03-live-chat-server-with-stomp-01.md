@@ -3,11 +3,12 @@ title: 실시간 채팅 개발 - STOMP 이해와 설정
 
 categories:
   - Spring
+  - WebSocket
 
 toc: true
 toc_sticky: true
 published: true
- 
+
 date: 2025-06-03
 last_modified_at: 2025-06-03
 ---
@@ -52,7 +53,7 @@ STOMP에서 클라이언트와 서버 간 통신은 여러 줄로 구성된 프�
 
 # 스프링에서 채팅 서버 구현하기
 
-본론에 앞서, 채팅 구현에 대한 테스트는 다음 [페이지](https://jiangxy.github.io/websocket-debug-tool/)에서 진행할 것이다. 간단하게 웹 소켓을 테스트 할 수 있는 사이트이다. 스프링에서 STOMP를 활용하여 채팅 서버를 구현하는 방법은 매우 간단하다. 우선 다음 의존성이 필요하다. 
+본론에 앞서, 채팅 구현에 대한 테스트는 다음 [페이지](https://jiangxy.github.io/websocket-debug-tool/)에서 진행할 것이다. 간단하게 웹 소켓을 테스트 할 수 있는 사이트이다. 스프링에서 STOMP를 활용하여 채팅 서버를 구현하는 방법은 매우 간단하다. 우선 다음 의존성이 필요하다.
 
 ```groovy
 implementation 'org.springframework.boot:spring-boot-starter-websocket'
@@ -70,7 +71,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/ws").setAllowedOrigins("*");
     }
-    
+
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
         // 토픽 구독을 위한 접두사
@@ -92,13 +93,13 @@ public void registerStompEndpoints(StompEndpointRegistry registry) {
 }
 ```
 
-이는 브라우저가 WebSocket을 지원하지 않는 경우, 대신 HTTP 기반의 통신 방식(Long Polling, XHR Streaming 등)을 자동으로 사용하는 SockJS 에뮬레이션 기능을 활성화하는 옵션이라고 한다. 
+이는 브라우저가 WebSocket을 지원하지 않는 경우, 대신 HTTP 기반의 통신 방식(Long Polling, XHR Streaming 등)을 자동으로 사용하는 SockJS 에뮬레이션 기능을 활성화하는 옵션이라고 한다.
 
 즉 해당 옵션이 있는 경우, WebSocket을 지원하지 않는 브라우저에서도 SockJS가 제공하는 대체 방식(Long Polling 등)을 통해 WebSocket 연결과 유사한 통신이 가능하다고 한다.
 
 # 스프링에서 채팅 서버 구현하기
 
-본론에 앞서, 채팅 구현에 대한 테스트는 다음 [페이지](https://jiangxy.github.io/websocket-debug-tool/)에서 진행할 것이다. 간단하게 웹 소켓을 테스트 할 수 있는 사이트이다. 스프링에서 STOMP를 활용하여 채팅 서버를 구현하는 방법은 매우 간단하다. 우선 다음 의존성이 필요하다. 
+본론에 앞서, 채팅 구현에 대한 테스트는 다음 [페이지](https://jiangxy.github.io/websocket-debug-tool/)에서 진행할 것이다. 간단하게 웹 소켓을 테스트 할 수 있는 사이트이다. 스프링에서 STOMP를 활용하여 채팅 서버를 구현하는 방법은 매우 간단하다. 우선 다음 의존성이 필요하다.
 
 ```groovy
 implementation 'org.springframework.boot:spring-boot-starter-websocket'
@@ -116,10 +117,10 @@ public class StompConfig implements WebSocketMessageBrokerConfigurer {
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/ws").setAllowedOrigins("*");
     }
-    
+
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
-		    // 토픽 구독을 위한 접두사
+        // 토픽 구독을 위한 접두사
         registry.enableSimpleBroker("/topic", "/queue");
         // 어플리케이션에 요청을 보낼 때 작성해야 하는 접두사
         registry.setApplicationDestinationPrefixes("/app");
@@ -131,7 +132,7 @@ public class StompConfig implements WebSocketMessageBrokerConfigurer {
 
 ## 채팅 구현
 
-채팅도 매우 간단하다. 
+채팅도 매우 간단하다.
 
 ```java
 public record MessageRequest(
@@ -164,8 +165,8 @@ public class StompController {
     ) {
         MessageRequest request = message.getPayload();
         return MessageResponse.of(
-                request.userId(), 
-                request.message(), 
+                request.userId(),
+                request.message(),
                 LocalDateTime.now()
         );
     }
@@ -178,7 +179,7 @@ public class StompController {
 
 ### 특정 토픽에만 브로드 캐스트 하기
 
-위의 방식을 사용하면 고정된 토픽에만 브로드 캐스팅이 가능하다. 하지만 채팅방이 여러 개인 경우에는 채팅방의 ID같은 고유 값을 통해서 특정 토픽에만 브로드 캐스트 하는 방법이 유용할 수 있다. 
+위의 방식을 사용하면 고정된 토픽에만 브로드 캐스팅이 가능하다. 하지만 채팅방이 여러 개인 경우에는 채팅방의 ID같은 고유 값을 통해서 특정 토픽에만 브로드 캐스트 하는 방법이 유용할 수 있다.
 
 이런 경우에는 `@SendTo`를 사용하지 않고 `SimpMessagingTemplate`을 사용하여 특정 토픽에만 메시지를 발행하도록 처리해야 한다.
 
@@ -187,6 +188,7 @@ public class StompController {
 @Controller
 @RequiredArgsConstructor
 public class StompController {
+
     private final SimpMessagingTemplate messagingTemplate;
 
     @MessageMapping("/chat.{chatroom-id}")
@@ -220,7 +222,7 @@ REST에서는 주로 `/`를 이용해 리소스를 구분한다. 물론 STOMP에
 이제 테스트를 진행해보자. 각각 일반 창과 시크릿 창으로 테스트 사이트에 접속하여 `ws://localhost:8080/ws`으로 소켓 연결을 하였고, 하나는 `/app/chat.1`에 발행을, 다른 하나는 `/topic/chat.1`을 구독한 상태에서 다음 메시지를 전송해보았다.
 
 ```json
-{"userId": 1, "message": "Hello"}
+{ "userId": 1, "message": "Hello" }
 ```
 
 다음 로그를 확인할 수 있다.
@@ -228,8 +230,8 @@ REST에서는 주로 `/`를 이용해 리소스를 구분한다. 물론 STOMP에
 **발행자**
 
 ```
-$ _INFO_:Connect STOMP server success, url = ws://localhost:8080/ws, connectHeader = 
-$ _INFO_:send STOMP message, destination = /app/chat.1, content = {"userId": 1, "message": "Hello"}, header = 
+$ _INFO_:Connect STOMP server success, url = ws://localhost:8080/ws, connectHeader =
+$ _INFO_:send STOMP message, destination = /app/chat.1, content = {"userId": 1, "message": "Hello"}, header =
 ```
 
 **구독자**
@@ -250,17 +252,17 @@ content-length:65
 서버에서 헤더와 메시지에 대한 로그는 다음과 같이 출력되었다.
 
 ```
-headers: {simpMessageType=MESSAGE, stompCommand=SEND, 
-nativeHeaders={destination=[/app/chat.1], content-length=[33]}, 
-DestinationVariableMethodArgumentResolver.templateVariables={chatroom-id=1}, 
-simpSessionAttributes={}, simpHeartbeat=[J@754a838, lookupDestination=/chat.1, 
+headers: {simpMessageType=MESSAGE, stompCommand=SEND,
+nativeHeaders={destination=[/app/chat.1], content-length=[33]},
+DestinationVariableMethodArgumentResolver.templateVariables={chatroom-id=1},
+simpSessionAttributes={}, simpHeartbeat=[J@754a838, lookupDestination=/chat.1,
 simpSessionId=b64bd69d-4f12-d14c-8494-b9b12d698b5c, simpDestination=/app/chat.1}
 
-message: GenericMessage [payload=MessageRequest[userId=1, message=Hello], 
-headers={simpMessageType=MESSAGE, stompCommand=SEND, 
-nativeHeaders={destination=[/app/chat.1], content-length=[33]}, 
-DestinationVariableMethodArgumentResolver.templateVariables={chatroom-id=1}, 
-simpSessionAttributes={}, simpHeartbeat=[J@754a838, lookupDestination=/chat.1, 
+message: GenericMessage [payload=MessageRequest[userId=1, message=Hello],
+headers={simpMessageType=MESSAGE, stompCommand=SEND,
+nativeHeaders={destination=[/app/chat.1], content-length=[33]},
+DestinationVariableMethodArgumentResolver.templateVariables={chatroom-id=1},
+simpSessionAttributes={}, simpHeartbeat=[J@754a838, lookupDestination=/chat.1,
 simpSessionId=b64bd69d-4f12-d14c-8494-b9b12d698b5c, simpDestination=/app/chat.1}]
 ```
 
@@ -268,9 +270,9 @@ simpSessionId=b64bd69d-4f12-d14c-8494-b9b12d698b5c, simpDestination=/app/chat.1}
 
 ---
 
-이것으로 실시간 채팅 기능에 대한 구현이 완료되었다. 생각보다 코드의 양도 많지 않고, 어려운 것도 없었다. 아마 그만큼 스프링이 내부적으로 어려운 부분은 잘 처리해주기 때문일 것이다. 
+이것으로 실시간 채팅 기능에 대한 구현이 완료되었다. 생각보다 코드의 양도 많지 않고, 어려운 것도 없었다. 아마 그만큼 스프링이 내부적으로 어려운 부분은 잘 처리해주기 때문일 것이다.
 
-참고로 STOMP를 학습하기 위해 관련 무료 강의를 수강했는데 1시간이라는 짧은 시간에 기본적인 구현에 필요한 것들은 모두 알려주는 강의인 것 같아 공유하도록 하겠다. 
+참고로 STOMP를 학습하기 위해 관련 무료 강의를 수강했는데 1시간이라는 짧은 시간에 기본적인 구현에 필요한 것들은 모두 알려주는 강의인 것 같아 공유하도록 하겠다.
 
 # 참고 자료
 

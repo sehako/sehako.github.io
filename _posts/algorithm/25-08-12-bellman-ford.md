@@ -7,7 +7,7 @@ categories:
 toc: true
 toc_sticky: true
 published: true
- 
+
 date: 2025-08-12
 last_modified_at: 2025-08-12
 ---
@@ -20,10 +20,10 @@ last_modified_at: 2025-08-12
 
 1. 모든 정점까지의 거리를 무한대로 초기화하되, 출발 정점의 초기값을 0으로 설정한다.
 2. 정점의 개수(V) - 1 번 만큼 반복을 진행한다.
-    1. 모든 간선을 순회하며 거리를 갱신
-    2. 기존 값보다 더 작은 값으로 업데이트 된다면 거리를 갱신
+   1. 모든 간선을 순회하며 거리를 갱신
+   2. 기존 값보다 더 작은 값으로 업데이트 된다면 거리를 갱신
 3. 음의 사이클을 확인하기 위해서 한 번 더 거리를 갱신(V번)하여 업데이트 되는 지 확인한다.
-    1. 업데이트 된다면 음의 사이클이 존재하는 것
+   1. 업데이트 된다면 음의 사이클이 존재하는 것
 4. 최종적으로 구한 경로들이 출발점에서의 최단 경로가 된다.
 
 하나씩 살펴보도록 하자.
@@ -64,21 +64,21 @@ N개의 도시가 있다. 그리고 한 도시에서 출발하여 다른 도시�
 public static void main(String[] args) throws IOException {
 	BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 	StringTokenizer st;
-	
+
 	st = new StringTokenizer(br.readLine(), " ");
 	int N = stoi(st.nextToken());
 	int M = stoi(st.nextToken());
-	
+
 	// 출발지, 도착지, 소요 시간을 주어진 간선의 개수만큼 저장하는 2차원 배열
 	int[][] graph = new int[M][3];
 	int from, to, weight;
 	for (int r = 0; r < M; r++) {
 		st = new StringTokenizer(br.readLine(), " ");
-		
+
 		from = stoi(st.nextToken());
 		to = stoi(st.nextToken());
 		weight = stoi(st.nextToken());
-		
+
 		graph[r][0] = from;
 		graph[r][1] = to;
 		graph[r][2] = weight;
@@ -94,48 +94,48 @@ private static int stoi(String number) {
 
 ## 최단 경로 구하기
 
-벨만-포드 알고리즘을 구현할 차례다. 
+벨만-포드 알고리즘을 구현할 차례다.
 
 ```java
 private static long[] getDist(int N, int M, int start, int[][] graph) {
 	// 모든 정점의 최단 거리를 구하기 위한 배열 생성
 	long[] dist = new long[N + 1];
-	
+
 	// 전체 배열을 INF로 초기화
 	Arrays.fill(dist, INF);
-	
+
 	// 벨만-포드 알고리즘에 따라서 시작 정점의 최단 거리는 0으로 설정
 	dist[start] = 0;
-	
+
 	for (int i = 0; i < N - 1; i++) {
 		for (int r = 0; r < M; r++) {
 			int[] edge = graph[r];
-			
+
 			// 시작 정점의 최소 가중치 배열이 무한대면 아직 방문하지 않은 정점이란 의미
 			if (dist[edge[0]] == INF) continue;
 			// 목적지 정점의 최소 소요 시간보다 시작 정점의 최소 소요 시간이 더 많은 경우
 			if (dist[edge[1]] <= dist[edge[0]] + edge[2]) continue;
-			
+
 			// 최소 소요 시간 갱신
 			dist[edge[1]] = dist[edge[0]] + edge[2];
-			
+
 			// 시작 정점의 최소 소요시간이 무한대인지만 확인 후 다음과 같이 최소값 갱신도 가능
 			// dist[edge[1]] = Math.min(dist[edge[1]], dist[edge[0]] + edge[2]);
 		}
 	}
-	
+
 	// 음수 사이클 확인
 	for (int i = 0; i < M; i++) {
 		int[] edge = graph[i];
-		
+
 		if (dist[edge[0]] == INF) continue;
 		if (dist[edge[1]] <= dist[edge[0]] + edge[2]) continue;
-		
+
 		// 음수 사이클이 확인되면 null을 리턴
 		// 최단 경로를 도출할 수 없다는 의미
 		return null;
 	}
-	
+
 	// 음수 사이클이 확인되지 않으면 최단 경로 반환
 	return dist;
 }
@@ -144,7 +144,6 @@ private static long[] getDist(int N, int M, int start, int[][] graph) {
 `boolean`을 반환하는 식으로 음의 사이클을 확인하는 코드가 많았지만, 나는 `null`을 활용하면 좀 더 깔끔하지 않을까 해서 그렇게 구현해봤다. 최단 경로를 `long` 배열로 설정한 이유는 다음과 같다.
 
 > 500개 vertex, 6,000개의 edge가 -10,000 일 경우 최솟값 계산이기에 -30억이 나올 수 있습니다. 양수로는 최대 60,000,000까지만 가능해서 INF값 설정을 작게 잡아도 되지만, dist를 저장하는 배열은 long long으로 선언해야 INT 음수 최댓값 범위 바깥을 커버할 수 있습니다.
-> 
 
 ## 최소 경로 출력
 
@@ -175,33 +174,33 @@ import java.io.*;
 
 public class BOJ_11657 {
 	private static long INF = 600_000_001;
-	
+
 	public static void main(String[] args) throws IOException {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		StringTokenizer st;
-		
+
 		st = new StringTokenizer(br.readLine(), " ");
 		int N = stoi(st.nextToken());
 		int M = stoi(st.nextToken());
-		
+
 		int[][] graph = new int[M][3];
 		int from, to, weight;
 		for (int r = 0; r < M; r++) {
 			st = new StringTokenizer(br.readLine(), " ");
-			
+
 			from = stoi(st.nextToken());
 			to = stoi(st.nextToken());
 			weight = stoi(st.nextToken());
-			
+
 			graph[r][0] = from;
 			graph[r][1] = to;
 			graph[r][2] = weight;
 		}
-		
-		
+
+
 		StringBuilder sb = new StringBuilder();
 		long[] result = getDist(N, M, 1, graph);
-		
+
 		if (result == null) sb.append(-1);
 		else {
 			for (int i = 2; i <= N; i++) {
@@ -209,48 +208,48 @@ public class BOJ_11657 {
 				sb.append(dist == INF ? -1 : dist).append('\n');
 			}
 		}
-		
+
 		System.out.println(sb);
 	}
-	
+
 	private static long[] getDist(int N, int M, int start, int[][] graph) {
 		// 모든 정점의 최단 거리를 구하기 위한 배열 생성
 		long[] dist = new long[N + 1];
 		// 벨만-포드 알고리즘에 따라서 시작 정점의 최단 거리는 0으로 설정
 		Arrays.fill(dist, INF);
-		
+
 		// 출발지 초기화
 		dist[start] = 0;
-		
+
 		for (int i = 0; i < N - 1; i++) {
 			for (int r = 0; r < M; r++) {
 				int[] edge = graph[r];
-				
+
 				// 시작 정점의 최소 가중치 배열이 무한대면 아직 방문하지 않은 정점이란 의미
 				if (dist[edge[0]] == INF) continue;
 				// 목적지 정점의 최소 소요 시간보다 시작 정점의 최소 소요 시간이 더 많은 경우
 				if (dist[edge[1]] <= dist[edge[0]] + edge[2]) continue;
-				
+
 				// 최소 소요 시간 갱신
 				dist[edge[1]] = dist[edge[0]] + edge[2];
-				
+
 				// 시작 정점의 최소 소요시간이 무한대인지만 확인 후 다음과 같이 최소값 갱신도 가능
 				// dist[edge[1]] = Math.min(dist[edge[1]], dist[edge[0]] + edge[2]);
 			}
 		}
-		
+
 		// 음수 사이클 확인
 		for (int i = 0; i < M; i++) {
 			int[] edge = graph[i];
-			
+
 			if (dist[edge[0]] == INF) continue;
 			if (dist[edge[1]] <= dist[edge[0]] + edge[2]) continue;
-			
+
 			// 음수 사이클이 확인되면 null을 리턴
 			// 최단 경로를 도출할 수 없다는 의미
 			return null;
 		}
-		
+
 		// 음수 사이클이 확인되지 않으면 최단 경로 반환
 		return dist;
 	}
@@ -258,7 +257,6 @@ public class BOJ_11657 {
 	private static int stoi(String number) {
 		return Integer.parseInt(number);
 	}
-
 }
 ```
 

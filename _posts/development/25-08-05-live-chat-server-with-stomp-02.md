@@ -3,11 +3,12 @@ title: 실시간 채팅 개발 - 인증 / 인가 처리
 
 categories:
   - Spring
+  - WebSocket
 
 toc: true
 toc_sticky: true
 published: true
- 
+
 date: 2025-08-05
 last_modified_at: 2025-08-05
 ---
@@ -19,20 +20,16 @@ STOMP를 활용하여 간단한 채팅 애플리케이션을 손쉽게 구축할
 만약 전통적인 스프링 웹 애플리케이션(뷰 까지 한 번에 보여주는 형태)이라면, 추가적인 인증 / 인가 처리가 필요 없다고 한다. 이는 스프링의 웹 소켓의 인증 부분에 대한 공식 문서를 살펴보면 알 수 있다.
 
 > STOMP over WebSocket 세션은 HTTP 요청(웹소켓 핸드셰이크 또는 SockJS HTTP 요청)으로 시작하며, 대부분의 웹 애플리케이션은 이미 Spring Security 등을 통해 HTTP 요청 단계에서 사용자가 인증되어 있다. 이때 인증 정보는 HTTP 세션에 저장되고, Spring은 이를 WebSocket 또는 SockJS 세션과 자동으로 연계해 STOMP 메시지의 `user` 헤더로 전달한다.
-> 
-> 
+>
 > 따라서 일반적인 웹 애플리케이션은 WebSocket을 위해 별도의 인증 로직을 추가할 필요가 없으며, STOMP의 `CONNECT` 프레임에 존재하는 `login`과 `passcode` 헤더는 TCP 기반 STOMP에서만 유효하고 WebSocket 기반 STOMP에서는 Spring이 이를 무시하고 HTTP 수준 인증만 신뢰한다.
-> 
 
 # 토큰 인증 처리 구현
 
 JWT 인증 기반의 애플리케이션이라면 이야기가 조금 달라진다. 스프링 웹 소켓 공식 문서에서 토큰 인증 부분에 대해서 다음과 같이 작성되어 있다.
 
 > 동시에, 이러한 쿠키 기반 세션이 항상 정답은 아니다. RFC 6455의 웹소켓 프로토콜에 따르면, 웹 소켓 핸드셰이크 중에 서버가 클라이언트를 인증하는 특정 방법을 규정하지 않는다. 브라우저 클라이언트는 HTTP 표준 인증 헤더 또는 쿠키만 사용할 수 있으며, 사용자 지정 헤더를 제공할 수 없다.
-> 
-> 
+>
 > 마찬가지로 클라이언트(SockJS)는 전송 요청과 함께 HTTP 헤더를 전송하는 방법을 제공하지 않고, 토큰 전송을 위한 쿼리 파라미터를 사용할 수 있지만 토큰이 서버 로그에 URL과 함께 기록될 수 있는 문제를 가지고 있다.
-> 
 
 따라서 토큰 기반 인증 처리를 위해서 STOMP 연결을 할 때(CONNECT 요청) 헤더에 인증 정보를 담아서 보내고 서버에서는 `ChannelInterceptor` 를 통해 인증을 처리하여 클라이언트를 식별하도록 할 수 있다고 한다.
 
@@ -70,8 +67,8 @@ public class WebSocketConfiguration implements WebSocketMessageBrokerConfigurer 
 @Configuration
 @EnableWebSocketMessageBroker
 public class StompConfig implements WebSocketMessageBrokerConfigurer {
-		// 연결 설정 부분 생략
-		
+    // 연결 설정 부분 생략
+
     @Override
     public void configureClientInboundChannel(ChannelRegistration registration) {
         registration.interceptors(new ChannelInterceptor() {
@@ -91,18 +88,18 @@ public class StompConfig implements WebSocketMessageBrokerConfigurer {
 
 `StompHeaderAccessor` 객체를 확인하기 위해서 로그를 작성해봤다. 서버에 연결하여 로그를 확인해보도록 하자.
 
-``` 
-$ _INFO_:Connect STOMP server success, 
+```
+$ _INFO_:Connect STOMP server success,
 url = ws://localhost:8080/ws, connectHeader = {"Authorization": "TOKEN"}
 ```
 
 `connectHeader`에서 JSON의 키-값 구조로 토큰을 보냈다는 것을 확인할 수 있다. 애플리케이션에서는 다음과 같은 로그를 출력하였다.
 
 ```
-accessor: StompHeaderAccessor 
-[headers={simpMessageType=CONNECT, stompCommand=CONNECT, 
-nativeHeaders={Authorization=[TOKEN], accept-version=[1.1,1.0], 
-heart-beat=[10000,10000]}, simpSessionAttributes={}, 
+accessor: StompHeaderAccessor
+[headers={simpMessageType=CONNECT, stompCommand=CONNECT,
+nativeHeaders={Authorization=[TOKEN], accept-version=[1.1,1.0],
+heart-beat=[10000,10000]}, simpSessionAttributes={},
 simpHeartbeat=[J@566f4bc8, simpSessionId=26f313e8-87b7-e0b0-04cf-765c038e6067}]
 ```
 
@@ -139,7 +136,7 @@ private String getToken(StompHeaderAccessor accessor) {
 우선 EXAMPLE_TOKEN을 전달하면 정상적으로 연결이 진행되는 것을 확인할 수 있었다.
 
 ```java
-$ _INFO_:Connect STOMP server success, 
+$ _INFO_:Connect STOMP server success,
 url = ws://localhost:8080/ws, connectHeader = {"Authorization": "EXAMPLE_TOKEN"}
 ```
 
@@ -227,7 +224,7 @@ public class StompErrorHandler extends StompSubProtocolErrorHandler {
 }
 ```
 
-이후 `StompConfig`에 다음과 같이 작성한 `StompErrorHandler`를 등록하였다. 
+이후 `StompConfig`에 다음과 같이 작성한 `StompErrorHandler`를 등록하였다.
 
 ```java
 @Slf4j
@@ -241,9 +238,9 @@ public class StompConfig implements WebSocketMessageBrokerConfigurer {
 				// 에러 핸들러 등록
         registry.setErrorHandler(new StompErrorHandler());
     }
-    
+
     // ...
-    
+
 }
 ```
 
@@ -262,7 +259,6 @@ content-length:36
 공식 문서에서 스프링 시큐리티와 함께 `ChannelInterceptor`를 사용하는 것에 대한 주의 사항을 짧게 적어놓았다.
 
 > 스프링 시큐리티의 메시지 권한 부여 기능을 사용할 때는 `ChannelInterceptor` 구성이 Spring Security보다 우선적으로 처리되어야 한다. 이를 위해서는 `@Order(Ordered.HIGHEST_PRECEDENCE + 99)`로 표시된 `WebSocketMessageBrokerConfigurer` 구현체에 커스텀 인터셉터를 선언해야 한다.
-> 
 
 따라서 스프링 시큐리티를 사용하는 경우에 `StompConfig`에 다음 어노테이션을 선언하도록 하자.
 
@@ -272,7 +268,7 @@ content-length:36
 @EnableWebSocketMessageBroker
 @Order(Ordered.HIGHEST_PRECEDENCE + 99)
 public class StompAuthConfig implements WebSocketMessageBrokerConfigurer {
-		// ...
+    // ...
 }
 ```
 

@@ -7,7 +7,7 @@ categories:
 toc: true
 toc_sticky: true
 published: true
- 
+
 date: 2025-07-21
 last_modified_at: 2025-07-21
 ---
@@ -72,14 +72,13 @@ spring:
     database-platform: org.hibernate.dialect.H2Dialect
     hibernate:
       ddl-auto: create-drop
-
 ```
 
 **비즈니스 로직 작성**
 
 테스트를 위해 다음과 같은 엔티티와 레포지토리를 만들었다.
 
-```groovy
+```java
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -103,7 +102,7 @@ public class Member {
 
 ```
 
-```groovy
+```java
 @Repository
 public interface MemberRepository extends JpaRepository<Member, Integer> {
 }
@@ -114,7 +113,7 @@ public interface MemberRepository extends JpaRepository<Member, Integer> {
 
 이제 테스트 코드를 작성해서 제대로 테스트가 이루어지는지 살펴보도록 하자.
 
-```groovy
+```java
 @SpringBootTest
 @Transactional
 @ActiveProfiles("test")
@@ -173,13 +172,12 @@ testImplementation 'com.github.codemonstur:embedded-redis:1.4.3'
 
 application-test.yml 파일에 다음과 같은 설정 정보를 추가하였다.
 
-```java
+```yaml
 spring:
   data:
     redis:
       host: localhost
       port: 6379
-
 ```
 
 이후 각 빈의 생명주기에 따라서 start()와 stop()을 선언하기만 하면 된다. 이때 앞서 작성한 포트 번호와 여기서 생성할 때 전달하는 숫자가 같아야 테스트가 성공적으로 진행된다.
@@ -234,7 +232,6 @@ public class RedisTestConfiguration {
         redisServer.stop();
     }
 }
-
 ```
 
 테스트 코드는 다음과 같이 작성하였고, 통과되는 것을 확인하였다.
@@ -265,7 +262,6 @@ class SessionManagerTest {
         Assertions.assertThat(sessionMember).isEqualTo(loginMember.getNickname());
     }
 }
-
 ```
 
 한 가지 눈여겨 볼 만한 것은 `@SpringBootTest`의 `classes` 속성에 앞서 작성했던 `RedisTestConfiguration` 클래스를 전달했다는 것이다.
@@ -288,7 +284,7 @@ implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
 
 사용자가 게시판에 3개의 글을 작성했다고 가정하고 다음과 같은 도큐먼트를 생성하였다.
 
-```groovy
+```java
 @Document
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -310,11 +306,11 @@ public class Article {
 
 ```
 
-## **테스트 코드 작성**
+## 테스트 코드 작성
 
 테스트 코드 작성을 할 때는 `@SpringBootTest`의 `properties` 속성에다 임베디드 MongoDB의 버전을 명시해줘야 한다.
 
-```groovy
+```java
 @ActiveProfiles("test")
 @SpringBootTest(properties = "de.flapdoodle.mongodb.embedded.version=5.0.5")
 class ArticleTest {
@@ -368,7 +364,6 @@ class ArticleTest {
 ```groovy
 implementation 'org.springframework.kafka:spring-kafka'
 testImplementation 'org.springframework.kafka:spring-kafka-test'
-
 ```
 
 spring-kafka-test는 임베디드 카프카를 지원하는 라이브러리다. 이를 활용하여 테스트 코드를 작성해볼 것이다.
@@ -385,7 +380,6 @@ public record ChatMessage(
         String message
 ) {
 }
-
 ```
 
 위 객체를 사용하는 생산자와 소비자를 다음과 같이 설정하였다.
@@ -415,7 +409,6 @@ public class KafkaProducerConfig {
         return new KafkaTemplate<>(videoEditProducerFactory());
     }
 }
-
 ```
 
 ```java
@@ -451,7 +444,6 @@ public class KafkaConsumerConfig {
         return factory;
     }
 }
-
 ```
 
 **비즈니스 로직 작성**
@@ -468,17 +460,15 @@ public class ChatProducer {
         kafkaTemplate.send(topic, chatMessage);
     }
 }
-
 ```
 
 ## 테스트 코드 작성
 
 테스트 코드 작성 이전에 application-test.yml파일에 다음 설정을 추가하도록 하자.
 
-```java
+```yaml
 kafka:
   topic: chat-test
-
 ```
 
 **발행 테스트**
@@ -492,8 +482,8 @@ kafka:
 @EmbeddedKafka(topics = "${kafka.topic}", partitions = 1)
 class ChatProducerTest {
 
-		@Value("${kafka.topic}")
-		private String topic;
+    @Value("${kafka.topic}")
+    private String topic;
 
     @Autowired
     private ChatProducer chatProducer;
@@ -550,7 +540,6 @@ class ChatProducerTest {
         assertThat(record.value().message()).isEqualTo("Hello, World");
     }
 }
-
 ```
 
 `@SpringBootTest`의 속성값은 무시하도록 하자. 이 테스트를 통해 토픽 발행이 제대로 진행되는 것을 확인할 수 있다. 참고로 IntelliJ에서 테스트를 진행할 경우 `EmbeddedKafkaBroker`라는 빈이 없다는 오류가 발생하는데, 그냥 무시해도 상관 없다.
@@ -592,7 +581,6 @@ public class ListenerInvocationAspect {
         return latch.await(timeout, unit);
     }
 }
-
 ```
 
 ```java
@@ -604,7 +592,6 @@ public class ChatConsumerTestConfig {
         return new ListenerInvocationAspect();
     }
 }
-
 ```
 
 테스트 코드는 다음과 같다.
@@ -641,7 +628,6 @@ class ChatProducerTest {
         );
     }
 }
-
 ```
 
 AOP를 사용한 이유는 내가 참고한 블로그에서는 컨슈머 코드에 CountDownLatch를 삽입했기 때문이다. 이런 방식은 비즈니스 코드에 테스트가 침범한다고 생각되어서 AOP를 통해서 분리하였다.
@@ -663,7 +649,6 @@ AOP를 사용한 이유는 내가 참고한 블로그에서는 컨슈머 코드�
 @Transactional
 public abstract class IntegrationTestEnvironment {
 }
-
 ```
 
 참고로 `TestApplication.class` 는 현재 이 블로그를 진행하기 위해서 만든 프로젝트의 메인 클래스이다.
@@ -677,7 +662,6 @@ public class TestApplication {
 	}
 
 }
-
 ```
 
 이렇게 통합한 환경을 상속받고, 세부 클래스에서 각각 별도로 필요한 설정을 하는 식으로 하면 어떨까 생각한다.
@@ -685,7 +669,6 @@ public class TestApplication {
 ```java
 @DirtiesContext
 class ChatProducerTest extends IntegrationTestEnvironment {...}
-
 ```
 
 ---

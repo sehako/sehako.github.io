@@ -3,11 +3,12 @@ title: 실시간 채팅 개발 - 이벤트와 읽음 처리
 
 categories:
   - Spring
+  - WebSocket
 
 toc: true
 toc_sticky: true
 published: true
- 
+
 date: 2025-08-30
 last_modified_at: 2025-08-30
 ---
@@ -110,12 +111,10 @@ destination: /user/queue/chat.log
 이렇게 채팅 서버를 수평적 확장하면 같은 채팅방에서 채팅을 나누어도 실시간으로 통신을 할 수 없다는 것을 확인하였다. 그 이유는 첫 번째 포스팅에서 STOMP에 대해서 언급할 때 짧게 다룬 바 있다.
 
 > STOMP는 Simple (or Streaming) Text Oriented Message Protocol의 약자이다. 이는 메시지 지향 미들웨어(RabbitMQ, Kafka)와 함께 작동되도록 설계된 간단한 텍스트 기반의 프로토콜이다.
-> 
 
 하지만 그 동안의 포스팅에서 메시지 지향 미들웨어를 따로 지정한 적이 없고, 컨테이너도 PostgreSQL만 실행했다. 이렇게 메시지 지향 미들웨어를 사용하지 않는 경우에는 스프링은 자체적으로 인메모리에서 메시지 지향 미들웨어를 활용한다. 그리고 이 경우에는 스케일 아웃이 불가능하다. 이는 실제로 스프링 웹소켓 관련 문서에서도 다음과 같이 언급한다.
 
 > The simple broker is great for getting started but supports only a subset of STOMP commands (e.g. no acks, receipts, etc.), relies on a simple message sending loop, and is not suitable for clustering. As an alternative, applications can upgrade to using a full-featured message broker.
-> 
 
 간단하게 번역하자면 인메모리 브로커(simple broker)는 몇 가지 기능을 지원하지 않고, 스케일 아웃(clustering)에는 적합하지 않다고 한다.
 
@@ -127,9 +126,12 @@ destination: /user/queue/chat.log
 
 ```java
 @Override
-public void convertAndSend(D destination, Object payload, @Nullable Map<String, Object> headers,
-		@Nullable MessagePostProcessor postProcessor) throws MessagingException {
-
+public void convertAndSend(
+        D destination,
+        Object payload,
+        @Nullable Map<String, Object> headers,
+		@Nullable MessagePostProcessor postProcessor
+) throws MessagingException {
 	Message<?> message = doConvert(payload, headers, postProcessor);
 	send(destination, message);
 }
@@ -182,7 +184,7 @@ public final boolean send(Message<?> message, long timeout) {
 }
 ```
 
-이후 MessageChannel의 또 다른 구현체인 `ExecutorSubscribableChannel.sendInternal()`이 호출된다. 
+이후 MessageChannel의 또 다른 구현체인 `ExecutorSubscribableChannel.sendInternal()`이 호출된다.
 
 ```java
 @Override
@@ -221,7 +223,7 @@ private class SendTask implements MessageHandlingRunnable {
 }
 ```
 
-여기서 스레드 풀 관련 프레임워크인 `Executor`의 유무에 따라서 호출 방법이 결정되며, 어떤 조건문을 거치던간에 최종적으로는 `Runnable` 을 구현한 내부 클래스인 `SendTask.run()`이 실행된다. 
+여기서 스레드 풀 관련 프레임워크인 `Executor`의 유무에 따라서 호출 방법이 결정되며, 어떤 조건문을 거치던간에 최종적으로는 `Runnable` 을 구현한 내부 클래스인 `SendTask.run()`이 실행된다.
 
 ### AbstractBrokerMessageHandler
 
@@ -253,7 +255,7 @@ protected void handleMessageInternal(Message<?> message) {
 	MessageHeaders headers = message.getHeaders();
 	String destination = SimpMessageHeaderAccessor.getDestination(headers);
 	String sessionId = SimpMessageHeaderAccessor.getSessionId(headers);
-	
+
 	// ..
 
 	SimpMessageType messageType = SimpMessageHeaderAccessor.getMessageType(headers);
@@ -355,7 +357,7 @@ private static final class SessionRegistry {
 
 ---
 
-디버깅 과정이 상당히 길었다. 하지만 이를 통해서 채팅 서버가 `ConcurrentHashMap`을 통해서 각 클라이언트의 세션 정보와 구독 정보를 관리하고, 이를 활용하여 메시지를 전달하는 것을 확인할 수 있었다. 
+디버깅 과정이 상당히 길었다. 하지만 이를 통해서 채팅 서버가 `ConcurrentHashMap`을 통해서 각 클라이언트의 세션 정보와 구독 정보를 관리하고, 이를 활용하여 메시지를 전달하는 것을 확인할 수 있었다.
 
 따라서 여러 서버 인스턴스가 존재하면, 각각의 서버 인스턴스에서 `ConcurrentHashMap`을 통해 클라이언트 접속 정보를 관리하고, 이를 통해 클라이언트에게 메시지를 보내기 때문에 서버 인스턴스가 다르면 실시간 통신을 처리하지 못하는 것이다.
 
@@ -541,11 +543,11 @@ public class ChatService {
                 )
         );
     }
-    
+
     private ChatLog saveChatLog(MessageSendingDto dto) {
         return chatLogRepository.save(dto.toChatLog());
     }
-    
+
     // ...
 }
 ```
@@ -587,7 +589,7 @@ public class StompController {
     ) throws JsonProcessingException {
         chatService.saveMessage(message.toMessageSendingDto(chatroomId));
     }
-    // ...   
+    // ...
 }
 ```
 
@@ -895,11 +897,11 @@ content-length:112
 
 Redis, RabbitMQ, 그리고 Kafka를 사용했을 때의 장단점을 간단하게 표로 알아보도록 하자.
 
-| 기술 | 장점 | 단점/주의점 |
-| --- | --- | --- |
-| Redis Pub/Sub | 아주 단순하고 지연이 매우 낮고 쉬운 운영 | 영속성 없고 구독 순간에만 전달(오프라인 소비자에게 유실), 재처리/리플레이 불가, 스케일아웃은 샤딩·패턴 분리의 난해함 존재 |
-| RabbitMQ | 다양한 라우팅과 패턴, DLQ/TTL/우선순위 큐, at-least-once | 클러스터링/고가용성 튜닝 필요, Kafka보다 일반적으로 낮은 처리량 |
-| Kafka | 매우 높은 처리량·내구성·리플레이, 파티션 기반 병렬처리, 대규모 로그 수집/스트리밍에 최적 | 운영 복잡도·러닝 커브 높음, 스키마/토픽/파티션 설계 필요, Redis에 비하면 높은 지연 시간 |
+| 기술          | 장점                                                                                     | 단점/주의점                                                                                                               |
+| ------------- | ---------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| Redis Pub/Sub | 아주 단순하고 지연이 매우 낮고 쉬운 운영                                                 | 영속성 없고 구독 순간에만 전달(오프라인 소비자에게 유실), 재처리/리플레이 불가, 스케일아웃은 샤딩·패턴 분리의 난해함 존재 |
+| RabbitMQ      | 다양한 라우팅과 패턴, DLQ/TTL/우선순위 큐, at-least-once                                 | 클러스터링/고가용성 튜닝 필요, Kafka보다 일반적으로 낮은 처리량                                                           |
+| Kafka         | 매우 높은 처리량·내구성·리플레이, 파티션 기반 병렬처리, 대규모 로그 수집/스트리밍에 최적 | 운영 복잡도·러닝 커브 높음, 스키마/토픽/파티션 설계 필요, Redis에 비하면 높은 지연 시간                                   |
 
 겉보기에는 Kafka를 몇 줄 코드로 적용하는 게 무척 쉬워 보인다. 하지만 실제 서비스 수준에서 안정적으로 운영하려면 토픽 파티션, 리밸런싱, 메시지 내구성 같은 구조적 요소들을 설계해야 하고, 이 과정에서 생각보다 큰 러닝 커브가 존재한다고 생각한다. 나도 토픽으로 발행 및 구독을 처리하는 부분밖에 모르기에 Kafka에 대해서 공부를 진행해야 한다.
 

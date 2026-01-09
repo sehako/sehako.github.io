@@ -7,7 +7,7 @@ categories:
 toc: true
 toc_sticky: true
 published: true
- 
+
 date: 2025-06-08
 last_modified_at: 2025-06-08
 ---
@@ -16,7 +16,7 @@ last_modified_at: 2025-06-08
 
 # 이론
 
-1에서 N까지 번호가 매겨진 V를 꼭짓점으로 갖는 그래프가 있을 때, i에서 j로 집합 `{1, 2, ..., k}`의 꼭짓점들을 경유지로 거쳐가는 최단 경로를 반환하는 함수인 `shortestPath(i, j, k)`를 생각한다. 
+1에서 N까지 번호가 매겨진 V를 꼭짓점으로 갖는 그래프가 있을 때, i에서 j로 집합 `{1, 2, ..., k}`의 꼭짓점들을 경유지로 거쳐가는 최단 경로를 반환하는 함수인 `shortestPath(i, j, k)`를 생각한다.
 
 함수가 주어졌을 때, 목표는 `{1, 2, ..., N}`에 있는 꼭짓점만을 이용하여 모든 꼭짓점 i에서 모든 꼭짓점 j로 가는 최단 경로를 찾는 것이다.
 
@@ -32,13 +32,13 @@ last_modified_at: 2025-06-08
 ```c
 let dist // 모든 요소의 값이 INF인 |V| x |V| 배열
 for each edge (u,v)
-   dist[u][v] ← w(u,v)  // 변 (u,v)의 가중치
+	dist[u][v] ← w(u,v)  // 변 (u,v)의 가중치
 for each vertex v
-   dist[v][v] ← 0  // 자기 자신의 가중치는 0으로 책정
+	dist[v][v] ← 0  // 자기 자신의 가중치는 0으로 책정
 for k from 1 to |V|
-   for i from 1 to |V|
-      for j from 1 to |V|
-		     dist[i][j] ← min(dist[i][j], dist[i][k] + dist[k][j])
+	for i from 1 to |V|
+		for j from 1 to |V|
+			dist[i][j] ← min(dist[i][j], dist[i][k] + dist[k][j])
 ```
 
 # 알고리즘 구현
@@ -46,16 +46,14 @@ for k from 1 to |V|
 플로이드-워셜 알고리즘을 구현 하기 위해 백준에 있는 [문제](https://www.acmicpc.net/problem/11404)를 풀어볼 것이다. 문제는 다음과 같다.
 
 > n(2 ≤ n ≤ 100)개의 도시가 있다. 그리고 한 도시에서 출발하여 다른 도시에 도착하는 m(1 ≤ m ≤ 100,000)개의 버스가 있다. 각 버스는 한 번 사용할 때 필요한 비용이 있다.
-> 
-> 
+>
 > 모든 도시의 쌍 (A, B)에 대해서 도시 A에서 B로 가는데 필요한 비용의 최솟값을 구하는 프로그램을 작성하시오.
-> 
+>
 > 첫째 줄에 도시의 개수 n이 주어지고 둘째 줄에는 버스의 개수 m이 주어진다. 그리고 셋째 줄부터 m+2줄까지 다음과 같은 버스의 정보가 주어진다. 먼저 처음에는 그 버스의 출발 도시의 번호가 주어진다. 버스의 정보는 버스의 시작 도시 a, 도착 도시 b, 한 번 타는데 필요한 비용 c로 이루어져 있다. 시작 도시와 도착 도시가 같은 경우는 없다. 비용은 100,000보다 작거나 같은 자연수이다.
-> 
+>
 > 시작 도시와 도착 도시를 연결하는 노선은 하나가 아닐 수 있다.
-> 
 
-`BufferedReader` 와 `StringTokenizer`를 활용하여 입력을 받을 것이다. 여기서 최대 비용이 100억이 될 수 있으므로 비용에 관한 부분은 `long` 타입으로 설정해줘야 한다. 
+`BufferedReader` 와 `StringTokenizer`를 활용하여 입력을 받을 것이다. 여기서 최대 비용이 100억이 될 수 있으므로 비용에 관한 부분은 `long` 타입으로 설정해줘야 한다.
 
 ```java
 import java.util.*;
@@ -65,20 +63,19 @@ public class Main {
 
 	private static final long INF = 10_000_000_001L;
 	private static long[][] cost;
-	
+
     public static void main(String[] args) throws IOException {
     	BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
     	StringTokenizer st;
-    	
+
     	int n = stoi(br.readLine());
     	int m = stoi(br.readLine());
-    	
 		}
-		
+
     private static int stoi(String number) {
     	return Integer.parseInt(number);
     }
-    
+
     private static long stol(String number) {
     	return Long.parseLong(number);
     }
@@ -110,7 +107,7 @@ for (int i = 0; i < m; i++) {
 	int from = stoi(st.nextToken()) - 1;
 	int to = stoi(st.nextToken()) - 1;
 	long weight = stol(st.nextToken());
-	
+
 	cost[from][to] = Math.min(cost[from][to], weight);
 }
 ```
@@ -139,6 +136,7 @@ private static void getDist(int n) {
 문제 풀이에 대한 전체 코드를 살펴보도록 하자.
 
 {% include code-header.html %}
+
 ```java
 import java.util.*;
 import java.io.*;
@@ -147,67 +145,66 @@ public class Main {
 
 	private static final long INF = 10_000_000_001L;
 	private static long[][] cost;
-	
-    public static void main(String[] args) throws IOException {
-    	BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-    	StringTokenizer st;
-    	
-    	int n = stoi(br.readLine());
-    	int m = stoi(br.readLine());
-    	
-    	cost = new long[n][n];
-    	
-    	for (int i = 0; i < n; i++) {
-    		Arrays.fill(cost[i], INF);
-    		cost[i][i] = 0L;
-    	}
-    	
-    	for (int i = 0; i < m; i++) {
-    		st = new StringTokenizer(br.readLine(), " ");
-    		int from = stoi(st.nextToken()) - 1;
-    		int to = stoi(st.nextToken()) - 1;
-    		long weight = stol(st.nextToken());
-    		
-    		cost[from][to] = Math.min(cost[from][to], weight);
-    	}
-    	
-    	getDist(n);
-    	
-    	StringBuilder sb = new StringBuilder();
-    	for (long[] arr : cost) {
-    		for (long num : arr) {
-    			sb.append(num == INF ? 0 : num).append(' ');
-    		}
-    		sb.append('\n');
-    	}
-    	
-    	System.out.println(sb);
-    }
-    
-    private static void getDist(int n) {
-    	for (int k = 0; k < n; k++) {
-    		for (int i = 0; i < n; i++) {
-    			for (int j = 0; j < n; j++) {
-    				cost[i][j] = Math.min(cost[i][j], cost[i][k] + cost[k][j]);
-    			}
-    		}
-    	}
-    }
-    
-    private static int stoi(String number) {
-    	return Integer.parseInt(number);
-    }
-    
-    private static long stol(String number) {
-    	return Long.parseLong(number);
-    }
-    
+
+	public static void main(String[] args) throws IOException {
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		StringTokenizer st;
+
+		int n = stoi(br.readLine());
+		int m = stoi(br.readLine());
+
+		cost = new long[n][n];
+
+		for (int i = 0; i < n; i++) {
+			Arrays.fill(cost[i], INF);
+			cost[i][i] = 0L;
+		}
+
+		for (int i = 0; i < m; i++) {
+			st = new StringTokenizer(br.readLine(), " ");
+			int from = stoi(st.nextToken()) - 1;
+			int to = stoi(st.nextToken()) - 1;
+			long weight = stol(st.nextToken());
+
+			cost[from][to] = Math.min(cost[from][to], weight);
+		}
+
+		getDist(n);
+
+		StringBuilder sb = new StringBuilder();
+		for (long[] arr : cost) {
+			for (long num : arr) {
+				sb.append(num == INF ? 0 : num).append(' ');
+			}
+			sb.append('\n');
+		}
+
+		System.out.println(sb);
+	}
+
+	private static void getDist(int n) {
+		for (int k = 0; k < n; k++) {
+			for (int i = 0; i < n; i++) {
+				for (int j = 0; j < n; j++) {
+					cost[i][j] = Math.min(cost[i][j], cost[i][k] + cost[k][j]);
+				}
+			}
+		}
+	}
+
+	private static int stoi(String number) {
+		return Integer.parseInt(number);
+	}
+
+	private static long stol(String number) {
+		return Long.parseLong(number);
+	}
 }
 ```
 
 ---
 
-알고리즘은 항상 해야지 해야지 하다가 안하게 되는 것 같다. 개발 분야는 꾸준히 하다보면 뭐라도 되겠지 싶은데 알고리즘은 그런 느낌이 안들어서 그런가… 
+알고리즘은 항상 해야지 해야지 하다가 안하게 되는 것 같다. 개발 분야는 꾸준히 하다보면 뭐라도 되겠지 싶은데 알고리즘은 그런 느낌이 안들어서 그런가…
 
 암튼 플로이드-워셜을 한 두번 접했을 때 원리에 대한 이해가 잘 안됐었는데, 이번에 공부를 하게 되면서 어느정도 이해를 하게 된 것 같다..
 

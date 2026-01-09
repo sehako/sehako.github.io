@@ -3,11 +3,12 @@ title: 실시간 채팅 개발 - 이벤트와 읽음 처리
 
 categories:
   - Spring
+  - WebSocket
 
 toc: true
 toc_sticky: true
 published: true
- 
+
 date: 2025-08-23
 last_modified_at: 2025-08-23
 ---
@@ -16,7 +17,7 @@ last_modified_at: 2025-08-23
 
 # 데이터베이스 설계
 
-저번 포스팅에서 설계한 ERD를 기반으로 적절하게 변경해보자. 
+저번 포스팅에서 설계한 ERD를 기반으로 적절하게 변경해보자.
 
 ## 메시지 별 읽지 않은 클라이언트 관리
 
@@ -35,7 +36,6 @@ last_modified_at: 2025-08-23
 어떻게 해야 할까 생각하던 차에 개발자 커뮤니티인 오키에서 다음과 같은 댓글을 읽었다.
 
 > 클라이언트가 마지막 읽은 메세지 순번을 기억시키는 방식이 가장 효율적입니다.
-> 
 
 이 아이디어를 기반으로 최대한 간단하게 다음과 같이 ERD를 구성하였다.
 
@@ -61,7 +61,7 @@ ORDER BY cl.id DESC
 LIMIT 20;
 ```
 
-채팅 내역 테이블을 조인하여 마지막으로 읽은 채팅 번호와 현재 온라인 상태 여부에 따라서 각 채팅 레코드에 아직 읽지 않은 클라이언트 수를 집계하는 것이다. 이 방법은 한 가지 석연찮은 점이 있었는데, 바로 서버나 데이터베이스에 문제가 생겨서 특정 클라이언트의 온라인 상태가 오프라인 상태로 변하지 않는다면 읽음 처리를 할 때 클라이언트가 계속 읽고 있다고 판단될 수 있다고 생각하였다. 
+채팅 내역 테이블을 조인하여 마지막으로 읽은 채팅 번호와 현재 온라인 상태 여부에 따라서 각 채팅 레코드에 아직 읽지 않은 클라이언트 수를 집계하는 것이다. 이 방법은 한 가지 석연찮은 점이 있었는데, 바로 서버나 데이터베이스에 문제가 생겨서 특정 클라이언트의 온라인 상태가 오프라인 상태로 변하지 않는다면 읽음 처리를 할 때 클라이언트가 계속 읽고 있다고 판단될 수 있다고 생각하였다.
 
 ## 커서를 활용한 방법
 
@@ -144,14 +144,14 @@ public class StompEventListener {
 
 여기서 `AbstractSubProtocolEvent` 를 상속한 이벤트 객체와 해당 객체가 사용되는 상황을 표를 통해 살펴보도록 하자.
 
-| 이벤트 | 설명 |
-| --- | --- |
+| 이벤트                  | 설명                                                                                                                     |
+| ----------------------- | ------------------------------------------------------------------------------------------------------------------------ |
 | BrokerAvailabilityEvent | STOMP 브로커(내장/외부)의 사용 가능 여부가 변경될 때 발행. `true`면 브로커 사용 가능, `false`면 메시지 송수신 불가 상태. |
-| SessionConnectEvent | 클라이언트가 STOMP `CONNECT` 프레임을 전송했을 때 발생. 아직 인증·연결 완료 전 단계. |
-| SessionConnectedEvent | STOMP 브로커가 클라이언트의 `CONNECT` 요청을 승인하고 `CONNECTED` 프레임을 보낸 시점에 발생. 연결 확정. |
-| SessionSubscribeEvent | 클라이언트가 특정 목적지(destination)에 `SUBSCRIBE` 요청을 보냈을 때 발생. |
-| SessionUnsubscribeEvent | 클라이언트가 구독 해제(`UNSUBSCRIBE`) 요청을 보냈을 때 발생. |
-| SessionDisconnectEvent | 클라이언트가 `DISCONNECT` 요청을 보내거나 세션이 종료될 때 발생. |
+| SessionConnectEvent     | 클라이언트가 STOMP `CONNECT` 프레임을 전송했을 때 발생. 아직 인증·연결 완료 전 단계.                                     |
+| SessionConnectedEvent   | STOMP 브로커가 클라이언트의 `CONNECT` 요청을 승인하고 `CONNECTED` 프레임을 보낸 시점에 발생. 연결 확정.                  |
+| SessionSubscribeEvent   | 클라이언트가 특정 목적지(destination)에 `SUBSCRIBE` 요청을 보냈을 때 발생.                                               |
+| SessionUnsubscribeEvent | 클라이언트가 구독 해제(`UNSUBSCRIBE`) 요청을 보냈을 때 발생.                                                             |
+| SessionDisconnectEvent  | 클라이언트가 `DISCONNECT` 요청을 보내거나 세션이 종료될 때 발생.                                                         |
 
 여기서 클라이언트가 채팅방에 접속한다는 것은 세션을 구독한다는 것이고, 접속을 종료한다는 것은 세션 구독을 해제 또는 연결이 끊겼다는 의미일 것이다. 따라서 `SessionSubscribeEvent`와 `SessionUnsubscribeEvent` 을 활용할 것이다.
 
@@ -170,8 +170,7 @@ public class StompEventListener {
 @Table(name = "chatroom_user")
 @Getter
 public class ChatroomUser {
-		// ...
-		
+    // ...
     @Column(name = "last_read_chat_log_id")
     private Long lastReadChatLogId;
 }
@@ -182,7 +181,7 @@ JPA에는 업데이트 관련 쿼리가 없기 때문에 참고 자료를 활용
 ```java
 @Repository
 public interface ChatroomUserRepository extends JpaRepository<ChatroomUser, Long> {
-		// EntityManager.flush() && EntityManager.clear() 호출
+    // EntityManager.flush() && EntityManager.clear() 호출
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query(value = """
             UPDATE chatroom_user cu
@@ -277,11 +276,11 @@ public void listener(SessionDisconnectEvent event) {
 ```
 
 ```
-SessionDisconnectEvent[sessionId=854cf080-bad6-3da7-d0e3-835f061458f7, 
+SessionDisconnectEvent[sessionId=854cf080-bad6-3da7-d0e3-835f061458f7,
 CloseStatus[code=1000, reason=null]]
 
-SimpMessageHeaderAccessor [headers={simpMessageType=DISCONNECT, 
-stompCommand=DISCONNECT, simpSessionAttributes={}, 
+SimpMessageHeaderAccessor [headers={simpMessageType=DISCONNECT,
+stompCommand=DISCONNECT, simpSessionAttributes={},
 simpSessionId=854cf080-bad6-3da7-d0e3-835f061458f7}]
 ```
 
@@ -320,29 +319,29 @@ LIMIT 20;
 
 ```sql
 WITH page AS (
-		SELECT id, user_id, message, created_at, chatroom_id
-		FROM chat_log
-		WHERE chatroom_id = :chatroomId
-		  AND (:cursor IS NULL OR id < :cursor)
-		ORDER BY id DESC
-		LIMIT 20
+    SELECT id, user_id, message, created_at, chatroom_id
+    FROM chat_log
+    WHERE chatroom_id = :chatroomId
+        AND (:cursor IS NULL OR id < :cursor)
+    ORDER BY id DESC
+    LIMIT 20
 ),
 members AS (
-	  SELECT user_id, last_read_chat_log_id
-	  FROM chatroom_user
-	  WHERE chatroom_id = :chatroomId
+    SELECT user_id, last_read_chat_log_id
+    FROM chatroom_user
+    WHERE chatroom_id = :chatroomId
 )
 SELECT
-	  p.id,
-	  p.user_id,
-	  p.message,
-	  p.created_at,
-	  (
-		    SELECT COUNT(*)
-		    FROM members m
-		    WHERE m.user_id <> p.user_id
-	      AND m.last_read_chat_log_id < p.id
-	  ) AS unread_count
+    p.id,
+    p.user_id,
+    p.message,
+    p.created_at,
+    (
+        SELECT COUNT(*)
+        FROM members m
+        WHERE m.user_id <> p.user_id
+        AND m.last_read_chat_log_id < p.id
+    ) AS unread_count
 FROM page p
 ORDER BY p.id DESC
 ```
@@ -353,7 +352,7 @@ ORDER BY p.id DESC
 
 ### 레포지토리
 
-레포지토리에서는 조금 색다르게 Native Query와 Interface Projection을 활용하여 처리하였다. 
+레포지토리에서는 조금 색다르게 Native Query와 Interface Projection을 활용하여 처리하였다.
 
 ```java
 public interface ChatMessage {
@@ -436,7 +435,7 @@ public class ChatService {
 
 ## 테스트
 
-테스트를 위해서 다음과 같은 쿼리를 통해 클라이언트 정보를 수정할 것이다. 
+테스트를 위해서 다음과 같은 쿼리를 통해 클라이언트 정보를 수정할 것이다.
 
 ```sql
 UPDATE chatroom_user SET last_read_chat_log_id = 10 WHERE user_id = 1;
@@ -520,8 +519,7 @@ destination: /user/queue/chat.log
 ```java
 @Repository
 public interface ChatroomUserRepository extends JpaRepository<ChatroomUser, Long> {
-		// ...
-
+    // ...
     Optional<ChatroomUser> findByChatroomIdAndUserId(Long chatroomId, Long userId);
 }
 ```
@@ -539,7 +537,7 @@ JPA의 Dirty Checking 기능을 활용하여 UPDATE 처리를 하도록 하겠�
 public class ChatService {
     private final ChatLogRepository chatLogRepository;
     private final ChatroomUserRepository chatroomUserRepository;
-    
+
     // ...
 
     public UserReadInfoResponse changeUserReadInfo(Long chatroomId, Long userId, Long currentReadId) {
@@ -559,9 +557,9 @@ public record UserReadInfoResponse(
 	    Long fromInclusive,
 	    Long toInclusive
 ) {
-	  public static UserReadInfoResponse of(Long userId, Long prev, Long cur) {
-		    return new UserReadInfoResponse(userId, prev + 1, cur);
-	  }
+    public static UserReadInfoResponse of(Long userId, Long prev, Long cur) {
+        return new UserReadInfoResponse(userId, prev + 1, cur);
+    }
 }
 ```
 
@@ -570,7 +568,7 @@ public record UserReadInfoResponse(
 @Table(name = "chatroom_user")
 @Getter
 public class ChatroomUser {
-		// ...
+    // ...
 
     public void changeLastReadChatLogId(Long lastReadChatLogId) {
         this.lastReadChatLogId = lastReadChatLogId;
@@ -589,7 +587,7 @@ public class ChatroomUser {
 public class StompController {
     private final ChatService chatService;
     private final SimpMessagingTemplate messagingTemplate;
-    
+
     // ...
 
     @MessageMapping("/chat.change.message.{chatroom-id}")
@@ -670,7 +668,7 @@ destination: /user/queue/chat.info
 ```java
 @Repository
 public interface ChatroomUserRepository extends JpaRepository<ChatroomUser, Long> {
-		// ...
+    // ...
     Long countByChatroomId(Long chatroomId);
 }
 ```
@@ -699,7 +697,7 @@ public class ChatService {
                 savedChatLog.getCreatedAt()
         );
     }
-    
+
     // ...
 }
 ```
@@ -718,7 +716,7 @@ destination: /topic/chat.1
 {"id":21,"userId":2,"message":"HEELO","unreadCount":2,"createdAt":"2025-08-22T20:55:23.957368"}
 ```
 
-성공적으로 읽지 않은 클라이언트 데이터가 전달된 것을 확인할 수 있다. 
+성공적으로 읽지 않은 클라이언트 데이터가 전달된 것을 확인할 수 있다.
 
 ---
 

@@ -7,14 +7,14 @@ categories:
 toc: true
 toc_sticky: true
 published: true
- 
+
 date: 2025-03-23
 last_modified_at: 2025-03-23
 ---
 
 # 파일 업로드 처리
 
-개발을 하다보면 클라이언트에서 전송한 파일을 서버에서 적절하게 처리해야 할 때가 있다. 문서나 사진, 동영상 같은 파일은 스프링 부트에서 어떻게 처리하는 지 알아보도록 하자. 
+개발을 하다보면 클라이언트에서 전송한 파일을 서버에서 적절하게 처리해야 할 때가 있다. 문서나 사진, 동영상 같은 파일은 스프링 부트에서 어떻게 처리하는 지 알아보도록 하자.
 
 # 데이터베이스에 저장
 
@@ -24,7 +24,7 @@ last_modified_at: 2025-03-23
 2. 데이터 베이스가 차지하는 용량이 커져서 관리가 어려워짐
 3. 파일을 저장하고, 제공하는 것이 난해해짐
 
-물론 이는 서비스의 크기에 따라서 달라진다고 하지만 일반적으로 비추천하는 방법인 것은 분명하다. 이 부분에 대해서 더 알아보고 싶다면 참고자료에 첨부해둔 두 사이트를 방문해보는 것을 추천한다. 
+물론 이는 서비스의 크기에 따라서 달라진다고 하지만 일반적으로 비추천하는 방법인 것은 분명하다. 이 부분에 대해서 더 알아보고 싶다면 참고자료에 첨부해둔 두 사이트를 방문해보는 것을 추천한다.
 
 # 서버 시스템에 저장
 
@@ -41,14 +41,15 @@ last_modified_at: 2025-03-23
 `application.yml` 파일에 다음과 같이 설정하도록 하자.
 
 {% include code-header.html %}
+
 ```yaml
 spring:
   application:
     name: blog
   servlet:
     multipart:
-      max-request-size: 150MB  # (1) 전체 HTTP 요청의 최대 크기 제한 (멀티파트 포함)
-      max-file-size: 100MB     # (2) 단일 파일 업로드의 최대 크기 제한
+      max-request-size: 150MB # (1) 전체 HTTP 요청의 최대 크기 제한 (멀티파트 포함)
+      max-file-size: 100MB # (2) 단일 파일 업로드의 최대 크기 제한
 ```
 
 ## 정적 파일 핸들러 추가
@@ -56,15 +57,16 @@ spring:
 이를 위해서 스프링에서는 시스템 내부에 존재하는 정적 파일을 처리할 수 있게 지원해준다. `WebMvcConfigurer` 객체를 구현하면 `addResourceHandlers`를 재정의할 수 있는데, 여기서 다음과 같이 설정해주면 된다.
 
 {% include code-header.html %}
+
 ```java
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
-  @Override
-  public void addResourceHandlers(ResourceHandlerRegistry registry) {
-    WebMvcConfigurer.super.addResourceHandlers(registry);
-    registry.addResourceHandler("/files/**")
-            .addResourceLocations("file:///C://blog/");
-  }
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        WebMvcConfigurer.super.addResourceHandlers(registry);
+        registry.addResourceHandler("/files/**")
+                .addResourceLocations("file:///C://blog/");
+    }
 }
 ```
 
@@ -77,20 +79,21 @@ public class WebConfig implements WebMvcConfigurer {
 **컨트롤러**
 
 {% include code-header.html %}
+
 ```java
 @RestController
 @RequiredArgsConstructor
 public class RequestController {
-  private final FileService fileService;
+    private final FileService fileService;
 
-  @PostMapping("/upload")
-  public ResponseEntity<ResponseEntityHelper<Void>> upload(
-        @RequestPart MultipartFile file
-  ) {
-    return ResponseEntity
-            .created(URI.create(fileService.saveFile(file)))
-            .build();
-  }
+    @PostMapping("/upload")
+    public ResponseEntity<ResponseEntityHelper<Void>> upload(
+            @RequestPart MultipartFile file
+    ) {
+        return ResponseEntity
+                .created(URI.create(fileService.saveFile(file)))
+                .build();
+    }
 }
 ```
 
@@ -99,21 +102,22 @@ public class RequestController {
 서비스에서는 원본 파일의 이름을 받으면 확장자를 추출하여 `현재 시간.확장자 이름`의 형식으로 저장하도록 할 것이다.
 
 {% include code-header.html %}
+
 ```java
 @Service
 public class FileService {
-  public String saveFile(MultipartFile file) {
-    String rootPath = Paths.get("C:", "blog").toAbsolutePath().toString();
-    String fileName = file.getOriginalFilename();
-    String ext = fileName.substring(fileName.lastIndexOf("."));
-    String newFileName = System.currentTimeMillis() + ext;
-    try {
-        file.transferTo(new File(rootPath + File.separator + newFileName));
-        return newFileName;
-    } catch (Exception e) {
-        return null;
+    public String saveFile(MultipartFile file) {
+        String rootPath = Paths.get("C:", "blog").toAbsolutePath().toString();
+        String fileName = file.getOriginalFilename();
+        String ext = fileName.substring(fileName.lastIndexOf("."));
+        String newFileName = System.currentTimeMillis() + ext;
+        try {
+            file.transferTo(new File(rootPath + File.separator + newFileName));
+            return newFileName;
+        } catch (Exception e) {
+            return null;
+        }
     }
-  }
 }
 ```
 
@@ -133,11 +137,11 @@ public class FileService {
 
 # AWS S3에 저장
 
-마지막으로 AWS에서 제공하는 S3 저장소를 활용하는 방법이 있다. 앞서 보았던 시스템에 파일을 저장하는 방법은 한 가지 문제점이 존재하는데, 클라이언트가 업로드한 파일이 서버 시스템에 저장되기 때문에 시스템 저장소의 용량이 부족해질 수 있는 문제가 존재한다. 
+마지막으로 AWS에서 제공하는 S3 저장소를 활용하는 방법이 있다. 앞서 보았던 시스템에 파일을 저장하는 방법은 한 가지 문제점이 존재하는데, 클라이언트가 업로드한 파일이 서버 시스템에 저장되기 때문에 시스템 저장소의 용량이 부족해질 수 있는 문제가 존재한다.
 
-또한 서버 시스템의 저장소에 문제가 생겼을 경우 클라이언트가 업로드한 파일이 유실될 수 있는 문제점도 있고, 만약에 서버 시스템을 여러 대 사용할 경우에 클라이언트가 저장한 파일을 어떻게 관리해야 하는가에 대한 고민도 생긴다. 
+또한 서버 시스템의 저장소에 문제가 생겼을 경우 클라이언트가 업로드한 파일이 유실될 수 있는 문제점도 있고, 만약에 서버 시스템을 여러 대 사용할 경우에 클라이언트가 저장한 파일을 어떻게 관리해야 하는가에 대한 고민도 생긴다.
 
-하지만 S3는 요금만 충분하다면 용량을 무제한으로 사용할 수 있고, AWS의 설명을 인용하자면  99.999999999% (11 9's)의 내구성을 자랑하여 안전하다. 또한 서버 시스템을 여러 대 사용하여도 S3가 중앙 저장소 역할을 하기 때문에 파일 관리도 고민할 필요가 없어진다.
+하지만 S3는 요금만 충분하다면 용량을 무제한으로 사용할 수 있고, AWS의 설명을 인용하자면 99.999999999% (11 9's)의 내구성을 자랑하여 안전하다. 또한 서버 시스템을 여러 대 사용하여도 S3가 중앙 저장소 역할을 하기 때문에 파일 관리도 고민할 필요가 없어진다.
 
 ## S3 버킷 생성
 
@@ -153,16 +157,16 @@ public class FileService {
 
 ```json
 {
-    "Version": "2012-10-17",
-    "Statement": [
-        {
-            "Sid": "PublicReadAccessToUploads",
-            "Effect": "Allow",
-            "Principal": "*",
-            "Action": "s3:GetObject",
-            "Resource": "arn:aws:s3:::YOUR_BUCKET_NAME/uploads/*"
-        }
-    ]
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "PublicReadAccessToUploads",
+      "Effect": "Allow",
+      "Principal": "*",
+      "Action": "s3:GetObject",
+      "Resource": "arn:aws:s3:::YOUR_BUCKET_NAME/uploads/*"
+    }
+  ]
 }
 ```
 
@@ -193,6 +197,7 @@ implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE
 그리고 `application.yml`에 다음과 같이 설정하도록 하자.
 
 {% include code-header.html %}
+
 ```yaml
 cloud:
   aws:
@@ -212,26 +217,27 @@ cloud:
 S3에 접근하기 위해서는 `AmazonS3` 스프링 빈을 생성해야 한다. 내가 찾아봤던 레퍼런스는 설정 파일 하나로 어떻게 끝내는 참고자료도 있던데 같은 의존성 버전임에도 S3를 설정으로 접근하는 부분이 나는 없었다. 따라서 다른 자료를 참고하였다.
 
 {% include code-header.html %}
+
 ```java
 @Configuration
 public class S3Config {
-  @Value("${cloud.aws.credentials.access-key}")
-  private String accessKey;
+    @Value("${cloud.aws.credentials.access-key}")
+    private String accessKey;
 
-  @Value("${cloud.aws.credentials.secret-key}")
-  private String secretKey;
+    @Value("${cloud.aws.credentials.secret-key}")
+    private String secretKey;
 
-  @Value("${cloud.aws.region.static}")
-  private String region;
+    @Value("${cloud.aws.region.static}")
+    private String region;
 
-  @Bean
-  public AmazonS3 amazonS3() {
-    AWSCredentials credentials = new BasicAWSCredentials(accessKey, secretKey);
-    return AmazonS3ClientBuilder.standard()
-            .withRegion(region)
-            .withCredentials(new AWSStaticCredentialsProvider(credentials))
-            .build();
-  }
+    @Bean
+    public AmazonS3 amazonS3() {
+        AWSCredentials credentials = new BasicAWSCredentials(accessKey, secretKey);
+        return AmazonS3ClientBuilder.standard()
+                .withRegion(region)
+                .withCredentials(new AWSStaticCredentialsProvider(credentials))
+                .build();
+    }
 }
 ```
 
@@ -242,67 +248,68 @@ public class S3Config {
 **컨트롤러**
 
 {% include code-header.html %}
+
 ```java
 @RestController
 @RequiredArgsConstructor
 public class RequestController {
-  private final FileService fileService;
+    private final FileService fileService;
 
-  @PostMapping("/upload")
-  public ResponseEntity<ResponseEntityHelper<Void>> upload(
-        @RequestPart MultipartFile file
-  ) {
-    return ResponseEntity
-            .created(URI.create(fileService.saveFileToAWS(file)))
-            .build();
-  }
-
+    @PostMapping("/upload")
+    public ResponseEntity<ResponseEntityHelper<Void>> upload(
+            @RequestPart MultipartFile file
+    ) {
+        return ResponseEntity
+                .created(URI.create(fileService.saveFileToAWS(file)))
+                .build();
+    }
 }
 ```
 
 **서비스**
 
 {% include code-header.html %}
+
 ```java
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class FileService {
-  private final AmazonS3 amazonS3;
+    private final AmazonS3 amazonS3;
 
-  public String saveFileToAWS(MultipartFile file) {
-    String fileName = file.getOriginalFilename();
-    String ext = fileName.substring(fileName.lastIndexOf("."));
-    String newFileName = System.currentTimeMillis() + ext;
+    public String saveFileToAWS(MultipartFile file) {
+        String fileName = file.getOriginalFilename();
+        String ext = fileName.substring(fileName.lastIndexOf("."));
+        String newFileName = System.currentTimeMillis() + ext;
 
-    ObjectMetadata metadata = new ObjectMetadata();
-    metadata.setContentLength(file.getSize());
-    metadata.setContentType(file.getContentType());
-    try {
-      amazonS3.putObject(new PutObjectRequest(
-              "sehako",
-              "uploads/"+ newFileName,
-              file.getInputStream(),
-              metadata)
-      );
-    } catch (Exception e) {
-      e.printStackTrace();
-      return null;
+        ObjectMetadata metadata = new ObjectMetadata();
+        metadata.setContentLength(file.getSize());
+        metadata.setContentType(file.getContentType());
+        try {
+        amazonS3.putObject(new PutObjectRequest(
+                "sehako",
+                "uploads/"+ newFileName,
+                file.getInputStream(),
+                metadata)
+        );
+        } catch (Exception e) {
+        e.printStackTrace();
+        return null;
+        }
+        return amazonS3.getUrl("sehako", "uploads/" + newFileName).toString(); // 업로드된 파일의 URL 반환
     }
-    return amazonS3.getUrl("sehako", "uploads/" + newFileName).toString(); // 업로드된 파일의 URL 반환
-  }
 }
 ```
 
 ## 테스트
 
-이제 테스트를 해보면 `Location` 헤더에 aws s3에 접근할 수 있는 경로가 나올 것이다. 
+이제 테스트를 해보면 `Location` 헤더에 aws s3에 접근할 수 있는 경로가 나올 것이다.
 
 ![S3 업로드 반환](/assets/images/saving-uploaded-file_08.png)
 
 ---
 
-최근에 새로 시작한 프로젝트에서는 스프링 Cloud를 이용한 MSA를 구축해보고 있다. 이번 프로젝트에서는 개발 보다는 MSA 구축과 로깅, 모니터링 부분을 한 번 해보고자 한다. 
+최근에 새로 시작한 프로젝트에서는 스프링 Cloud를 이용한 MSA를 구축해보고 있다. 이번 프로젝트에서는 개발 보다는 MSA 구축과 로깅, 모니터링 부분을 한 번 해보고자 한다.
 
 # 참고자료
 

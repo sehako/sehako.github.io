@@ -3,11 +3,12 @@ title: 실시간 채팅 개발 - 채팅 저장과 예외 처리
 
 categories:
   - Spring
+  - WebSocket
 
 toc: true
 toc_sticky: true
 published: true
- 
+
 date: 2025-08-16
 last_modified_at: 2025-08-16
 ---
@@ -46,19 +47,19 @@ docker run --name postgres-chat \
 
 ```sql
 CREATE TABLE "user" (
-		id INTEGER PRIMARY KEY
+    id INTEGER PRIMARY KEY
 );
 
 CREATE TABLE chatroom (
-		id INTEGER PRIMARY KEY
+    id INTEGER PRIMARY KEY
 );
 
 CREATE TABLE chat_log (
-		id BIGINT PRIMARY KEY,
-		chatroom_id INTEGER NOT NULL,
-		user_id INTEGER NOT NULL,
-		message TEXT,
-		created_at TIMESTAMP DEFAULT now()
+    id BIGINT PRIMARY KEY,
+    chatroom_id INTEGER NOT NULL,
+    user_id INTEGER NOT NULL,
+    message TEXT,
+    created_at TIMESTAMP DEFAULT now()
 );
 
 CREATE TABLE chatroom_user (
@@ -72,7 +73,7 @@ CREATE TABLE chatroom_user (
 
 CREATE SEQUENCE chat_log_id_seq;
 ALTER TABLE chat_log
-    ALTER COLUMN id SET DEFAULT nextval('chat_log_id_seq');
+ALTER COLUMN id SET DEFAULT nextval('chat_log_id_seq');
 ALTER SEQUENCE chat_log_id_seq OWNED BY chat_log.id;
 SELECT setval('chat_log_id_seq', COALESCE((SELECT MAX(id) FROM chat_log), 0) + 1, false);
 
@@ -200,7 +201,7 @@ public class ChatLog {
 
 # 채팅 저장
 
-이전 포스팅에서 인증 처리를 위해서 `ChannelInterceptor`를 활용하여 토큰을 받았었다. 이번 포스팅에서는 원할한 구현을 위해 다음 부분을 삭제하고 진행하였다. 
+이전 포스팅에서 인증 처리를 위해서 `ChannelInterceptor`를 활용하여 토큰을 받았었다. 이번 포스팅에서는 원할한 구현을 위해 다음 부분을 삭제하고 진행하였다.
 
 ## 레포지토리
 
@@ -322,14 +323,14 @@ public record MessageRequest(
 **채팅 전송**
 
 ```
-$ _INFO_:Connect STOMP server success, url = ws://localhost:8080/ws, connectHeader = 
-$ _INFO_:send STOMP message, destination = /app/chat.1, content = {"userId": 1, "message": "Hello"}, header = 
+$ _INFO_:Connect STOMP server success, url = ws://localhost:8080/ws, connectHeader =
+$ _INFO_:send STOMP message, destination = /app/chat.1, content = {"userId": 1, "message": "Hello"}, header =
 ```
 
 **채팅 수신**
 
 ```
-$ _INFO_:Connect STOMP server success, url = ws://localhost:8080/ws, connectHeader = 
+$ _INFO_:Connect STOMP server success, url = ws://localhost:8080/ws, connectHeader =
 $ _INFO_:subscribe destination /topic/chat.1 success
 $ _INFO_:Receive subscribed message from destination /topic/chat.1, content = MESSAGE
 content-length:64
@@ -348,11 +349,11 @@ content-length:64
 SELECT * FROM chat_log;
 ```
 
-다음과 같은 조회 결과가 출력된다. 
+다음과 같은 조회 결과가 출력된다.
 
-| id | chatroom_id | user_id | content | created_at |
-| --- | --- | --- | --- | --- |
-| 1 | 1 | 1 | Hello | 2025-08-15 17:00:22.588947 |
+| id  | chatroom_id | user_id | content | created_at                 |
+| --- | ----------- | ------- | ------- | -------------------------- |
+| 1   | 1           | 1       | Hello   | 2025-08-15 17:00:22.588947 |
 
 이렇게 정상적으로 데이터가 저장된 것을 확인할 수 있다.
 
@@ -360,17 +361,13 @@ SELECT * FROM chat_log;
 
 단순히 서버로 전달된 채팅 데이터를 저장만 한다면 의미가 없을 것이다. 중요한 것은 채팅방에 접속한 사용자가 해당 채팅방에 저장된 채팅 내역을 볼 수 있어야 한다. 가장 간단한 것은 클라이언트에게 커서 기반 페이지네이션을 통해 채팅 내역을 조회할 수 있는 REST API를 하나 구현하고, 이를 채팅방 접속 시에 추가적으로 요청을 보내도록 하면 될 것이다.
 
-<aside>
-
-참고로 OFFSET 기반 페이지네이션은 중복 데이터 문제와 페이지 증가에 따른 쿼리 성능 저하로 적절하지 않다고 생각하였다.
-
-</aside>
+> 참고로 OFFSET 기반 페이지네이션은 중복 데이터 문제와 페이지 증가에 따른 쿼리 성능 저하로 적절하지 않다고 생각하였다.
 
 나도 처음에 채팅을 구현할 때에는 REST API로 구현하였고, 별 문제 없이 제대로 실행되었다. 하지만 이미 서버와 연결이 된 상태에서 굳이 그렇게 할 필요가 있을까 하는 생각이 들었고, STOMP SEND 요청을 활용하여 채팅방 ID와 커서를 전달받아 채팅 내역을 조회하고, 특정 사용자에게 전송하면 될 것 같다고 생각하였다.
 
 ## 페이지네이션을 위한 사전 설정
 
-그 전에 우선 페이지네이션을 구현하기 위해서 1번 채팅방에 대해 1번 부터 3번 사용자까지 채팅을 나눈 무작위 100개 데이터를 Postgres에 INSERT 하였다. 
+그 전에 우선 페이지네이션을 구현하기 위해서 1번 채팅방에 대해 1번 부터 3번 사용자까지 채팅을 나눈 무작위 100개 데이터를 Postgres에 INSERT 하였다.
 
 ```sql
 INSERT INTO chat_log (chatroom_id, user_id, message, created_at)
@@ -398,7 +395,7 @@ public interface ChatLogRepository extends JpaRepository<ChatLog, Long> {
 
 ## 특정 사용자에게 데이터를 전송하는 두 가지 방법
 
-요청을 통해 조회된 채팅 내역을 `@SendTo` 어노테이션이나 `SimpMessagingTemplate.convertAndSend()`를 사용하여 전송하면 해당 토픽을 구독한 사용자들이 채팅 내역을 지속적으로 중복하여 전달받는다. 
+요청을 통해 조회된 채팅 내역을 `@SendTo` 어노테이션이나 `SimpMessagingTemplate.convertAndSend()`를 사용하여 전송하면 해당 토픽을 구독한 사용자들이 채팅 내역을 지속적으로 중복하여 전달받는다.
 
 이를 위해서 `@SendToUser` 어노테이션이나 `SimpMessagingTemplate.convertAndSendToUser()`를 사용하면 같은 토픽을 구독한 사용자들 중에서 요청을 보낸 사용자에게만 데이터를 전송할 수 있다. 하나씩 알아보도록 하자.
 
@@ -438,14 +435,14 @@ public class ChatService {
 - 커서는 구독/메시지 단위의 컨텍스트이므로 `SUBSCRIBE`나 `SEND` 프레임의 **헤더**로 전달해야 함.
 - 보안/유지보수 측면에서도 헤더 방식이 권장됨.
 
- 따라서 STOMP SEND 요청 헤더에 커서 값을 담아서 보내는 방식으로 작성하였다.
+따라서 STOMP SEND 요청 헤더에 커서 값을 담아서 보내는 방식으로 작성하였다.
 
 ```java
 @Controller
 @RequiredArgsConstructor
 public class StompController {
     private final ChatService chatService;
-    
+
     @MessageMapping("/chat.{chatroom-id}.log")
     @SendToUser("/queue/chat.log")
     public List<MessageResponse> sendChatLog(
@@ -503,9 +500,12 @@ public class StompController {
 
 ```java
 @Override
-public void convertAndSendToUser(String user, String destination, Object payload,
-		@Nullable Map<String, Object> headers) throws MessagingException {
-
+public void convertAndSendToUser(
+        String user,
+        String destination,
+        Object payload,
+		@Nullable Map<String, Object> headers
+) throws MessagingException {
 	convertAndSendToUser(user, destination, payload, headers, null);
 }
 ```
@@ -514,7 +514,7 @@ public void convertAndSendToUser(String user, String destination, Object payload
 
 ## 테스트
 
-이제 페이지네이션이 동작하는지 확인하도록 한다. 이때 한 가지 주의해야 할 점은 클라이언트는 `/queue/chat.log` 토픽을 구독하는 것이 아니라, `/user/queue/chat.log` 토픽을 구독해야 한다는 것이다. 이는 앞서 설명한 사용자 세션에 메시지를 매핑 및 라우팅 하기 때문이다. 
+이제 페이지네이션이 동작하는지 확인하도록 한다. 이때 한 가지 주의해야 할 점은 클라이언트는 `/queue/chat.log` 토픽을 구독하는 것이 아니라, `/user/queue/chat.log` 토픽을 구독해야 한다는 것이다. 이는 앞서 설명한 사용자 세션에 메시지를 매핑 및 라우팅 하기 때문이다.
 
 STOMP 설정에 사용된 `StompConfig`를 다시 살펴보도록 하자.
 
@@ -522,11 +522,11 @@ STOMP 설정에 사용된 `StompConfig`를 다시 살펴보도록 하자.
 @Configuration
 @EnableWebSocketMessageBroker
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
-		// ...
+    // ...
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
-		    // ...
-				// 사용자 세션 접근을 위한 접두사
+        // ...
+        // 사용자 세션 접근을 위한 접두사
         registry.setUserDestinationPrefix("/user");
     }
 }
@@ -536,13 +536,13 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
 ```
 $ _INFO_:subscribe destination /user/queue/chat.log success
-$ _INFO_:send STOMP message, destination = /app/chat.1.log, content = , header = 
+$ _INFO_:send STOMP message, destination = /app/chat.1.log, content = , header =
 ```
 
-그 다음 아무런 헤더 없이 1번 채팅방의 채팅 내역을 `/app/chat.1.log`에 SEND 요청을 보내어 확인해보도록 하자. 
+그 다음 아무런 헤더 없이 1번 채팅방의 채팅 내역을 `/app/chat.1.log`에 SEND 요청을 보내어 확인해보도록 하자.
 
 ```
-$ _INFO_:send STOMP message, destination = /app/chat.1.log, content = , header = 
+$ _INFO_:send STOMP message, destination = /app/chat.1.log, content = , header =
 $ _INFO_:Receive subscribed message from destination /user/queue/chat.log, content = MESSAGE
 content-length:1473
 message-id:25312829-3674-a7c2-68de-6024cf0a8430-0
@@ -581,15 +581,13 @@ content-length:1491
 
 애플리케이션은 항상 성공 케이스뿐 아니라 예외 케이스가 존재한다. 예를 들어 채팅 저장 과정에서 데이터베이스가 다운되어 채팅 서버와의 커넥션이 유실되면, 사용자는 자신의 메시지가 왜 채팅방에 표시되지 않는지 알기 어렵다. 따라서 서버에서 예외가 발생했을 때 이를 사용자에게 명확히 전달하는 예외 처리가 필요하다.
 
-이때 앞서 토큰 인증 처리에서 구현했던 `StompSubProtocolErrorHandler`로 `ERROR` 프레임을 보내는 방법은 적절하지 않다. STOMP 1.2 명세는 서버가 `ERROR` 프레임을 전송한 직후 연결을 닫아야 한다(MUST)고 규정한다. 
+이때 앞서 토큰 인증 처리에서 구현했던 `StompSubProtocolErrorHandler`로 `ERROR` 프레임을 보내는 방법은 적절하지 않다. STOMP 1.2 명세는 서버가 `ERROR` 프레임을 전송한 직후 연결을 닫아야 한다(MUST)고 규정한다.
 
 > 서버는 무언가 잘못되었을 경우 `ERROR` 프레임을 전송할 수 있다. 이렇게 `ERROR` 프레임을 전송한 이후에는 반드시(MUST) 연결을 종료해야 한다.
-> 
 
 이는 스프링 관련 객체를 다룬 Javadoc 역시 언급하고 있는 부분이다.
 
 > Note that the STOMP protocol requires a server to close the connection after sending an ERROR frame. To prevent an ERROR frame from being sent, a handler could return `null` and send a notification message through the broker instead, for example, via a user destination.
-> 
 
 하지만 단순 저장 실패 같은 애플리케이션 예외에 대해 세션을 끊어버리면 사용자 경험이 나빠진다고 생각한다.
 
@@ -605,25 +603,25 @@ content-length:1491
 public class StompExceptionHandler {
     @MessageExceptionHandler
     public void handleException(Exception exception) {
-		    // 예외 처리 로직 구현
+        // 예외 처리 로직 구현
     }
 }
 ```
 
 여기서 인자에 정의한 예외가 발생하면 해당 예외에 대해서 적절하게 처리하도록 코드를 작성하면 된다. 메서드의 인자로 전달 받을 수 있는 객체를 공식문서를 참고하여 다음과 같이 정리하였다.
 
-| 메서드 인자 | 설명 |
-| --- | --- |
-| `Message<?>`  | 전체 메시지 객체 |
-| `MessageHeaders` | 메시지 헤더 |
-| `MessageHeaderAccessor` / `SimpMessageHeaderAccessor` / `StompHeaderAccessor` | 타입 안전한 메시지 헤더 |
-| `@Payload` | 메시지 페이로드 |
-| `@Header("name")` | 특정 헤더 값 |
-| `@Headers` | 모든 헤더에 대한 `Map` 자료구조 (따라서 인자는 `java.util.Map` 타입이어야 함) |
-| `@DestinationVariable` | 메시지 목적지 경로에서 추출된 템플릿 변수 |
-| `java.security.Principal` | 웹소켓 HTTP 핸드셰이크 시점의 로그인 사용자 정보 |
+| 메서드 인자                                                                   | 설명                                                                          |
+| ----------------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
+| `Message<?>`                                                                  | 전체 메시지 객체                                                              |
+| `MessageHeaders`                                                              | 메시지 헤더                                                                   |
+| `MessageHeaderAccessor` / `SimpMessageHeaderAccessor` / `StompHeaderAccessor` | 타입 안전한 메시지 헤더                                                       |
+| `@Payload`                                                                    | 메시지 페이로드                                                               |
+| `@Header("name")`                                                             | 특정 헤더 값                                                                  |
+| `@Headers`                                                                    | 모든 헤더에 대한 `Map` 자료구조 (따라서 인자는 `java.util.Map` 타입이어야 함) |
+| `@DestinationVariable`                                                        | 메시지 목적지 경로에서 추출된 템플릿 변수                                     |
+| `java.security.Principal`                                                     | 웹소켓 HTTP 핸드셰이크 시점의 로그인 사용자 정보                              |
 
-대부분의 STOMP 처리에서 사용되는 객체를 사용할 수 있는 것을 볼 수 있다. 이를 활용하여 예외가 발생하면 특정 사용자에게 현재 데이터베이스가 문제가 생겼다는 메시지를 전송하도록 하자. 
+대부분의 STOMP 처리에서 사용되는 객체를 사용할 수 있는 것을 볼 수 있다. 이를 활용하여 예외가 발생하면 특정 사용자에게 현재 데이터베이스가 문제가 생겼다는 메시지를 전송하도록 하자.
 
 서버 구동 중 데이터베이스가 꺼지면 HikariPool이 없다는 경고 로그가 뜨고, 일정 시간이 지나면 `TransactionException`의 하위 클래스인 `CannotCreateTransactionException`이 발생하는 것을 확인하였다. 이를 참고하여 다음과 같이 예외 처리를 하는 메서드를 작성하였다.
 
@@ -666,7 +664,7 @@ public class StompExceptionHandler {
 이제 `/user/queue/chat.error`에 클라이언트를 구독하고, `/app/chat.1`으로 1번 채팅방에 메시지를 보내보고 기다려보면 서버에서 `CannotCreateTransactionException` 이 발생하고, 이에 대해서 다음과 같이 클라이언트에게 메시지가 전송된 것을 확인할 수 있다.
 
 ```
-$ _INFO_:send STOMP message, destination = /app/chat.1, content = {"userId": "1", "message": "ERROR"}, header = 
+$ _INFO_:send STOMP message, destination = /app/chat.1, content = {"userId": "1", "message": "ERROR"}, header =
 $ _INFO_:subscribe destination /user/queue/chat.error success
 $ _INFO_:Receive subscribed message from destination /user/queue/chat.error, content = MESSAGE
 content-length:13
@@ -681,13 +679,13 @@ content-length:13
 
 ## 참고: 멀티플랙싱을 통한 토픽 관리
 
-현재 애플리케이션은 채팅용 토픽, 채팅 내역 전송용 토픽, 채팅 중 발생한 오류 처리용 토픽 이렇게 3개를 구독해야 정상적으로 채팅 서비스를 이용할 수 있다. 하지만 채팅 애플리케이션은 여기서 끝이 아니다. 
+현재 애플리케이션은 채팅용 토픽, 채팅 내역 전송용 토픽, 채팅 중 발생한 오류 처리용 토픽 이렇게 3개를 구독해야 정상적으로 채팅 서비스를 이용할 수 있다. 하지만 채팅 애플리케이션은 여기서 끝이 아니다.
 
 카카오톡을 생각해보자. 단적으로 사용자가 소속된 채팅방의 가장 최근 채팅 내역을 보여주고, 또 사용자가 읽지 않은 채팅 개수를 표기하기도 한다. 심지어 개인적으로는 좋아하지 않는 기능이지만 사용자가 채팅을 입력중이면 해당 사용자가 입력중이라는 표시도 최근에 구현되었다.
 
 이렇게 여러 필수 / 부가 기능들을 각 기능별로 토픽을 생성하여 처리하면, 채팅 서비스에 소켓 관련 기능이 점점 많아질수록 관리해야할 토픽의 개수가 증가할 것이고, 이는 유지보수의 어려움으로 될 가능성이 높다.
 
-이를 위해 멀티플랙싱을 고려할 수 있다. 멀티플랙싱은 네트워크 용어인데, 쉽게 정리하면 여러 개의 입력을 하나의 출력으로 변환한다는 것이다. 이를 채팅 애플리케이션으로 보면 여러 요청을 하나의 토픽에 발행한다는 것으로 생각할 수 있다. 
+이를 위해 멀티플랙싱을 고려할 수 있다. 멀티플랙싱은 네트워크 용어인데, 쉽게 정리하면 여러 개의 입력을 하나의 출력으로 변환한다는 것이다. 이를 채팅 애플리케이션으로 보면 여러 요청을 하나의 토픽에 발행한다는 것으로 생각할 수 있다.
 
 그렇다면 현재 서비스에서는 어떤 토픽을 하나의 토픽으로 관리할 수 있을까? 이에 대해서 나는 채팅 내역을 전송하기 위한 토픽과 채팅 시 발생하는 예외를 전송하기 위한 토픽을 `/user/queue/chat.info`로 처리하면 어떨까 생각하였다. 또한 하나의 토픽으로 합쳐진만큼 클라이언트에서는 해당 토픽을 통해 발행된 메시지가 어떤 타입인지 알아야 해당 타입에 따른 적절한 처리를 할 수 있다고 생각하였다. 따라서 다음과 같은 객체를 작성해보았다.
 
@@ -706,7 +704,7 @@ enum Type {
 }
 ```
 
-그리고 예외 처리 부분에서 단순히 문자열을 담아 메시지를 보낸 것을 다음과 같이 변경하였다. 
+그리고 예외 처리 부분에서 단순히 문자열을 담아 메시지를 보낸 것을 다음과 같이 변경하였다.
 
 ```java
 @MessageExceptionHandler
@@ -739,7 +737,7 @@ content-length:39
 {"type":"ERROR","data":"데이터베이스 에러 발생"}
 ```
 
-이렇게 클라이언트에게 해당 메시지 타입은 어떤 것인지 알리면 클라이언트가 해당 타입을 확인하여 전송한 데이터를 적절하게 처리할 것이다. 
+이렇게 클라이언트에게 해당 메시지 타입은 어떤 것인지 알리면 클라이언트가 해당 타입을 확인하여 전송한 데이터를 적절하게 처리할 것이다.
 
 ---
 

@@ -3,11 +3,12 @@ title: 대용량 데이터 처리 - Spring Scheduler가 위험한 이유
 
 categories:
   - Spring
+  - Spring Batch
 
 toc: true
 toc_sticky: true
 published: true
- 
+
 date: 2025-10-05
 last_modified_at: 2025-10-05
 ---
@@ -180,11 +181,11 @@ CREATE OR REPLACE VIEW seq_million AS
 SELECT
     (d6.d*100000 + d5.d*10000 + d4.d*1000 + d3.d*100 + d2.d*10 + d1.d) + 1 AS n
 FROM digits d1
-         CROSS JOIN digits d2
-         CROSS JOIN digits d3
-         CROSS JOIN digits d4
-         CROSS JOIN digits d5
-         CROSS JOIN digits d6;
+    CROSS JOIN digits d2
+    CROSS JOIN digits d3
+    CROSS JOIN digits d4
+    CROSS JOIN digits d5
+    CROSS JOIN digits d6;
 
 INSERT INTO management
 (member_id, medication_name, morning, lunch, dinner, sleep,
@@ -212,7 +213,7 @@ LIMIT 1000000;
 
 # 애플리케이션 사전 설정
 
-배치 작업을 처리하기  위해서 다음과 같은 설정과 클래스를 활용하였다.
+배치 작업을 처리하기 위해서 다음과 같은 설정과 클래스를 활용하였다.
 
 ## 의존성 및 설정 정보
 
@@ -242,7 +243,6 @@ spring:
     url: jdbc:mysql://localhost:3306/batch
     username: root
     password: 1234
-
 ```
 
 ## Spring Scheduler 활성화
@@ -257,9 +257,7 @@ public class SpringBatchApplication {
     public static void main(String[] args) {
         SpringApplication.run(SpringBatchApplication.class, args);
     }
-
 }
-
 ```
 
 ## 엔티티 작성
@@ -318,7 +316,6 @@ public class History extends BaseEntity {
         this.sleepTaking = sleepTaking;
     }
 }
-
 ```
 
 ```java
@@ -364,7 +361,6 @@ public class Management extends BaseEntity {
         this.sleepTaking = false;
     }
 }
-
 ```
 
 ## 레포지토리 작성
@@ -373,7 +369,6 @@ public class Management extends BaseEntity {
 @Repository
 public interface HistoryRepository extends JpaRepository<History, Long> {
 }
-
 ```
 
 ```java
@@ -383,7 +378,6 @@ public interface ManagementRepository extends JpaRepository<Management, Long> {
             + "WHERE :date BETWEEN m.startDate AND m.endDate")
     List<Management> findYesterdayManagements(LocalDate date);
 }
-
 ```
 
 ## 성능 모니터링
@@ -425,7 +419,6 @@ public class ExecutionMonitor {
                 point, used, max, String.format("%.3f", usage));
     }
 }
-
 ```
 
 # Spring Scheduler로 배치를 설정하면 안되는 이유
@@ -474,7 +467,6 @@ public class HistoryScheduler {
         ExecutionMonitor.end("스케줄러 종료");
     }
 }
-
 ```
 
 우선 코드를 살펴봤을 때 가장 먼저 예측되는 문제는 바로 메모리 비효율이다. 전체 데이터베이스 조회 결과를 하나의 리스트로 조회하여 `History` 엔티티로 변환해야 하기 때문에 굉장히 많은 메모리가 요구되며, 최악의 경우 OOM 문제가 발생할 것이다.
@@ -506,7 +498,6 @@ public interface ManagementRepository extends JpaRepository<Management, Long> {
             "LIMIT 1000", nativeQuery = true)
     List<Management> findYesterdayManagements(LocalDate date, Long id);
 }
-
 ```
 
 여기에 맞춰서 데이터 처리 작업도 `while`로 데이터가 빌 때 까지 반복하도록 처리하는 것이다. 그러면 적어도 메모리 최적화는 가능할 것으로 보인다. 이 과정에서 `EntityManager`로 `history` 테이블에 INSERT를 할 때마다 영속성 컨텍스트를 비워 메모리 누적을 방지하도록 해봤다.
@@ -548,7 +539,6 @@ public class HistoryScheduler {
         ExecutionMonitor.end("스케줄러 종료");
     }
 }
-
 ```
 
 그리고 **application.yml**에서 다음과 같이 JPA 관련 설정을 작성하자.
@@ -562,7 +552,6 @@ spring:
           batch_size: 1000
         order_inserts: true
         order_updates: true
-
 ```
 
 이제 애플리케이션을 실행시켜 실제로 메모리 점유를 개선할 수 있는지 확인해보자.
@@ -586,26 +575,39 @@ spring:
 
 ## 단점 정리
 
-정리하자면 Spring Scheduler에서 배치 작업을 처리하려면 비즈니스 로직 뿐 아니라 여러 예외 상황에 따른 처리를 해줘야 한다. 성능 이외의 단점을 정리해보면 다음과 같다. 
+정리하자면 Spring Scheduler에서 배치 작업을 처리하려면 비즈니스 로직 뿐 아니라 여러 예외 상황에 따른 처리를 해줘야 한다. 성능 이외의 단점을 정리해보면 다음과 같다.
 
 1. **트랜잭션 범위 문제**
+
 - 클래스 전체에 `@Transactional`이 붙어 있어서 모든 데이터가 한 트랜잭션에 묶임
 - 데이터가 수천, 수만 건일 경우 롤백 시 부담이 크고, DB 락 시간이 길어져 다른 트랜잭션에 영향
 - 부분 커밋 불가 → 전체 실패 가능성 ↑
+
 1. **장애 추적 어려움**
+
 - `saveAll()` 호출로 한 번에 INSERT → 내부적으로 batch insert가 안 되면 row 단위 실패 원인 추적 어려움 (예: 특정 row에서 `DataIntegrityViolationException` 발생 → 전체 실패)
+
 1. **모니터링/로깅 한계**
+
 - 진행 상황(몇 건 완료/실패)을 알 수 없기 때문에 운영 상황에서 장애 대응이 난해함
+
 1. **스케줄러 중복 실행 위험**
+
 - `@Scheduled`는 락이 없으므로, 이전 실행이 끝나기 전에 다음 실행이 겹칠 수 있음
 - 특히 대용량 처리 시 겹치면 동일 데이터 중복 처리, DB Deadlock 발생 위험
+
 1. **확장성 부족**
+
 - 단일 인스턴스에서만 동작 가능 → 여러 서버에서 띄우면 중복 실행 발생
 - 분산 환경/클러스터 환경에서는 동기화, 리더 선출, 분산락(ZooKeeper, Redis 등) 필요
+
 1. **에러/재처리 전략 부재**
+
 - 실패 시 재처리할 건만 따로 처리 불가
 - 중간 저장이나 skip/retry 정책 없음 → 낮은 안정성
+
 1. **테스트/운영 환경 분리 어려움**
+
 - `@Scheduled` 붙은 메서드는 테스트 자동 실행 문제.
 - 운영 배포 시점에 우발적으로 실행될 수 있음 → 데이터 꼬임 가능성 존재
 

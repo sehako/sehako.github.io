@@ -7,7 +7,7 @@ categories:
 toc: true
 toc_sticky: true
 published: true
- 
+
 date: 2025-09-13
 last_modified_at: 2025-09-13
 ---
@@ -25,7 +25,7 @@ last_modified_at: 2025-09-13
 
 ![image.png](https://velog.velcdn.com/images/gkrdh99/post/22ec6115-9639-4c50-95a6-41d42c5c161b/image.png)
 
-세그먼트 트리는 이진 트리의 형태를 가진다. 만약 주어진 배열의 개수가 2의 제곱꼴인 경우에는 완전 이진 트리의 형태가 된다. 리프 노드에는 배열의 수가 담겨져 있고, 부모 노드에는 두 노드에 대한 연산을 수행한 결과가 담겨져 있는 것을 확인할 수 있다. 
+세그먼트 트리는 이진 트리의 형태를 가진다. 만약 주어진 배열의 개수가 2의 제곱꼴인 경우에는 완전 이진 트리의 형태가 된다. 리프 노드에는 배열의 수가 담겨져 있고, 부모 노드에는 두 노드에 대한 연산을 수행한 결과가 담겨져 있는 것을 확인할 수 있다.
 
 # 알고리즘 구현
 
@@ -102,12 +102,12 @@ long[] tree = new long[treeSize];
 ```java
 public class SegmentTree {
 	private final long[] tree;
-	
+
 	public SegmentTree(int[] arr) {
 		int n = arr.length;
-		
+
 		int h = (int) Math.ceil(Math.log(n) / Math.log(2));
-		
+
 		tree = new long[1 << (h + 1)];
 	}
 }
@@ -118,7 +118,7 @@ public class SegmentTree {
 ```java
 public class SegmentTree {
 	private final long[] tree;
-	
+
 	public SegmentTree(int[] arr) {
 		int n = arr.length;
 		tree = new long[4 * n];
@@ -138,10 +138,10 @@ private void build(long[] arr, int n, int s, int e) {
 		tree[n] = arr[s];
 		return;
 	}
-	
+
 	build(arr, n * 2, s, (s + e) / 2);
 	build(arr, n * 2 + 1, (s + e) / 2 + 1, e);
-	
+
 	tree[n] = tree[n * 2] + tree[n * 2 + 1];
 }
 ```
@@ -163,10 +163,10 @@ public long query(int n, int s, int e, int l, int r) {
 	if (l <= s && e <= r) {
 		return tree[n];
 	}
-	
+
 	long leftQuery = query(n * 2, s, (s + e) / 2, l, r);
 	long rightQuery = query(n * 2 + 1, (s + e) / 2 + 1, e, l, r);
-	
+
 	return leftQuery + rightQuery;
 }
 ```
@@ -190,13 +190,13 @@ public long query(int n, int s, int e, int l, int r) {
 
 ### 차이 계산 후 인덱스 범위에 해당하는 수 업데이트
 
-원본 배열의 인덱스를 변경하는 경우, 해당 인덱스를 포함하는 노드에서 차이점만 연산하면 된다. 원래 배열의 값이 `arr[idx]`이고, 변경된 수와 기존의 수가 `diff`라고 했을 때 코드는 다음과 같다. 
+원본 배열의 인덱스를 변경하는 경우, 해당 인덱스를 포함하는 노드에서 차이점만 연산하면 된다. 원래 배열의 값이 `arr[idx]`이고, 변경된 수와 기존의 수가 `diff`라고 했을 때 코드는 다음과 같다.
 
 ```java
 public void update(int n, int s, int e, int idx, long diff) {
 	if (idx < s || idx > e) return;
 	tree[n] += diff;
-	
+
 	if (s == e) return;
 
 	update(n * 2, s, (s + e) / 2, idx, diff);
@@ -224,7 +224,7 @@ public void update(int n, int s, int e, int idx, long diff) {
 	}
 	update(n * 2, s, (s + e) / 2, idx, diff);
 	update(n * 2 + 1, (s + e) / 2 + 1, e, idx, diff);
-	
+
 	tree[n] = tree[n * 2] + tree[n * 2 + 1];
 }
 ```
@@ -245,12 +245,12 @@ private final long[] update;
 private static void applyUpdate(int n, int s, int e) {
 	if (update[n] != 0) {
 		tree[n] += (e - s + 1) * update[n];
-		
+
 		if (s != e) {
 			update[n * 2] += update[n];
 			update[n * 2 + 1] += update[n];
 		}
-		
+
 		update[n] = 0;
 	}
 }
@@ -280,19 +280,18 @@ private static void updateRange(int n, int s, int e, int l, int r, long diff) {
 	if (s > r || e < l) return;
 	if (l <= s && e <= r) {
 		tree[n] += (e - s + 1) * diff;
-		
+
 		if (s != e) {
 			update[n * 2] += diff;
 			update[n * 2 + 1] += diff;
-
 		}
-		
+
 		return;
 	}
-	
+
 	updateRange(n * 2, s, (s + e) / 2, l, r, diff);
 	updateRange(n * 2 + 1, (s + e) / 2 + 1, e, l, r, diff);
-	
+
 	tree[n] = tree[n * 2] + tree[n * 2 + 1];
 }
 ```
@@ -308,82 +307,82 @@ private static void updateRange(int n, int s, int e, int l, int r, long diff) {
 ```java
 public class SegmentTree {
 	private long[] tree, update;
-	
+
 	public SegmentTree(long[] arr) {
 		int n = arr.length;
 		int h = (int) Math.ceil(Math.log(n) / Math.log(2));
 
 		tree = new long[1 << (h + 1)];
 		update = new long[1 << (h + 1)];
-		
+
 		build(arr, 1, 0, n - 1);
 	}
-	
+
 	private void build(long[] arr, int n, int s, int e) {
 		if (s == e) {
 			tree[n] = arr[s];
 			return;
 		}
-		
+
 		build(arr, n * 2, s, (s + e) / 2);
 		build(arr, n * 2 + 1, (s + e) / 2 + 1, e);
-		
+
 		tree[n] = tree[n * 2] + tree[n * 2 + 1];
 	}
-	
+
 	public long query(int n, int s, int e, int l, int r) {
 		applyUpdate(n, s, e);
 		if (s > r || e < l) return 0L;
 		if (l <= s && e <= r) {
 			return tree[n];
 		}
-		
+
 		long leftQuery = query(n * 2, s, (s + e) / 2, l, r);
 		long rightQuery = query(n * 2 + 1, (s + e) / 2 + 1, e, l, r);
-		
+
 		return leftQuery + rightQuery;
 	}
-	
+
 	public void update(int n, int s, int e, int idx, long diff) {
 		if (idx < s || idx > e) return;
 
 		tree[n] += diff;
-		
+
 		if (s == e) return;
 
 		update(n * 2, s, (s + e) / 2, idx, diff);
 		update(n * 2 + 1, (s + e) / 2 + 1, e, idx, diff);
 	}
-	
+
 	public void updateRange(int n, int s, int e, int l, int r, long diff) {
 		applyUpdate(n, s, e);
 		if (s > r || e < l) return;
 		if (l <= s && e <= r) {
 			tree[n] += (e - s + 1) * diff;
-			
+
 			if (s != e) {
 				update[n * 2] += diff;
 				update[n * 2 + 1] += diff;
 			}
-			
+
 			return;
 		}
-		
+
 		updateRange(n * 2, s, (s + e) / 2, l, r, diff);
 		updateRange(n * 2 + 1, (s + e) / 2 + 1, e, l, r, diff);
-		
+
 		tree[n] = tree[n * 2] + tree[n * 2 + 1];
 	}
 
 	private void applyUpdate(int n, int s, int e) {
 		if (update[n] != 0) {
 			tree[n] += (e - s + 1) * update[n];
-			
+
 			if (s != e) {
 				update[n * 2] += update[n];
 				update[n * 2 + 1] += update[n];
 			}
-			
+
 			update[n] = 0;
 		}
 	}

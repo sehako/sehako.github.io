@@ -1,29 +1,29 @@
 ---
-title: 대용량 데이터 처리 - Spring Scheduler가 위험한 이유
+title: Spring Batch - 기본 개념 정리 및 도입
 
 categories:
   - Spring
+  - Spring Batch
 
 toc: true
 toc_sticky: true
 published: true
- 
+
 date: 2025-10-08
 last_modified_at: 2025-10-08
 ---
 
 앞서 Spring Scheduler를 활용하여 대용량 데이터를 처리하면 어떤 치명적인 문제가 발생하는지 알아보고 해당 문제들을 해결하기 위해서 Spring Batch가 사용된다는 것을 알아보았다. 그렇다면 Spring Batch는 무엇일까?
 
-*참고로 앞서 Spring Scheduler로 구현했던 배치 작업을 **기존 작업**으로 명칭하도록 하겠다.*
+_참고로 앞서 Spring Scheduler로 구현했던 배치 작업을 **기존 작업**으로 명칭하도록 하겠다._
 
 # Spring Batch
 
 공식 문서에 따르면 스프링 배치는 다음과 같다.
 
 > 스프링 배치는 로깅/추적, 트랜잭션 관리, 작업 처리 통계, 작업 재시작, 건너뛰기, 리소스 관리 등 대용량 레코드 처리에 필수적인 재사용 가능한 기능과, 최적화 및 파티셔닝 기술을 통해 대용량 및 고성능 배치 작업을 지원하는 더욱 진보된 기술 서비스와 기능을 제공한다. 간단한 작업뿐 아니라 복잡한 대용량 배치 작업도 확장성이 뛰어난 방식으로 이 프레임워크를 활용하여 방대한 양의 정보를 처리할 수 있다.
-> 
 
-쉽게 말해 스프링 프레임워크 기반으로 만들어진 대용량 데이터 처리 프레임워크다. 
+쉽게 말해 스프링 프레임워크 기반으로 만들어진 대용량 데이터 처리 프레임워크다.
 
 ## 기본 개념
 
@@ -50,7 +50,7 @@ Spring Batch는 배치 작업을 Job과 Step으로 구성한다. Job은 말 그�
 
 **청크 지향 처리 (Chunk-Oriented Processing)**
 
-데이터 처리 작업은 결국 데이터의 조회 → 처리(변환) → 쓰기 단계로 이루어진다. 이러한 패턴을 보이는 작업을 Spring Batch에서는 청크 지향 처리라고 부른다. 
+데이터 처리 작업은 결국 데이터의 조회 → 처리(변환) → 쓰기 단계로 이루어진다. 이러한 패턴을 보이는 작업을 Spring Batch에서는 청크 지향 처리라고 부른다.
 
 청크는 일정 크기를 가진 데이터 덩어리로, 앞서 기존 작업에서 보여주었던 것 처럼 100만 건의 데이터를 한 번에 처리하는 것이 아닌 1000건의 청크로 분할하여 처리하도록 하는 것이다. 어떻게 보면 기존 작업은 청크 지향 처리를 구현한 것이다.
 
@@ -60,9 +60,9 @@ Spring Batch는 다음 인터페이스로 데이터의 조회, 처리, 쓰기를
 
 ```java
 public interface ItemReader<T> {
-    T read() throws Exception, 
-        UnexpectedInputException, 
-        ParseException, 
+    T read() throws Exception,
+        UnexpectedInputException,
+        ParseException,
         NonTransientResourceException;
 }
 ```
@@ -87,7 +87,7 @@ public interface ItemWriter<T> {
 }
 ```
 
-ItemProcessor가 가공한 데이터를 받아 최종적으로 저장 / 출력한다. 이때 ItemWriter는 앞선 객체들이 아이템을 하나씩 처리하는 것과는 다르게 데이터를 한 건씩 쓰지 않고 청크 단위로 묶어서 한 번에 데이터를 쓴다. 
+ItemProcessor가 가공한 데이터를 받아 최종적으로 저장 / 출력한다. 이때 ItemWriter는 앞선 객체들이 아이템을 하나씩 처리하는 것과는 다르게 데이터를 한 건씩 쓰지 않고 청크 단위로 묶어서 한 번에 데이터를 쓴다.
 
 이렇게 3개의 객체들로 구성된 청크 지향 처리는 어떻게 보면 데이터를 읽고, 처리하고, 쓴다는 데이터 처리의 표준이기도 하다. 이 패턴 덕분에 Spring Batch에서의 청크 지향 처리는 책임 분리, 재사용성 극대화, 높은 유연성을 가진다는 장점이 있다. 또한 청크 지향 처리는 청크 단위로 트랜잭션을 나누어 처리하기 때문에 예외 발생 시 해당 청크만 롤백된다.
 
@@ -112,11 +112,11 @@ Spring Batch는 Job, Step, Chunk, Item의 실행 주기에 따른 이벤트 처�
 
 # Spring Batch로 전환해보기
 
-그러면 이제 기존 작업을 Spring Batch로 전환해보자. 
+그러면 이제 기존 작업을 Spring Batch로 전환해보자.
 
 ## 사전 설정
 
-배치 작업을 위해서 애플리케이션 설정을 먼저 하도록 하자. 
+배치 작업을 위해서 애플리케이션 설정을 먼저 하도록 하자.
 
 **build.gradle**
 
@@ -152,10 +152,10 @@ spring:
 
 여기서 `spring.batch.jdbc.initialize-schema` 배치 관련 메타데이터 테이블을 생성하는 스키마 파일 실행 관련 설정이다. `always`는 애플리케이션 실행마다 항상 스키마 파일을 실행하려고 하기 때문에 특정 DBMS에서는 에러가 발생할 수 있다. 따라서 개발 환경에서만 사용하고, 로컬 환경에서는 지양하도록 하자. 그 외 설정은 아래 표로 확인해보도록 하자.
 
-| 키워드 | 설명 |
-| --- | --- |
+| 키워드     | 설명                                                    |
+| ---------- | ------------------------------------------------------- |
 | `embedded` | 내장 DB 사용 시 자동으로 메타데이터 테이블 생성, 기본값 |
-| `never`  | 자동으로 테이블을 만들지 않음 (운영 환경에서 직접 사용) |
+| `never`    | 자동으로 테이블을 만들지 않음 (운영 환경에서 직접 사용) |
 
 운영 환경에서는 Maven 기준으로 다음 경로로 찾아 들어가서 스키마 파일을 찾아 사용하려는 메타데이터 데이터베이스에 맞는 스키마를 실행시키면 된다.
 
@@ -167,7 +167,7 @@ org/springframework/batch/core/
 
 ## 배치 작업 설정
 
-이제 사전 설정도 완료되었으니 배치 작업을 구성해보도록 하자. 
+이제 사전 설정도 완료되었으니 배치 작업을 구성해보도록 하자.
 
 ### ItemReader
 
@@ -179,18 +179,18 @@ JPA의 기능을 사용하지 않기 때문에 `ManagementRow`라는 별도의 D
 
 ```java
 public record ManagementRow(
-        Long id,
-        Long memberId,
-        boolean morning,
-        boolean lunch,
-        boolean dinner,
-        boolean sleep,
-        boolean morningTaking,
-        boolean lunchTaking,
-        boolean dinnerTaking,
-        boolean sleepTaking,
-        LocalDate startDate,
-        LocalDate endDate
+    Long id,
+    Long memberId,
+    boolean morning,
+    boolean lunch,
+    boolean dinner,
+    boolean sleep,
+    boolean morningTaking,
+    boolean lunchTaking,
+    boolean dinnerTaking,
+    boolean sleepTaking,
+    LocalDate startDate,
+    LocalDate endDate
 ) {}
 ```
 
@@ -207,8 +207,8 @@ public class ItemReaderConfig {
     @Bean
     @StepScope
     public JdbcPagingItemReader<ManagementRow> managementReader(
-            DataSource dataSource,
-            @Value("#{jobParameters['targetDate']}") LocalDate targetDate
+        DataSource dataSource,
+        @Value("#{jobParameters['targetDate']}") LocalDate targetDate
     ) {
         return new JdbcPagingItemReaderBuilder<ManagementRow>()
                 .name("managementReader")
@@ -230,7 +230,7 @@ public class ItemReaderConfig {
 
 여기서 `@StepScope`는 무엇일까? 이 어노테이션이 선언된 빈들은 애플리케이션 구동 시점에 프록시로 등록되고, Job 또는 Step이 실행된 이후에 프록시 객체에서 접근을 시도하면 실제 빈이 생성되도록 한다. 이를 활용하여 `ItemReader`가 `JobParameters`에 접근이 가능하게 해준다.
 
-그리고 `sortKey()`는 정렬 이외에도 KEYSET 기반 페이지네이션 용도로도 사용되기 때문에 일반적으로 유니크한 값인 PK를 사용하면 된다. 
+그리고 `sortKey()`는 정렬 이외에도 KEYSET 기반 페이지네이션 용도로도 사용되기 때문에 일반적으로 유니크한 값인 PK를 사용하면 된다.
 
 ### ItemProcessor
 
@@ -238,32 +238,32 @@ public class ItemReaderConfig {
 
 ```java
 public record HistoryRow(
-        Long managementId,
-        Long memberId,
-        LocalDate takingDate,
-        boolean morning,
-        boolean lunch,
-        boolean dinner,
-        boolean sleep,
-        boolean morningTaking,
-        boolean lunchTaking,
-        boolean dinnerTaking,
-        boolean sleepTaking
+    Long managementId,
+    Long memberId,
+    LocalDate takingDate,
+    boolean morning,
+    boolean lunch,
+    boolean dinner,
+    boolean sleep,
+    boolean morningTaking,
+    boolean lunchTaking,
+    boolean dinnerTaking,
+    boolean sleepTaking
 ) {
     public static HistoryRow of(ManagementRow managementRow, LocalDate takingDate) {
-        return new HistoryRow(
-                managementRow.id(),
-                managementRow.memberId(),
-                takingDate,
-                managementRow.morning(),
-                managementRow.lunch(),
-                managementRow.dinner(),
-                managementRow.sleep(),
-                managementRow.morningTaking(),
-                managementRow.lunchTaking(),
-                managementRow.dinnerTaking(),
-                managementRow.sleepTaking()
-        );
+      return new HistoryRow(
+          managementRow.id(),
+          managementRow.memberId(),
+          takingDate,
+          managementRow.morning(),
+          managementRow.lunch(),
+          managementRow.dinner(),
+          managementRow.sleep(),
+          managementRow.morningTaking(),
+          managementRow.lunchTaking(),
+          managementRow.dinnerTaking(),
+          managementRow.sleepTaking()
+      );
     }
 }
 ```
@@ -298,29 +298,29 @@ public class ItemWriterConfig {
                 .dataSource(dataSource)
                 .sql("""
                         INSERT INTO history (
-                            management_id, 
-                            member_id, 
-                            taking_date, 
-                            morning, 
-                            lunch, 
-                            dinner, 
-                            sleep, 
-                            morning_taking, 
-                            lunch_taking, 
-                            dinner_taking, 
+                            management_id,
+                            member_id,
+                            taking_date,
+                            morning,
+                            lunch,
+                            dinner,
+                            sleep,
+                            morning_taking,
+                            lunch_taking,
+                            dinner_taking,
                             sleep_taking
-                        ) 
+                        )
                         VALUES (
-                            :managementId, 
-                            :memberId, 
-                            :takingDate, 
-                            :morning, 
-                            :lunch, 
-                            :dinner, 
-                            :sleep, 
-                            :morningTaking, 
-                            :lunchTaking, 
-                            :dinnerTaking, 
+                            :managementId,
+                            :memberId,
+                            :takingDate,
+                            :morning,
+                            :lunch,
+                            :dinner,
+                            :sleep,
+                            :morningTaking,
+                            :lunchTaking,
+                            :dinnerTaking,
                             :sleepTaking
                         )
                         """)
@@ -376,7 +376,7 @@ public class ItemWriterConfig {
 
 이제 `spring.datasource.url`의 쿼리 파라미터로 `rewriteBatchedStatements=true` 옵션을 설정한 이유를 설명할 차례다. Spring Batch의 ItemWriter는 내부적으로 `PreparedStatement`를 재사용하여 쿼리 템플릿 하나와 여러 파라미터 세트를 함께 전송한다.
 
-이렇게 전달된 쿼리를 데이터베이스 서버에서 파싱하여 처리를 하는데, 이때 연결 정보에 다음 설정을 처리해주면 데이터베이스에서 Multi-Value-INSERT라는 하나의 INSERT로 통합된 쿼리로 실행하기 때문에 이러한 설정을 한 것이다. 
+이렇게 전달된 쿼리를 데이터베이스 서버에서 파싱하여 처리를 하는데, 이때 연결 정보에 다음 설정을 처리해주면 데이터베이스에서 Multi-Value-INSERT라는 하나의 INSERT로 통합된 쿼리로 실행하기 때문에 이러한 설정을 한 것이다.
 
 ### Tasklet 작성
 
@@ -402,10 +402,10 @@ public class ManagementResetTasklet implements Tasklet {
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) {
         log.info("management reset tasklet start");
         String sql = """
-                UPDATE management 
-                SET morning_taking = false, 
-                lunch_taking = false, 
-                dinner_taking = false, 
+                UPDATE management
+                SET morning_taking = false,
+                lunch_taking = false,
+                dinner_taking = false,
                 sleep_taking = false
                 WHERE ? BETWEEN start_date AND end_date
                 """;
@@ -468,7 +468,7 @@ public class HistoryBatchConfig {
 
 ## 이벤트 리스너 작성
 
-배치 작업 자체는 설정되었지만, 현재 상황이라면 아무런 로그도 출력되지 않을 것이다. 따라서 Job의 소요 시간과 메모리 점유율을 확인하기 위해, 이벤트 리스너를 만들어 기존 작업의 성능 측정에 사용되었던 `ExecutionMonitor`를 적용해보도록 하자. 
+배치 작업 자체는 설정되었지만, 현재 상황이라면 아무런 로그도 출력되지 않을 것이다. 따라서 Job의 소요 시간과 메모리 점유율을 확인하기 위해, 이벤트 리스너를 만들어 기존 작업의 성능 측정에 사용되었던 `ExecutionMonitor`를 적용해보도록 하자.
 
 ### ExecutionMonitor 수정
 
@@ -520,7 +520,7 @@ public class ExecutionMonitor {
 
 ### 이벤트 리스너 작성 및 설정
 
-그리고 다음과 같이 이벤트 리스너를 작성한다. 
+그리고 다음과 같이 이벤트 리스너를 작성한다.
 
 ```java
 @Slf4j
@@ -631,21 +631,21 @@ Step: [managementResetStep] executed in 5s167ms
 [writerHistoryJob 종료] Elapsed Time: 157948 ms (157.948 sec)
 Average Memory Usage: 79 MB / 4022 MB (2.000 %)
 Maximum Memory Usage: 133 MB / 4022 MB (3.300 %)
-Job: [SimpleJob: [name=writeHistoryJob]] completed with 
-the following parameters: [{'targetDate':'{value=2025-10-02, 
-type=class java.time.LocalDate, identifying=true}'}] and 
+Job: [SimpleJob: [name=writeHistoryJob]] completed with
+the following parameters: [{'targetDate':'{value=2025-10-02,
+type=class java.time.LocalDate, identifying=true}'}] and
 the following status: [COMPLETED] in 2m37s962ms
 ```
 
-작업 실행 시간은 IDE의 기본적인 로그 출력으로 알 수 있어서 해당 로그를 기준으로 계산해보도록 하자. 우선 100만 건의 데이터를 대상으로 기존 작업이 15분 ~ 20분 정도 걸려서 처리하던 것을 Spring Batch 전환 이후 2분 ~ 3분으로 줄였는데, 이는 최대 시간 기준 약 85%로 시간을 단축시킨 것이다, 
+작업 실행 시간은 IDE의 기본적인 로그 출력으로 알 수 있어서 해당 로그를 기준으로 계산해보도록 하자. 우선 100만 건의 데이터를 대상으로 기존 작업이 15분 ~ 20분 정도 걸려서 처리하던 것을 Spring Batch 전환 이후 2분 ~ 3분으로 줄였는데, 이는 최대 시간 기준 약 85%로 시간을 단축시킨 것이다,
 
 또한 최대 1.3GB를 점유하던 메모리 사용률을 최대 133MB를 점유하도록 줄였는데, 이는 기존 작업의 메모리 점유율 대비 약 90% 정도 개선한 것이다. 정리하자면 메모리 사용률과 처리 시간 모두 기존 작업에 비해서 획기적으로 단축시켰다!
 
 ## 추가 테스트
 
-그렇다면 추가적으로 테스트를 한 번 진행해보자. 기존 작업은 100만 건 이상의 데이터를 처리하려고 하면 OOM이 발생하거나 시간이 굉장히 오래 걸릴 것이 예상되어서 데이터 크기를 늘려 테스트 하기 조금 꺼려졌다. 
+그렇다면 추가적으로 테스트를 한 번 진행해보자. 기존 작업은 100만 건 이상의 데이터를 처리하려고 하면 OOM이 발생하거나 시간이 굉장히 오래 걸릴 것이 예상되어서 데이터 크기를 늘려 테스트 하기 조금 꺼려졌다.
 
-하지만 Spring Batch를 활용했을 때 소요 시간과 메모리 점유를 획기적으로 개선했으므로, 과감하게 현재 데이터 레코드의 10배인 1000만 건의 데이터를 대상으로 배치 작업을 처리해보도록 하자. 
+하지만 Spring Batch를 활용했을 때 소요 시간과 메모리 점유를 획기적으로 개선했으므로, 과감하게 현재 데이터 레코드의 10배인 1000만 건의 데이터를 대상으로 배치 작업을 처리해보도록 하자.
 
 ### 사전 설정
 
@@ -669,7 +669,7 @@ FROM digits d1
          CROSS JOIN digits d5
          CROSS JOIN digits d6
          CROSS JOIN digits d7;
-         
+
 DROP TABLE IF EXISTS `management`;
 INSERT INTO management
 (member_id, medication_name, morning, lunch, dinner, sleep,
@@ -704,7 +704,7 @@ public class HistoryBatchConfig {
     private final PlatformTransactionManager transactionManager;
     private final JobRepository jobRepository;
     private final WriteHistoryBatchListener historyBatchListener;
-    
+
     // ...
 
     @Bean
@@ -754,9 +754,9 @@ Step: [managementResetStep] executed in 1m5s74ms
 [writerHistoryJob 종료] Elapsed Time: 1390840 ms (1390.84 sec)
 Average Memory Usage: 122 MB / 4022 MB (3.000 %)
 Maximum Memory Usage: 196 MB / 4022 MB (4.900 %)
-Job: [SimpleJob: [name=writeHistoryJob]] completed with 
-the following parameters: [{'targetDate':'{value=2025-10-02, 
-type=class java.time.LocalDate, identifying=true}'}] and 
+Job: [SimpleJob: [name=writeHistoryJob]] completed with
+the following parameters: [{'targetDate':'{value=2025-10-02,
+type=class java.time.LocalDate, identifying=true}'}] and
 the following status: [COMPLETED] in 23m10s857ms
 ```
 
@@ -768,7 +768,7 @@ the following status: [COMPLETED] in 23m10s857ms
 
 **application.yml**
 
-애플리케이션의 데이터베이스 관련 설정이 대용량 데이터를 처리하기에는 미비하다는 판단을 하였다. 따라서 연결 정보에 추가적인 파라미터를 전달하는 것이 어떻겠냐는 조언을 하여 다음과 같이 설정하였다. 
+애플리케이션의 데이터베이스 관련 설정이 대용량 데이터를 처리하기에는 미비하다는 판단을 하였다. 따라서 연결 정보에 추가적인 파라미터를 전달하는 것이 어떻겠냐는 조언을 하여 다음과 같이 설정하였다.
 
 ```yaml
 spring:
@@ -829,13 +829,13 @@ innodb_read_io_threads=8
 
 각 설정에 대한 설명은 아래 표로 정리하였다.
 
-| 설정 항목 | 권장값 | 역할 / 설명 | 효과 |
-| --- | --- | --- | --- |
-| `innodb_flush_log_at_trx_commit` | `2` | 트랜잭션 커밋 시 로그를 디스크로 즉시 flush하지 않고 1초 단위로 동기화하도록 설정한다. | 디스크 I/O 감소로 성능이 2~3배 향상되며, 전원 장애 시 1초 내 데이터 손실 가능성이 있다. |
-| `innodb_buffer_pool_size` | `4G` | InnoDB 캐시 메모리 크기를 지정한다. 데이터와 인덱스를 메모리에 캐싱하여 읽기/쓰기 성능을 향상시킨다. (전용 DB 서버라면 RAM의 60~70% 수준 권장) | 읽기·쓰기 성능이 향상되고 디스크 접근이 최소화된다. |
-| `innodb_redo_log_capacity` | `8G` | MySQL 8.0.30+ 이후 도입된 설정으로, 전체 Redo Log(트랜잭션 로그)의 용량을 지정한다. 과거 `innodb_log_file_size` 설정을 대체한다. | 로그 flush 빈도가 감소하여 대용량 배치 처리 시 쓰기 지연이 완화된다. |
-| `innodb_write_io_threads` | `8` | InnoDB의 쓰기 I/O를 처리하는 백그라운드 스레드 수를 지정한다. 멀티코어 CPU 환경에서 병렬 디스크 쓰기를 처리한다. | 병렬 처리 성능이 향상된다. |
-| `innodb_read_io_threads` | `8` | InnoDB의 읽기 I/O를 처리하는 백그라운드 스레드 수를 지정한다. | 읽기 요청이 많은 경우 성능이 향상되지만, 쓰기 설정보다 영향은 다소 적다. |
+| 설정 항목                        | 권장값 | 역할 / 설명                                                                                                                                    | 효과                                                                                    |
+| -------------------------------- | ------ | ---------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
+| `innodb_flush_log_at_trx_commit` | `2`    | 트랜잭션 커밋 시 로그를 디스크로 즉시 flush하지 않고 1초 단위로 동기화하도록 설정한다.                                                         | 디스크 I/O 감소로 성능이 2~3배 향상되며, 전원 장애 시 1초 내 데이터 손실 가능성이 있다. |
+| `innodb_buffer_pool_size`        | `4G`   | InnoDB 캐시 메모리 크기를 지정한다. 데이터와 인덱스를 메모리에 캐싱하여 읽기/쓰기 성능을 향상시킨다. (전용 DB 서버라면 RAM의 60~70% 수준 권장) | 읽기·쓰기 성능이 향상되고 디스크 접근이 최소화된다.                                     |
+| `innodb_redo_log_capacity`       | `8G`   | MySQL 8.0.30+ 이후 도입된 설정으로, 전체 Redo Log(트랜잭션 로그)의 용량을 지정한다. 과거 `innodb_log_file_size` 설정을 대체한다.               | 로그 flush 빈도가 감소하여 대용량 배치 처리 시 쓰기 지연이 완화된다.                    |
+| `innodb_write_io_threads`        | `8`    | InnoDB의 쓰기 I/O를 처리하는 백그라운드 스레드 수를 지정한다. 멀티코어 CPU 환경에서 병렬 디스크 쓰기를 처리한다.                               | 병렬 처리 성능이 향상된다.                                                              |
+| `innodb_read_io_threads`         | `8`    | InnoDB의 읽기 I/O를 처리하는 백그라운드 스레드 수를 지정한다.                                                                                  | 읽기 요청이 많은 경우 성능이 향상되지만, 쓰기 설정보다 영향은 다소 적다.                |
 
 해당 설정을 한 다음 컨테이너 재시작 후 배치 작업을 테스트해봤는데 시간 개선이 전혀 이루어지지 않았다. 그 외에도 청크 크기도 조정해보았지만 유의미한 변화는 없었다.
 
@@ -884,9 +884,9 @@ Step: [managementResetStep] executed in 1m10s545ms
 [writerHistoryJob 종료] Elapsed Time: 752363 ms (752.363 sec)
 Average Memory Usage: 84 MB / 1950 MB (4.300 %)
 Maximum Memory Usage: 152 MB / 1950 MB (7.800 %)
-Job: [SimpleJob: [name=writeHistoryJob]] completed with 
-the following parameters: [{'targetDate':'{value=2025-10-02, 
-type=class java.time.LocalDate, identifying=true}'}] and 
+Job: [SimpleJob: [name=writeHistoryJob]] completed with
+the following parameters: [{'targetDate':'{value=2025-10-02,
+type=class java.time.LocalDate, identifying=true}'}] and
 the following status: [COMPLETED] in 12m32s437ms
 ```
 
@@ -902,9 +902,9 @@ Step: [managementResetStep] executed in 1m17s203ms
 [writerHistoryJob 종료] Elapsed Time: 776767 ms (776.767 sec)
 Average Memory Usage: 118 MB / 1950 MB (6.100 %)
 Maximum Memory Usage: 197 MB / 1950 MB (10.100 %)
-Job: [SimpleJob: [name=writeHistoryJob]] completed with 
-the following parameters: [{'targetDate':'{value=2025-10-02, 
-type=class java.time.LocalDate, identifying=true}'}] and 
+Job: [SimpleJob: [name=writeHistoryJob]] completed with
+the following parameters: [{'targetDate':'{value=2025-10-02,
+type=class java.time.LocalDate, identifying=true}'}] and
 the following status: [COMPLETED] in 12m56s781ms
 ```
 
@@ -922,9 +922,9 @@ the following status: [COMPLETED] in 12m56s781ms
  [writerHistoryJob 종료] Elapsed Time: 90846 ms (90.846 sec)
  Average Memory Usage: 76 MB / 1950 MB (3.900 %)
  Maximum Memory Usage: 130 MB / 1950 MB (6.700 %)
- Job: [SimpleJob: [name=writeHistoryJob]] completed with 
- the following parameters: [{'targetDate':'{value=2025-10-02, 
- type=class java.time.LocalDate, identifying=true}'}] and 
+ Job: [SimpleJob: [name=writeHistoryJob]] completed with
+ the following parameters: [{'targetDate':'{value=2025-10-02,
+ type=class java.time.LocalDate, identifying=true}'}] and
  the following status: [COMPLETED] in 1m30s861ms
 ```
 
@@ -940,9 +940,9 @@ Step: [managementResetStep] executed in 7s60ms
 [writerHistoryJob 종료] Elapsed Time: 82119 ms (82.119 sec)
 Average Memory Usage: 117 MB / 1950 MB (6.000 %)
 Maximum Memory Usage: 172 MB / 1950 MB (8.800 %)
-Job: [SimpleJob: [name=writeHistoryJob]] completed with 
-the following parameters: [{'targetDate':'{value=2025-10-02, 
-type=class java.time.LocalDate, identifying=true}'}] and 
+Job: [SimpleJob: [name=writeHistoryJob]] completed with
+the following parameters: [{'targetDate':'{value=2025-10-02,
+type=class java.time.LocalDate, identifying=true}'}] and
 the following status: [COMPLETED] in 1m22s141ms
 ```
 
@@ -952,7 +952,7 @@ the following status: [COMPLETED] in 1m22s141ms
 
 ---
 
-이렇게 Spring Scheduler를 활용한 어설픈 배치 작업에서 Spring Batch를 활용한 배치 작업으로 성공적으로 전환하였다. 결과적으로 소모 시간은 기존 작업 대비 85% 이상, 메모리 점유율은 기존 작업 대비 90% 이상 개선할 수 있었다. 
+이렇게 Spring Scheduler를 활용한 어설픈 배치 작업에서 Spring Batch를 활용한 배치 작업으로 성공적으로 전환하였다. 결과적으로 소모 시간은 기존 작업 대비 85% 이상, 메모리 점유율은 기존 작업 대비 90% 이상 개선할 수 있었다.
 
 생각보다 리팩토링 결과를 작성하는 글이 많이 늦어졌다. AI를 활용하면 내가 아는 것 이상의 지식을 활용할 수 있기 때문에 구현 자체는 이보다 훨씬 빨랐겠지만, 배치 작업은 실제 고객의 금전적인 부분을 처리하는 작업인 경우도 많기 때문에 그런 식으로 배우고 ‘배치를 할 줄 안다’고 스스로 착각하면 위험할 것 같아서 강의를 통해 자세히 공부해야 한다고 생각하였고, 이 선택은 틀리지 않았다고 생각한다. 해당 포스팅을 작성하는데 도움이 된 강의를 참고자료에 공유하도록 하겠다.
 
