@@ -2,7 +2,6 @@
 title: Spring Batch - CSV 백업 및 알림 메일 처리
 
 categories:
-  - Spring
   - Spring Batch
 
 toc: true

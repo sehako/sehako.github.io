@@ -3,6 +3,7 @@ title: 인메모리 라이브러리를 활용한 통합 테스트 환경과 실�
 
 categories:
   - Spring
+  - Test
 
 toc: true
 toc_sticky: true

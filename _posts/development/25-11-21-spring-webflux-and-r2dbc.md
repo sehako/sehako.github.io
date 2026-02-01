@@ -2,7 +2,6 @@
 title: Spring WebFlux와 Spring Data R2DBC
 
 categories:
-  - Spring
   - Reactive Programming
 
 toc: true

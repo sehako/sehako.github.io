@@ -3,6 +3,7 @@ title: TestContainers를 활용한 통합 테스트 환경과 실행 환경의 �
 
 categories:
   - Spring
+  - Test
 
 toc: true
 toc_sticky: true

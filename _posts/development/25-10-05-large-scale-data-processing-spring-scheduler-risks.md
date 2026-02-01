@@ -2,7 +2,6 @@
 title: 대용량 데이터 처리 - Spring Scheduler가 위험한 이유
 
 categories:
-  - Spring
   - Spring Batch
 
 toc: true

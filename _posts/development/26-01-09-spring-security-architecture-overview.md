@@ -2,7 +2,6 @@
 title: Spring Security 아키텍처 이해하기
 
 categories:
-  - Spring
   - Spring Security
 
 toc: true

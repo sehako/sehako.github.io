@@ -2,7 +2,6 @@
 title: Spring Batch - 기본 개념 정리 및 도입
 
 categories:
-  - Spring
   - Spring Batch
 
 toc: true
