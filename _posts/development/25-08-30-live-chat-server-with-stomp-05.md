@@ -1,5 +1,5 @@
 ---
-title: 실시간 채팅 개발 - 이벤트와 읽음 처리
+title: 실시간 채팅 개발 - 스케일 아웃
 
 categories:
   - Spring
