@@ -1,14 +1,13 @@
 ---
-title: MSA 환경에서 발 및 배포 환경 분리 및 스웨거 설정
+title: MSA 환경 분리 및 스웨거 설정
 
 categories:
-  - Spring
   - Infrastructure
 
 toc: true
 toc_sticky: true
 published: true
- 
+
 date: 2025-04-20
 last_modified_at: 2025-04-20
 ---
@@ -26,6 +25,7 @@ Nginx를 통해 경유하기 때문에 `{SERVER_URL}/service/`에 요청을 보�
 각각의 마이크로 서비스들을 로컬에서 개발할 때 다음 라이브러리들이 굳이 필요하지 않다.
 
 {% include code-header.html %}
+
 ```groovy
 ext {
     set('springCloudVersion', "2024.0.0")
@@ -47,6 +47,7 @@ dependencies {
 따라서 이러한 라이브러리들을 로컬 환경에서 개발할 때에는 의도적으로 동작하지 않도록 해야 한다. 이는 간단하게 조건문을 추가하여 해결할 수 있었다.
 
 {% include code-header.html %}
+
 ```groovy
 dependencies {
     if (project.hasProperty("profile") && project.profile == "prod") {
@@ -60,6 +61,7 @@ dependencies {
 그리고 빌드 명령어를 다음과 같이 작성하면 된다.
 
 {% include code-header.html %}
+
 ```bash
 ./gradlew clean bootJar -Pprofile=prod
 ```
@@ -73,6 +75,7 @@ dependencies {
 게이트웨이에서 스웨거를 사용하려면 다음 라이브러리를 선언해야 한다.
 
 {% include code-header.html %}
+
 ```groovy
 implementation 'org.springdoc:springdoc-openapi-starter-webflux-ui:2.8.6'
 ```
@@ -80,6 +83,7 @@ implementation 'org.springdoc:springdoc-openapi-starter-webflux-ui:2.8.6'
 또한 설정 파일에 다음과 같은 설정을 선언하도록 하자.
 
 {% include code-header.html %}
+
 ```yaml
 springdoc:
   api-docs:
@@ -103,6 +107,7 @@ springdoc:
 마지막으로 마이크로 서비스에 스웨거 설정 빈을 등록해야 한다.
 
 {% include code-header.html %}
+
 ```java
 @OpenAPIDefinition
 @Configuration
@@ -126,6 +131,7 @@ public class SwaggerConfig {
 그리고 마이크로 서비스에서는 다음과 같이 설정하도록 하자.
 
 {% include code-header.html %}
+
 ```yaml
 springdoc:
   api-docs:
@@ -135,14 +141,14 @@ springdoc:
 
 open-api:
   service:
-    url: {배포 도메인 또는 localhost 주소}
+    url: { 배포 도메인 또는 localhost 주소 }
 ```
 
 ---
 
-스프링 클라우드를 활용한 MSA 구축은 색다른 경험이었다. 특히 소켓 서버 로드 벨런싱을 한답시고 공식 문서랑 구현 코드를 살펴보면서 지속성 해싱을 구현하기는 했는데 HTTP 요청에만 해당된다고 해서 시무룩 했던 경험도 있고, 소켓 서버가 불안정 한 것 같아서 따로 Nginx로 리버스 프록시 처리만 해주기도 하였다. 
+스프링 클라우드를 활용한 MSA 구축은 색다른 경험이었다. 특히 소켓 서버 로드 벨런싱을 한답시고 공식 문서랑 구현 코드를 살펴보면서 지속성 해싱을 구현하기는 했는데 HTTP 요청에만 해당된다고 해서 시무룩 했던 경험도 있고, 소켓 서버가 불안정 한 것 같아서 따로 Nginx로 리버스 프록시 처리만 해주기도 하였다.
 
-또한 원래 쿠버네티스를 학습해서 최종적으로 적용해보려고 했는데, 시간적 요인 때문에 잘 안되었다. 그리고 MSA 관련 자료를 찾아보던 도중에 쿠버네티스를 활용한 MSA 배포에 관한 블로그 글을 읽을 수 있었다. 
+또한 원래 쿠버네티스를 학습해서 최종적으로 적용해보려고 했는데, 시간적 요인 때문에 잘 안되었다. 그리고 MSA 관련 자료를 찾아보던 도중에 쿠버네티스를 활용한 MSA 배포에 관한 블로그 글을 읽을 수 있었다.
 
 여기서 쿠버네티스를 활용하면 디스커버리 서비스를 사용하지 않아도 되며, 다른 언어로 작성되어도 상관이 없는 진정한 의미의 MSA를 구축할 수 있다고 하여 흥미가 생겨서 아마 쿠버네티스를 학습하여서 간단하게 내 로컬에서만이라도 적용해보고 싶다.
 

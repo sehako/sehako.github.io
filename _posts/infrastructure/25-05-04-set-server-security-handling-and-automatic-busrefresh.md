@@ -2,13 +2,12 @@
 title: 설정 서버 보안 처리 및 자동 busrefresh
 
 categories:
-  - Spring
   - Infrastructure
 
 toc: true
 toc_sticky: true
 published: true
- 
+
 date: 2025-05-04
 last_modified_at: 2025-05-04
 ---
@@ -20,6 +19,7 @@ last_modified_at: 2025-05-04
 - `application.yml`을 사용하는 경우
 
 {% include code-header.html %}
+
 ```yaml
 spring:
   application:
@@ -32,6 +32,7 @@ spring:
 - `bootstrap.yml`을 사용하는 경우
 
 {% include code-header.html %}
+
 ```yaml
 spring:
   cloud:
@@ -48,14 +49,14 @@ spring:
 
 이때 GPT에게 이러한 문제를 공유하니 bootstrap 의존성을 사용하는 것을 추천하였다. 그 이유는 bootstrap을 통해 설정 정보를 불러오는 작업은 스프링 어플리케이션 컨텍스트가 초기화되기 이전에 이루어지기 때문이라고 한다. GPT의 정리 표를 보도록 하자.
 
-| 항목 | `bootstrap.yml` | `application.yml` |
-| --- | --- | --- |
-| 로딩 시점 | 컨텍스트 초기화 **이전** | 컨텍스트 초기화 **이후** |
-| 주용도 | 외부 설정 소스에 접근하기 위한 메타 설정 | 일반적인 앱 설정 (포트, 로그 등) |
-| 설정 예시 | Config URI, 서비스 이름 등 | 포트, DB 연결정보, 로그레벨 등 |
-| Config 서버 연동시 필수 여부 | Spring Cloud Config 사용 시 필수 | 아니어도 무방 |
+| 항목                         | `bootstrap.yml`                          | `application.yml`                |
+| ---------------------------- | ---------------------------------------- | -------------------------------- |
+| 로딩 시점                    | 컨텍스트 초기화 **이전**                 | 컨텍스트 초기화 **이후**         |
+| 주용도                       | 외부 설정 소스에 접근하기 위한 메타 설정 | 일반적인 앱 설정 (포트, 로그 등) |
+| 설정 예시                    | Config URI, 서비스 이름 등               | 포트, DB 연결정보, 로그레벨 등   |
+| Config 서버 연동시 필수 여부 | Spring Cloud Config 사용 시 필수         | 아니어도 무방                    |
 
-이 표를 보니 아마 `application.yml` 에서 설정 정보를 불러오는 방식은 컨텍스트 초기화 이후이기 때문에 busrefresh가 제대로 적용이 되지 않는건가 싶다. 
+이 표를 보니 아마 `application.yml` 에서 설정 정보를 불러오는 방식은 컨텍스트 초기화 이후이기 때문에 busrefresh가 제대로 적용이 되지 않는건가 싶다.
 
 물론 내가 제대로 안써서 그럴 수 있으니 이 부분은 불확실 하긴 하지만, bootstrap 의존성을 사용하면 실제 어플리케이션 내에는 `bootstrap.yaml`에서 설정 서버만 명시하고, 서비스의 모든 설정 정보 자체는 깃허브 같은 중앙 저장소에서 관리할 수 있기 때문에 굳이 busrefresh 반영 문제가 아니더라고 bootstrap 의존성을 사용할 이유는 충분해 보인다.
 
@@ -65,11 +66,12 @@ spring:
 
 설정 서버를 사용하면서 굉장한 편리함을 느꼈지만, 한 편으로는 배포한 URL만 알 수 있으면 서비스가 사용하는 모든 설정 정보를 알 수 있게 되어 결과적으로 보안에 취약해진다고 생각하였다. 설정 서버에서 키 값을 암호화 처리해줄 수는 있지만, 이는 매번 설정 서버에 HTTP 요청을 보내고, 반환 받은 값을 명시해줘야 하기 때문에 귀찮을 것 같았다.
 
-심심해서 chatGPT를 갈궈본 결과 스프링 시큐리티를 활용하면 Basic 인증 방법을 사용할 수 있게 되기 때문에 보안 처리를 할 수 있다고 해서 한 번 해봤고, 결과는 성공적이었다. 
+심심해서 chatGPT를 갈궈본 결과 스프링 시큐리티를 활용하면 Basic 인증 방법을 사용할 수 있게 되기 때문에 보안 처리를 할 수 있다고 해서 한 번 해봤고, 결과는 성공적이었다.
 
 다음 의존성들을 사용하였다.
 
 {% include code-header.html %}
+
 ```groovy
 ext {
     set('springCloudVersion', "2024.0.1")
@@ -94,6 +96,7 @@ dependencyManagement {
 이렇게 설정하였을 때, 스프링 시큐리티는 기본적으로 요청에 대해서 Basic 인증을 요구하게 된다. 이때 Basic 인증 정보를 `application.yml`으로 수정할 수 있다. 가령 사용자 이름이 root이고, 비밀번호가 1234라면 다음과 같이 설정하면 된다.
 
 {% include code-header.html %}
+
 ```yaml
 spring:
   security:
@@ -105,6 +108,7 @@ spring:
 그러면 이 설정 서버로부터 값을 가져오는 서비스에서는 다음과 같이 설정해주기만 하면 된다.
 
 {% include code-header.html %}
+
 ```yaml
 spring:
   cloud:
@@ -119,6 +123,7 @@ spring:
 MSA를 처음 구축했을 때, 나는 매번 설정 정보가 변경되면 서버에 직접 접속하여 다음과 같은 curl 명령어를 입력하였다.
 
 {% include code-header.html %}
+
 ```yaml
 curl -X POST http://localhost:8081/actuator/busrefresh
 ```
@@ -128,12 +133,13 @@ curl -X POST http://localhost:8081/actuator/busrefresh
 스프링 클라우드 버스가 구축되었다는 가정에서 작성하도록 하겠다. 어플리케이션 설정 파일들이 담긴 비공개 레포지토리에서 다음과 같은 Github Action을 정의하였다.
 
 {% include code-header.html %}
+
 ```yaml
 name: Refresh Spring Config Server
 
 on:
   push:
-    branches: [ main ]  # 또는 설정 변경 시
+    branches: [main] # 또는 설정 변경 시
 
 jobs:
   refresh-config:
@@ -146,7 +152,7 @@ jobs:
                -H "Authorization: Basic ${{secrets.BASIC_AUTH_HEADER}}"
 ```
 
-또한 앞서 설정한 설정 서버의 보안 처리를 위해서 레포지토리 설정에서 설정 서버가 요구하는 아이디 패스워드의 Basic 인증 값을 명시하기만 하면 된다. 
+또한 앞서 설정한 설정 서버의 보안 처리를 위해서 레포지토리 설정에서 설정 서버가 요구하는 아이디 패스워드의 Basic 인증 값을 명시하기만 하면 된다.
 
 ![깃헙 엑션 인증 값 명시](/assets/images/set-server-security-handling-and-automatic-busrefresh_01.png)
 
