@@ -23,7 +23,7 @@ last_modified_at: 2025-09-13
 
 기본 구상은 매우 간단한데, 전체 10개의 배열 요소에 대해서 구간합을 구하는 세그먼트 트리를 그림으로 표현하면 다음과 같다.
 
-![image.png](https://velog.velcdn.com/images/gkrdh99/post/22ec6115-9639-4c50-95a6-41d42c5c161b/image.png)
+![image.png](/assets/images/algorithm/25-09-13-segment-tree/01.png)
 
 세그먼트 트리는 이진 트리의 형태를 가진다. 만약 주어진 배열의 개수가 2의 제곱꼴인 경우에는 완전 이진 트리의 형태가 된다. 리프 노드에는 배열의 수가 담겨져 있고, 부모 노드에는 두 노드에 대한 연산을 수행한 결과가 담겨져 있는 것을 확인할 수 있다.
 
