@@ -25,7 +25,7 @@ last_modified_at: 2025-08-23
 
 이를 통해 클라이언트가 채팅방에 접속할 때마다 전체 N개의 메시지 레코드에 대해서 1 감소하는 UPDATE 쿼리를 실행하는 방법이다. 이를 ERD로 둔다면 다음과 같다.
 
-![image.png](/assets/images/live-chat-server-with-stomp-04_01.png)
+![image.png](/assets/images/development/spring-websocket/25-08-23-live-chat-server-with-stomp-04/01.png)
 
 실제로 이 ERD로 구현할 것은 아니기 때문에 대충 설명하자면 마지막 접속일에 대한 컬럼을 두고, 클라이언트가 채팅방에 접속한다면 이를 최신으로 업데이트한다. 이전에 접속했던 마지막 접속일까지 채팅 내역의 작성일 기준으로 읽지 않은 클라이언트 수를 -1 하는 것이다.
 
@@ -39,7 +39,7 @@ last_modified_at: 2025-08-23
 
 이 아이디어를 기반으로 최대한 간단하게 다음과 같이 ERD를 구성하였다.
 
-![image.png](/assets/images/live-chat-server-with-stomp-04_02.png)
+![image.png](/assets/images/development/spring-websocket/25-08-23-live-chat-server-with-stomp-04/02.png)
 
 두 번째로 생각한 방법으로, 마지막으로 읽은 채팅 번호를 커서로 두고, 온라인 상태로 현재 클라이언트가 온라인 상태인지 판별하여 다음 쿼리를 통해 몇 명의 클라이언트가 메시지를 읽지 않았는지 판단하는 방법을 생각했다.
 
@@ -67,7 +67,7 @@ LIMIT 20;
 
 따라서 최종적으로 온라인 상태를 판단하는 컬럼을 제거하고 다음과 같이 ERD를 구상하였다.
 
-![image.png](/assets/images/live-chat-server-with-stomp-04_03.png)
+![image.png](/assets/images/development/spring-websocket/25-08-23-live-chat-server-with-stomp-04/03.png)
 
 이때 클라이언트가 어디까지 메시지를 읽었는지 최신화 하는 방법에 대해서 초기에는 채팅 메시지가 서버에 전송될 때 마다 현재 접속중인 클라이언트가 최신 메시지까지 읽었다고 강제하는 방법이다. 하지만 이 방식은 매번 UPDATE 쿼리를 통해 데이터베이스를 갱신해야 하므로 연산 부담이 증가할 것 같았다.
 

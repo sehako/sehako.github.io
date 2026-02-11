@@ -375,7 +375,7 @@ public class HistoryBatchConfig {
 ./gradlew bootRun --args='--spring.batch.job.name=writeHistoryJob targetDate=2025-10-02,java.time.LocalDate'
 ```
 
-![image.png](/assets/images/large-scale-data-processing-with-spring-batch-with-flow_01.png)
+![image.png](/assets/images/development/spring-batch/25-12-09-large-scale-data-processing-with-spring-batch-with-flow/01.png)
 
 정상적으로 CSV 파일이 보내진 것을 확인할 수 있다. 그렇다면 오류 상황은 어떨까? ItemProcessor에 임의의 예외를 던져서 확인해보았다.
 
@@ -497,7 +497,7 @@ historyStep
 
 Flow를 적용한 다음 실패 시 메일이 제대로 오는지 확인해봤다.
 
-![image.png](https://velog.velcdn.com/images/gkrdh99/post/a90c8e70-17b8-41e9-bd9c-ce7bbc07c6fe/image.png)
+![image.png](/assets/images/development/spring-batch/25-12-09-large-scale-data-processing-with-spring-batch-with-flow/02.png)
 
 실패한 Step과 실패 원인이 작성되어 전송된 것을 볼 수 있다.
 

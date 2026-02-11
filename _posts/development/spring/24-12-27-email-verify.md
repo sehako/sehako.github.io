@@ -28,7 +28,7 @@ SMTP(Simple Mail Transfer Protocol)는 전자 메일을 전송하는 데 사용�
 
 구글 SMTP를 이용하기 위해서 계정 관리 -> 앱 비밀번호 발급을 해야 한다. 계정 관리 창에서 검색을 통해 '앱 비밀번호'라고 작성하면 쉽게 찾을 수 있다.
 
-![앱 비밀번호 발급](/assets/images/email-verify_01.png)
+![앱 비밀번호 발급](/assets/images/development/spring/24-12-27-email-verify/01.png)
 
 여기서 앱 이름을 입력하고 만들면 16자리의 비밀번호가 나오게 되는데, 이를 이용하여 SMTP 서버에 로그인 할 수 있다.
 

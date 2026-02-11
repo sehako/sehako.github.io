@@ -68,7 +68,7 @@ Mono.just(1);
 
 ### **map**
 
-![image.png](/assets/images/project-reactor_01.png)
+![image.png](/assets/images/java/25-11-14-project-reactor/01.png)
 
 `map()`은 각 요소를 새로운 값으로 매핑한다는 의미이다. `Flux`를 다음과 같이 생성해보자.
 
@@ -83,7 +83,7 @@ Flux<Integer> flux = Flux.just(1, 2, 3, 4, 5)
 
 **소비자 작성**
 
-![image.png](/assets/images/project-reactor_02.png)
+![image.png](/assets/images/java/25-11-14-project-reactor/02.png)
 
 앞서 생성한 `Flux`를 구독해서 데이터를 처리해보도록 하자. `Flux` 또는 `Mono`에 대한 소비자는 `subscribe()`로 구현할 수 있으며, 다음과 같은 메서드들을 지원한다.
 
@@ -160,7 +160,7 @@ StepVerifier.create(fluxUsingMap, option)
 
 ### **flatMap**
 
-![image.png](/assets/images/project-reactor_03.png)
+![image.png](/assets/images/java/25-11-14-project-reactor/03.png)
 
 해당 연산자는 각 요소를 비동기 작업으로 매핑한다고 하였는데, 이 말이 어떤 말인지 직접 알아보자.
 
@@ -177,7 +177,7 @@ Thread.sleep(500);
 
 `delayElement()`는 onNext 신호(값 방출)를 지정된 시간만큼 지연시키는 Reactor의 비동기 지연 연산자이다.
 
-![image.png](/assets/images/project-reactor_04.png)
+![image.png](/assets/images/java/25-11-14-project-reactor/04.png)
 
 이 연산자를 사용하면 Mono 또는 Flux의 각 요소가 랜덤한 시간 뒤에 비동기적으로 방출되도록 만들 수 있다. 이 연산자를 사용한 이유는 `flatMap()`이 각 요소의 순서를 보장해주지 않는 것을 확인하기 위해서이다.
 
@@ -196,7 +196,7 @@ result: user3
 
 ### concatMap
 
-![image.png](/assets/images/project-reactor_05.png)
+![image.png](/assets/images/java/25-11-14-project-reactor/05.png)
 
 만약에 순서를 보장하고자 한다면 `concatMap()`을 활용하면 된다.
 
@@ -210,7 +210,7 @@ Flux.just("user1", "user2", "user3")
 
 ### zip
 
-![image.png](/assets/images/project-reactor_06.png)
+![image.png](/assets/images/java/25-11-14-project-reactor/06.png)
 
 `zip()`은 둘 이상의 Flux나 Mono를 인덱스 기준으로 묶어서 동시에 방출하는 연산자이다.
 
@@ -248,7 +248,7 @@ zipped.subscribe(t ->
 
 ### concatWith
 
-![image.png](/assets/images/project-reactor_07.png)
+![image.png](/assets/images/java/25-11-14-project-reactor/07.png)
 
 `concatWith`는 첫 번째 스트림이 `onComplete()` 시그널을 보낸 이후에 두 번째 스트림을 실행하도록 두 스트림을 순차적으로 연결하는 연산자다. 두 스트림의 요소 타입은 동일해야 하며, 앞선 스트림이 완료되어야만 뒤이어 오는 스트림이 실행된다. 따라서 SSE, WebSocket, `Flux.interval()` 같은 onComplete 시그널이 없는 무한 스트림과 함께 사용할 경우, 후속 스트림은 절대 실행되지 않는다.
 
@@ -275,7 +275,7 @@ Concat: B3
 
 ### mergeWith
 
-![image.png](/assets/images/project-reactor_08.png)
+![image.png](/assets/images/java/25-11-14-project-reactor/08.png)
 
 이 연산자는 두 스트림을 병렬로 섞는 연산자로, 병렬로 합친다는 특성 때문에 순서가 보장되지 않는다. 이를 확인하기 위해서 각각 Flux를 생성할 때 지연을 추가해서 확인해봤다.
 
@@ -308,7 +308,7 @@ A3
 
 ### retry
 
-![image.png](/assets/images/project-reactor_09.png)
+![image.png](/assets/images/java/25-11-14-project-reactor/09.png)
 
 지정된 횟수만큼 재시도를 수행하도록 설정한다.
 

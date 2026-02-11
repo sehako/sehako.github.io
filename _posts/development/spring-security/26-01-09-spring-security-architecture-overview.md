@@ -22,7 +22,7 @@ last_modified_at: 2025-01-06
 
 스프링 시큐리티의 핵심 아키텍처는 서블릿 컨테이너 레벨에서 동작하는 `Filter`를 기반으로 한다. `Filter`는 서블릿의 최전방에서 요청을 인터셉트하여 적절한 처리를 하는 컴포넌트로, 스프링 시큐리티에 포함된 수많은 보안 기능은 이 `Filter` 체인을 통해 구현된다.
 
-![image.png](/assets/images/spring-security-architecture-overview_01.png)
+![image.png](/assets/images/development/spring-security/26-01-09-spring-security-architecture-overview/01.png)
 
 클라이언트가 요청을 보내면 서블릿 컨테이너는 URI를 기반으로 요청을 처리하는 필터 인스턴스와 서블릿(스프링에서는 `DispatcherServlet`)을 포함하는 `FilterChain`을 구성한다. 그림에서 알 수 있듯이 서블릿은 하나의 서블릿이 하나의 요청만 처리할 수 있지만, 필터는 여러 개로 이루어져 다음과 같은 목적으로 사용된다.
 
@@ -68,7 +68,7 @@ class ExampleFilter implements Filter {
 public abstract class GenericFilterBean implements Filter, ... { }
 ```
 
-![image.png](/assets/images/spring-security-architecture-overview_02.png)
+![image.png](/assets/images/development/spring-security/26-01-09-spring-security-architecture-overview/02.png)
 
 이렇게 서블릿 컨테이너로 등록하면 해당 객체를 통해 `ApplicationContext`에 등록된 스프링 시큐리티의 필터 빈들이 구동할 수 있게 되는 것이다. `DelegatingFilterProxy.doFilter()`의 의사 코드를 살펴보자.
 
@@ -93,7 +93,7 @@ public void doFilter(
 
 요청에 따라서 적절한 `SecurityFilterChain`을 선택하여 실행하는 스프링 시큐리티의 특수한 `Filter` 구현체이다. 일반적으로 `DelegatingFilterProxy`가 요청을 위임하는 대상이 된다.
 
-![image.png](/assets/images/spring-security-architecture-overview_03.png)
+![image.png](/assets/images/development/spring-security/26-01-09-spring-security-architecture-overview/03.png)
 
 여기서 이미 `DelegatingFilterProxy`를 통해서 스프링 빈으로 등록된 필터를 호출할 수 있는데도, 왜 굳이 `FilterChainProxy`를 활용하는지 의문이 들었다. 그 이유에 대해서 찾아봤을 때 `DelegatingFilterProxy`는 스프링 시큐리티에서 제공하는 필터 프록시 객체가 아닌 스프링 웹에서 제공해주는 객체인 것을 알 수 있었다.
 
@@ -107,7 +107,7 @@ public void doFilter(
 
 `SecurityFilterChain`은 `FilterChainProxy`에서 현재 요청에 대해 어떤 스프링 시큐리티 필터 인스턴스를 호출해야 하는지 결정하는데 사용된다.
 
-![image.png](/assets/images/spring-security-architecture-overview_04.png)
+![image.png](/assets/images/development/spring-security/26-01-09-spring-security-architecture-overview/04.png)
 
 앞서서 이미 `DelegatingFilterProxy`에 직접 등록하는 대신에 `FilterChainProxy`를 활용하는 이유를 다루었었다. 이러한 구조로 인해 `FilterChainProxy`를 활용하면 다음과 같은 장점이 있다.
 
@@ -211,7 +211,7 @@ SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
 그리고 기본적으로 `SecurityContextHolder`는 `ThreadLocal`을 사용한다. 따라서 동일한 스레드 내의 메서드에서 항상 `SecurityContext`를 사용할 수 있다. 그리고 이렇게 구성되어 있기 때문에 `FilterChainProxy`에서 항상 `SecurityContextHolder`가 비워지도록 전처리 작업을 수행하는 이유이기도 하다. (하나의 스레드가 여러 사용자의 요청을 처리하기 때문)
 
-![image.png](/assets/images/spring-security-architecture-overview_05.png)
+![image.png](/assets/images/development/spring-security/26-01-09-spring-security-architecture-overview/05.png)
 
 여기서 인증된 사용자 정보는 다음과 같이 조회할 수 있다.
 
@@ -256,7 +256,7 @@ GrantedAuthority는 애플리케이션 전역 권한을 표현하는 용도로 �
 
 `AuthenticationManager`의 가장 일반적인 구현체이다. 이는 `AuthenticationProvider` 인스턴스 목록 중에서 해당하는 인증 방법으로 인증을 위임한다. 이 인스턴스 중에서 어느것도 인증에 성공하지 못하면 `ProviderNotFoundException` 예외와 함께 인증이 실패한다.
 
-![image.png](/assets/images/spring-security-architecture-overview_06.png)
+![image.png](/assets/images/development/spring-security/26-01-09-spring-security-architecture-overview/06.png)
 
 실제로 각 `AuthenticationProvider`는 처리 가능한 인증 타입이 무엇인지를 스스로 알고 있다. 이는 인터페이스 설계를 살펴보면 명확하게 알 수 있다.
 
@@ -300,11 +300,11 @@ public Authentication attemptAuthentication(
 
 이런 흐름으로 인증이 수행되는 것이다. 그리고 `ProviderManager`는 선택적인 상위 `AuthenticationManager`를 구성할 수 있도록 지원한다. 이는 곧 여러 인증 방식을 계층적으로 조합할 수 있도록 만들어 처리하지 못한 인증을 상위 `AuthenticationManager`에게 위임할 수 있다는 것이다.
 
-![image.png](/assets/images/spring-security-architecture-overview_07.png)
+![image.png](/assets/images/development/spring-security/26-01-09-spring-security-architecture-overview/07.png)
 
 이는 여러 `SecurityFilterChain` 인스턴스가 공통된 인증 방식(상위 `AuthenticationManager`)을 사용하지만, 서로 다른 메커니즘(여러 `ProviderManager` 인스턴스)을 사용하는 시나리오에서 흔히 발생한다.
 
-![image.png](/assets/images/spring-security-architecture-overview_08.png)
+![image.png](/assets/images/development/spring-security/26-01-09-spring-security-architecture-overview/08.png)
 
 이 부분은 나중에 직접 해보면서 좀 더 정리해야 할 것 같다. 마지막으로 `ProviderManager`는 인증 요청이 성공적으로 완료된 후 반환되는 `Authentication` 객체에서 민감한 자격 증명 정보를 모두 삭제하려고 한다.
 
@@ -334,7 +334,7 @@ public Authentication attemptAuthentication(
 
 참고로 이 추상 클래스를 상속한 대표적인 필터가 바로 `UsernamePasswordAuthenticationFilter`이다.
 
-![image.png](/assets/images/spring-security-architecture-overview_09.png)
+![image.png](/assets/images/development/spring-security/26-01-09-spring-security-architecture-overview/09.png)
 
 이후 다음 절차를 수행한다. 코드와 함께 보기 위해서 `UsernamePasswordAuthenticationFilter`부터 시작하는 코드를 따라가면서 정리했다.
 
@@ -505,13 +505,13 @@ public interface AuthorizationManager<T extends @Nullable Object> {
 
 그리고 스프링 시큐리티는 요청에 따라서 적절한 `AuthorizationManager` 구현체에 판단을 위임하는 구조를 가지고 있다.
 
-![image.png](/assets/images/spring-security-architecture-overview_10.png)
+![image.png](/assets/images/development/spring-security/26-01-09-spring-security-architecture-overview/10.png)
 
 웹 요청의 경우 `RequestMatcherDelegatingAuthorizationManager`가 `RequestMatcher`를 기반으로 요청을 분기하여 인가를 담당한다.
 
 ## 웹 요청 인가 과정 살펴보기
 
-![image.png](/assets/images/spring-security-architecture-overview_11.png)
+![image.png](/assets/images/development/spring-security/26-01-09-spring-security-architecture-overview/11.png)
 
 1. `AuthorizationFilter`는 `SecurityContextHolder`로부터 `Authentication`을 가져오는 `Supplier`를 생성하여 `Supplier<Authentication>`과 `HttpServletRequest`를 `AuthorizationManager`에게 전달한다.
 

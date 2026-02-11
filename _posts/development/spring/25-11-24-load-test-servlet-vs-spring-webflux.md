@@ -407,7 +407,7 @@ export default function () {
 
 여기서 P95 Latency는 전체 요청 중 95%가 해당 시간 이하로 응답된다는 의미이다. 대다수 사용자의 실제 경험을 평가하는데 자주 활용된다고 한다.
 
-![image.png](/assets/images/load-test-servlet-vs-spring-webflux_01.png)
+![image.png](/assets/images/development/spring/25-11-24-load-test-servlet-vs-spring-webflux/01.png)
 
 성능 지표는 어떨까? 동시 요청이 몰리자마자 현재 스레드 풀의 최대 개수인 200개까지 포화 상태가 되었다. 그리고 스레드 상태를 보면 작업중인 스레드가 데이터베이스 쓰기 요청인 I/O 작업을 기다리는 timed-waiting 상태에 머물러 있다.
 
@@ -430,7 +430,7 @@ export default function () {
 | Avg Latency    | 1,423.38ms |
 | P95 Latency    | 1,639.08ms |
 
-![image.png](/assets/images/load-test-servlet-vs-spring-webflux_02.png)
+![image.png](/assets/images/development/spring/25-11-24-load-test-servlet-vs-spring-webflux/02.png)
 
 3000명 보다는 느려졌지만 1,639.08ms의 P95를 가지기 때문에 여전히 안정적인 RPS와 처리 시간을 보여주는 것으로 볼 수 있을 것 같다.
 
@@ -444,7 +444,7 @@ export default function () {
 | Avg Latency    | 2,334.44ms |
 | P95 Latency    | 2,783.33ms |
 
-![image.png](/assets/images/load-test-servlet-vs-spring-webflux_03.png)
+![image.png](/assets/images/development/spring/25-11-24-load-test-servlet-vs-spring-webflux/03.png)
 
 여기서부터 본격적으로 에러가 발생하면서 가용성이 훼손되기 시작했다. P95가 길어진 것은 물론이고 전체 215,850건의 요청 중에서 약 13,771 건의 요청이 실패하게 된 것이다. 이 때부터 본격적인 Thread Pool Hell에 빠지게 되었다고 볼 수 있다.
 
@@ -458,7 +458,7 @@ export default function () {
 | Avg Latency    | 2,365.36ms |
 | P95 Latency    | 3,920.44ms |
 
-![image.png](/assets/images/load-test-servlet-vs-spring-webflux_04.png)
+![image.png](/assets/images/development/spring/25-11-24-load-test-servlet-vs-spring-webflux/04.png)
 
 여기부터는 전체 212,659의 요청 수에서 약 53781건의 요청이 실패하게 되었다. 이 때부터는 이제 시스템이 제대로 운영되지 않는다고 볼 수 있다.
 
@@ -478,7 +478,7 @@ export default function () {
 | Avg Latency    | 862.54ms   |
 | P95 Latency    | 968.46ms   |
 
-![image.png](/assets/images/load-test-servlet-vs-spring-webflux_05.png)
+![image.png](/assets/images/development/spring/25-11-24-load-test-servlet-vs-spring-webflux/05.png)
 
 성능 지표를 통해 확인할 수 있는 가장 큰 차이점은 바로 스레드의 개수이다. 3,000명의 동시 접속 상황에서도 최대 35개의 스레드만 활성화된 것을 볼 수 있다.
 
@@ -492,7 +492,7 @@ export default function () {
 | Avg Latency    | 1,460.55ms |
 | P95 Latency    | 1,612.56ms |
 
-![image.png](/assets/images/load-test-servlet-vs-spring-webflux_06.png)
+![image.png](/assets/images/development/spring/25-11-24-load-test-servlet-vs-spring-webflux/06.png)
 
 3,000명과 5,000명은 비슷한 요청 수와 RPS를 보여준다. 그렇다면 기존의 블로킹 애플리케이션의 한계인 10,000명 규모의 부하 테스트는 어떨까?
 
@@ -506,7 +506,7 @@ export default function () {
 | Avg Latency    | 2,988.99ms |
 | P95 Latency    | 3,321.47ms |
 
-![image.png](/assets/images/load-test-servlet-vs-spring-webflux_07.png)
+![image.png](/assets/images/development/spring/25-11-24-load-test-servlet-vs-spring-webflux/07.png)
 
 여기서 서블릿 애플리케이션과의 차이점이 확연하게 드러난다. 204,568 건의 요청을 모두 성공적으로 처리한 것을 볼 수 있다. 그리고 요청이 아무리 증가해도 최대 스레드는 35개 이하로 유지되는 것을 볼 수 있다.
 
@@ -520,7 +520,7 @@ export default function () {
 | Avg Latency    | 5,327.36ms |
 | P95 Latency    | 6,060.17ms |
 
-![image.png](/assets/images/load-test-servlet-vs-spring-webflux_08.png)
+![image.png](/assets/images/development/spring/25-11-24-load-test-servlet-vs-spring-webflux/08.png)
 
 15,000명 까지도 0퍼센트의 오류율을 기록했다! 물론 P95가 6,060.17ms이므로 상당히 느린 편이지만 핵심은 블로킹 애플리케이션이 요청 자체가 실패한다면 WebFlux는 모든 요청을 오류 없이 처리할 수 있다는 것이다.
 

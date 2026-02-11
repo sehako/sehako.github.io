@@ -23,7 +23,7 @@ last_modified_at: 2025-11-13
 
 ## 리액티브 매니페스토
 
-![image.png](/assets/images/java-reactive-programming_01.png)
+![image.png](/assets/images/java/25-11-13-java-reactive-programming/01.png)
 
 - 반응성 (Responsive): 시스템이 가능한 한 제 시간에 응답을 제공할 수 있어야 한다. 이는 단순한 사용자 만족을 넘어 오류 탐지 및 대응 가능성을 높이는 기반이다.
 - 탄력성 (Resilient): 장애 발생에도 응답성을 유지해야 한다. 이를 위해 복제, 격리, 비동기 위임 등의 설계가 필요하다.
@@ -44,7 +44,7 @@ last_modified_at: 2025-11-13
 
 공부 중에 비동기와 Non-Blocking의 개념이 비슷한 것 같아서 좀 더 찾아봤다.
 
-![image.png](/assets/images/java-reactive-programming_02.png)
+![image.png](/assets/images/java/25-11-13-java-reactive-programming/02.png)
 
 | 작업 유형             | 설명                                                                                       |
 | --------------------- | ------------------------------------------------------------------------------------------ |
@@ -70,7 +70,7 @@ last_modified_at: 2025-11-13
 
 데이터가 일정 시간 간격으로 순차적으로 방출되는 데이터의 흐름을 의미한다. 사용자 입력, 애플리케이션 프로퍼티 값, 캐시, 데이터베이스 조회 결과 등 여러 소스로부터 생성될 수 있다.
 
-![image.png](/assets/images/java-reactive-programming_03.png)
+![image.png](/assets/images/java/25-11-13-java-reactive-programming/03.png)
 
 구독자는 새로운 데이터가 방출될 때마다 이를 비동기적으로 수신하고, 필요에 따라 가공하거나 변환하여 또 다른 스트림을 발행할 수 있다. 즉, 리액티브 프로그래밍에서는 시간에 따라 연속적으로 변화하는 데이터를 반응형으로 다룬다.
 
@@ -96,7 +96,7 @@ last_modified_at: 2025-11-13
 
 > **이벤트 루프란?**
 >
-> ![image.png](/assets/images/java-reactive-programming_04.png)
+> ![image.png](/assets/images/java/25-11-13-java-reactive-programming/04.png)
 >
 > 비동기 작업의 완료 이벤트를 감지하고, 등록된 콜백 함수를 실행하는 루프 구조이다. 즉, I/O 요청의 결과를 기다리지 않고 응답이 준비되면 이벤트 루프가 해당 콜백을 스케줄링에서 실행한다. 자바에서는 언어 차원이 아니라 Netty, Project Reactor, Vert.x 같은 프레임워크에서 구현되어 있다.
 
@@ -153,7 +153,7 @@ public interface Subscription {
 
 구독자가 발행자를 구독할 때 발행자는 내부적으로 `onSubscribe()`를 호출해 `Subscription` 객체를 전달한다. 이를 통해 구독자와 발행자의 관계를 나타낸다. `request()`로 발행자에게 주어진 개수의 이벤트를 처리할 수 있음을 알린다. `cancel()`로 발행자에게 더 이상 이벤트를 받지 않는다는 것을 통지한다.
 
-![image.png](/assets/images/java-reactive-programming_05.png)
+![image.png](/assets/images/java/25-11-13-java-reactive-programming/05.png)
 
 위 3개의 객체의 관계를 그림으로 나타내면 다음과 같다. 그리고 자바 9 Flow 명세서에서는 이들 인터페이스의 구현에 대해서 다음과 같은 규칙을 요구한다.
 

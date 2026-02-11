@@ -26,9 +26,9 @@ server:
 
 아무튼 이렇게 설정을 하고 두 개의 서버 인스턴스를 실행해보도록 하자. IntelliJ에서는 Run/Debug Configurations에서 다음 아이콘을 클릭하면 된다.
 
-![image.png](/assets/images/live-chat-server-with-stomp-05_01.png)
+![image.png](/assets/images/development/spring-websocket/25-08-30-live-chat-server-with-stomp-05/01.png)
 
-![image.png](/assets/images/live-chat-server-with-stomp-05_02.png)
+![image.png](/assets/images/development/spring-websocket/25-08-30-live-chat-server-with-stomp-05/02.png)
 
 복제한 두 개의 서버 인스턴스가 랜덤 포트로 실행된 것을 확인할 수 있을 것이다.
 

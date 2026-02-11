@@ -68,7 +68,7 @@ Netty의 EventLoop는 커널의 Selector를 돌면서 소켓의 `accept`, `rea
 
 ## Spring WebFlux 도입 전 알아야 할 의사결정 기준
 
-![image.png](/assets/images/spring-webflux-and-r2dbc_01.png)
+![image.png](/assets/images/development/spring/25-11-21-spring-webflux-and-r2dbc/01.png)
 
 Spring MVC와 Spring WebFlux 중에서 무엇을 선택해야 하는지 공식문서에서 다음과 같이 언급한다.
 

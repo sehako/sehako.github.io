@@ -21,7 +21,7 @@ last_modified_at: 2025-08-16
 
 ## ERD
 
-![image.png](/assets/images/live-chat-server-with-stomp-03_01.png)
+![image.png](/assets/images/development/spring-websocket/25-08-16-live-chat-server-with-stomp-03/01.png)
 
 간단한 학습을 위해서 정말 필요한 테이블과 컬럼만 구상하였다. 지금 와서 생각해보면 채팅 내역 테이블만 있어도 됐을 것 같다.
 
