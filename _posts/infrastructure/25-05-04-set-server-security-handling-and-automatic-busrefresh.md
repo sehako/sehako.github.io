@@ -154,11 +154,11 @@ jobs:
 
 또한 앞서 설정한 설정 서버의 보안 처리를 위해서 레포지토리 설정에서 설정 서버가 요구하는 아이디 패스워드의 Basic 인증 값을 명시하기만 하면 된다.
 
-![깃헙 엑션 인증 값 명시](/assets/images/set-server-security-handling-and-automatic-busrefresh_01.png)
+![깃헙 엑션 인증 값 명시](/assets/images/infrastructure/25-05-04-set-server-security-handling-and-automatic-busrefresh/01.png)
 
 참고로 인증 값은 API 테스트 도구에서 통해서 얻을 수 있다. 내가 사용하는 API 테스트 도구인 Talend API 도구의 경우 Add authorization 버튼을 통해서 입력된 아이디 패스워드 값의 Base64 인코딩 값을 얻을 수 있다.
 
-![인증 값 Base64 사용 예시](/assets/images/set-server-security-handling-and-automatic-busrefresh_02.png)
+![인증 값 Base64 사용 예시](/assets/images/infrastructure/25-05-04-set-server-security-handling-and-automatic-busrefresh/02.png)
 
 ---
 

@@ -7,12 +7,12 @@ categories:
 toc: true
 toc_sticky: true
 published: true
- 
+
 date: 2025-04-03
 last_modified_at: 2025-04-03
 ---
 
-CI/CD는 지속적 통합(Continuous Integration)과 지속적인 전달 혹은 배포(Continuous Delivery and/or Deployment)를 뜻한다. 전달과 배포의 차이점은 변경된 어플리케이션이 프로덕션 환경까지 반영되는 지 안되는 지 이다. 
+CI/CD는 지속적 통합(Continuous Integration)과 지속적인 전달 혹은 배포(Continuous Delivery and/or Deployment)를 뜻한다. 전달과 배포의 차이점은 변경된 어플리케이션이 프로덕션 환경까지 반영되는 지 안되는 지 이다.
 
 CI/CD를 쉽게 말하자면 어플리케이션의 변경 사항을 감지하고, 이런 변경 사항을 자동으로 배포한다는 것이다. 나의 경우 젠킨스를 이용하여 CI/CD를 구축하였다. 참고로 젠킨스를 사용한 이유는 다음과 같다.
 
@@ -25,6 +25,7 @@ CI/CD를 쉽게 말하자면 어플리케이션의 변경 사항을 감지하고
 참고로 프로젝트의 원할한 CICD 목적으로 gradle bootjar를 실행시키면 app.jar가 나오도록 설정하였다.
 
 {% include code-header.html %}
+
 ```groovy
 bootJar {
     archiveFileName = 'app.jar'
@@ -34,6 +35,7 @@ bootJar {
 jar 파일의 이름을 프로젝트의 이름으로 빌드되도록 설정할 수도 있다.
 
 {% include code-header.html %}
+
 ```groovy
 bootJar {
     archiveFileName = "${rootProject.name}.jar"
@@ -42,13 +44,13 @@ bootJar {
 
 # EC2 구축
 
-젠킨스를 사용하기에 앞서 EC2가 필요하다. 젠킨스와 형상 관리 툴을 연동하는 지속적 통합(CI) 작업 까지는 ngrok 같은 localhost를 외부에서 접근이 가능하게 만드는 툴 같은 것을 이용하면 어떻게든 될 것 같았지만, 문제는 지속적 배포(CD)였다. 
+젠킨스를 사용하기에 앞서 EC2가 필요하다. 젠킨스와 형상 관리 툴을 연동하는 지속적 통합(CI) 작업 까지는 ngrok 같은 localhost를 외부에서 접근이 가능하게 만드는 툴 같은 것을 이용하면 어떻게든 될 것 같았지만, 문제는 지속적 배포(CD)였다.
 
-어떻게 안될까 고민을 조금 하다가 그냥 EC2를 생성하는 것이 속편할 것 같아서 앞으로의 포스팅은 EC2에 앞서 첨부한 실습 자료에서 데이터베이스 부분만 제외하고 nginx, 스프링 부트, 젠킨스만 컨테이너로 실행 하도록 하겠다. 
+어떻게 안될까 고민을 조금 하다가 그냥 EC2를 생성하는 것이 속편할 것 같아서 앞으로의 포스팅은 EC2에 앞서 첨부한 실습 자료에서 데이터베이스 부분만 제외하고 nginx, 스프링 부트, 젠킨스만 컨테이너로 실행 하도록 하겠다.
 
 EC2는 다음 [블로그](https://olrlobt.tistory.com/83)를 참고하여 생성하였고, 이 중에서 보안 그룹 부분은 HTTP/HTTPS가 아닌 스프링 부트와 젠킨스 자체 포트인 8080과 9000번에 접근이 가능하도록 하였다.
 
-![보안 그룹 설정](/assets/images/set-cicd-with-jenkins_01.png)
+![보안 그룹 설정](/assets/images/infrastructure/25-04-03-set-cicd-with-jenkins/01.png)
 
 또한 여러 어플리케이션이 띄워지면 메모리가 부족해질 수 있으니 혹시 몰라 스왑 메모리 설정도 해주었다. 다음 [블로그](https://diary-developer.tistory.com/32)를 참고하도록 하자.
 
@@ -72,7 +74,7 @@ sudo swapon /swapfile
 sudo vim /etc/fstab
 ```
 
-``` bash
+```bash
 # 파일 최하단 아래에 추가
 LABEL=SWAP      /swapfile       swap    swap defaults 0 0
 ```
@@ -82,6 +84,7 @@ LABEL=SWAP      /swapfile       swap    swap defaults 0 0
 EC2에 띄우기에 앞서 nginx나 데이터베이스는 필요가 없으니 컴포즈 파일을 다음과 같이 수정하였다.
 
 {% include code-header.html %}
+
 ```yaml
 services:
   spring:
@@ -97,12 +100,13 @@ services:
     #   - ./.env
     ports:
       - 8080:8080
-    restart: always  # <- 컨테이너 자동 재시작 설정
+    restart: always # <- 컨테이너 자동 재시작 설정
     networks:
       - compose-network
 
   jenkins:
-    container_name: jenkins
+    container_name:
+      jenkins
       #    image: jenkins/jenkins:2.492.1-lts-jdk17
     build:
       context: .
@@ -114,7 +118,7 @@ services:
     ports:
       - 9000:9000
     volumes:
-      - jenkins_home:/var/jenkins_home  # Jenkins 데이터를 Docker Volume으로 저장
+      - jenkins_home:/var/jenkins_home # Jenkins 데이터를 Docker Volume으로 저장
       # - /var/run/docker.sock:/var/run/docker.sock
       # - ~/.ssh:/root/.ssh  # SSH 키 공유
     networks:
@@ -124,12 +128,13 @@ networks:
   compose-network:
     driver: bridge
 volumes:
-  jenkins_home:  # Jenkins 홈 디렉터리 저장
+  jenkins_home: # Jenkins 홈 디렉터리 저장
 ```
 
 스프링은 각자 테스트 목적의 깃허브 레포지토리를 생성하여 사용하도록 하자. 그리고 젠킨스 도커 파일은 다음과 같다.
 
 {% include code-header.html %}
+
 ```dockerfile
 FROM jenkins/jenkins:2.492.1-lts-jdk17
 
@@ -156,11 +161,12 @@ RUN aws --version
 CMD ["/usr/local/bin/jenkins.sh"]
 ```
 
-참고로 젠킨스의 버전이 낮으면 플러그인이 제대로 설치가 안될 수 있다고 한다. 따라서 플러그인 설치 중 오류가 발생한다면 위 도커 파일에서 젠킨스의 버전을 최신 버전으로 만들도록 하자. 
+참고로 젠킨스의 버전이 낮으면 플러그인이 제대로 설치가 안될 수 있다고 한다. 따라서 플러그인 설치 중 오류가 발생한다면 위 도커 파일에서 젠킨스의 버전을 최신 버전으로 만들도록 하자.
 
-변경한 실습 자료 전체를 EC2에 전송하도록 하자. (scp 명령어 [블로그](https://dejavuqa.tistory.com/358) 참고) 
+변경한 실습 자료 전체를 EC2에 전송하도록 하자. (scp 명령어 [블로그](https://dejavuqa.tistory.com/358) 참고)
 
 {% include code-header.html %}
+
 ```bash
 scp -i {EC2 pem 키} -r ./DeploySet {사용자이름}@{서버주소}:{경로}
 ```
@@ -170,26 +176,31 @@ scp -i {EC2 pem 키} -r ./DeploySet {사용자이름}@{서버주소}:{경로}
 EC2를 우분투로 생성하였을 거라고 가정하고 다음 명령어들을 입력하여 도커와 도커 컴포즈를 설치하도록 하자.
 
 {% include code-header.html %}
+
 ```bash
 sudo apt update
 ```
 
 {% include code-header.html %}
+
 ```bash
 sudo apt install apt-transport-https ca-certificates curl software-properties-common -y
 ```
 
 {% include code-header.html %}
+
 ```bash
 sudo wget -qO- http://get.docker.com/ | sh
 ```
 
 {% include code-header.html %}
+
 ```bash
 sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
 ```
 
 {% include code-header.html %}
+
 ```bash
 sudo chmod +x /usr/local/bin/docker-compose
 ```
@@ -197,6 +208,7 @@ sudo chmod +x /usr/local/bin/docker-compose
 이제 다음 명령어를 실행하면 nginx, 스프링 부트, 젠킨스가 컨테이너로 생성될 것이다.
 
 {% include code-header.html %}
+
 ```bash
 sudo docker-compose up -d
 ```
@@ -205,11 +217,12 @@ sudo docker-compose up -d
 
 이제 젠킨스가 도커 컨테이너로 잘 실행되었다면, `{EC2 접속 주소}:9000`으로 접근이 가능할 것이다. 그러면 다음과 같은 화면이 나타난다.
 
-![최초 젠킨스 접속 화면](/assets/images/set-cicd-with-jenkins_02.png)
+![최초 젠킨스 접속 화면](/assets/images/infrastructure/25-04-03-set-cicd-with-jenkins/02.png)
 
 젠킨스에 최초로 접속하면 관리자 비밀번호를 요구한다. 이는 젠킨스를 최초 실행할 때 나오는 값이므로 다음 명령어를 입력하여 확인하도록 하자.
 
 {% include code-header.html %}
+
 ```bash
 sudo docker-compose logs jenkins
 ```
@@ -233,11 +246,11 @@ jenkins  | *************************************************************
 
 비밀번호를 입력하면 다음과 같은 화면이 나타난다.
 
-![플러그인 설치](/assets/images/set-cicd-with-jenkins_03.png)
+![플러그인 설치](/assets/images/infrastructure/25-04-03-set-cicd-with-jenkins/03.png)
 
 그냥 젠킨스가 제시하는 플러그인을 설치하도록 하자. 저렇게 설치를 하고도 더 설치해야 한다. 설치를 완료하면 계정을 생성하는 창이 나타나게 된다.
 
-![계정 설정](/assets/images/set-cicd-with-jenkins_04.png)
+![계정 설정](/assets/images/infrastructure/25-04-03-set-cicd-with-jenkins/04.png)
 
 실제 배포 서버라면 이 부분을 잘 만들어야 겠지만 지금은 그냥 admin/admin으로 통일하도록 하겠다.
 
@@ -254,21 +267,21 @@ CI/CD를 위해 젠킨스에서 지원하는 플러그인을 설치하도록 하
 
 ![깃허브 토큰 발급](/assets/images/set-cicd-with-jenkins_05.png)
 
-여기서 나온 텍스트를 젠킨스의 Credentials에 등록하도록 하자. `{젠킨스 주소}/manage/credentials/`에 접속하거나 **Jenkins 관리 → Credentials**에 이동하여 Add credentials를 클릭하도록 하자. 
+여기서 나온 텍스트를 젠킨스의 Credentials에 등록하도록 하자. `{젠킨스 주소}/manage/credentials/`에 접속하거나 **Jenkins 관리 → Credentials**에 이동하여 Add credentials를 클릭하도록 하자.
 
-![젠킨스 credentials](/assets/images/set-cicd-with-jenkins_06.png)
+![젠킨스 credentials](/assets/images/infrastructure/25-04-03-set-cicd-with-jenkins/06.png)
 
 그리고 Secret text에 토큰 값을 붙여넣도록 하자.
 
-![credentials 등록](/assets/images/set-cicd-with-jenkins_07.png)
+![credentials 등록](/assets/images/infrastructure/25-04-03-set-cicd-with-jenkins/07.png)
 
 ## 서버 접속 키 등록
 
-젠킨스에서 빌드가 완료되면 이를 도커 허브로 최신화를 하든 파일 또는 디렉터리를 배포 서버에 전송하든 서버에 접근해야 한다. 
+젠킨스에서 빌드가 완료되면 이를 도커 허브로 최신화를 하든 파일 또는 디렉터리를 배포 서버에 전송하든 서버에 접근해야 한다.
 
 이를 위해서 SSH Agent 플러그인을 이용하여 접속에 필요한 키를 등록해야 한다. 마찬가지로 Credentials로 등록하자.
 
-![접속 키 등록](/assets/images/set-cicd-with-jenkins_08.png)
+![접속 키 등록](/assets/images/infrastructure/25-04-03-set-cicd-with-jenkins/08.png)
 
 접속 키를 등록하려면 등록하려는 키를 텍스트 형식으로 열면 위와 같은 문자열이 나온다. 전체 복사 후 붙여넣기 하도록 하자.
 
@@ -276,27 +289,27 @@ CI/CD를 위해 젠킨스에서 지원하는 플러그인을 설치하도록 하
 
 이제 job을 생성하여 CI/CD를 수행하도록 하자.
 
-![job 생성 화면](/assets/images/set-cicd-with-jenkins_09.png)
+![job 생성 화면](/assets/images/infrastructure/25-04-03-set-cicd-with-jenkins/09.png)
 
 ## Generic Webhook Trigger 설정
 
 설정은 간단하게 사진으로 보도록 하자.
 
-![generic webhook trigger 1](/assets/images/set-cicd-with-jenkins_10.png)
+![generic webhook trigger 1](/assets/images/infrastructure/25-04-03-set-cicd-with-jenkins/10.png)
 
-![generic webhook trigger 2](/assets/images/set-cicd-with-jenkins_11.png)
+![generic webhook trigger 2](/assets/images/infrastructure/25-04-03-set-cicd-with-jenkins/11.png)
 
 ## Github Webhook 추가
 
 깃허브 레포지토리에서 Settings를 클릭하고 그 옆에 Webhooks를 클릭하도록 하자.
 
-![github webhook 1](/assets/images/set-cicd-with-jenkins_12.png)
+![github webhook 1](/assets/images/infrastructure/25-04-03-set-cicd-with-jenkins/12.png)
 
 이미 젠킨스가 등록된 상황이다. 이를 자세히 보면 다음과 같다.
 
-![github webhook 2](/assets/images/set-cicd-with-jenkins_13.png)
+![github webhook 2](/assets/images/infrastructure/25-04-03-set-cicd-with-jenkins/13.png)
 
-마지막 부분이 짤렸지만 저 `token` 부분이 generic webhook trigger에서 정의한 토큰 값이다. push 이벤트는 pr까지 커버가 된다. 
+마지막 부분이 짤렸지만 저 `token` 부분이 generic webhook trigger에서 정의한 토큰 값이다. push 이벤트는 pr까지 커버가 된다.
 
 다른 브랜치에서 main 브랜치로 pr이 이루어지면 main 브랜치에도 push 이벤트가 발생하는 방식이다. 따라서 push 이벤트에만 동작하도록 구성하였다.
 
@@ -321,6 +334,7 @@ CI/CD를 위해 젠킨스에서 지원하는 플러그인을 설치하도록 하
 이제 webhook이 전달되면 처리할 파이프라인을 구축하도록 하자. 파이프라인은 두 가지로 관리할 수 있는데, 하나는 젠킨스 파일을 특정 레포지토리에 보관하여 관리하는 방법이 있고, 다른 하나는 젠킨스의 job에 직접 정의하는 방법이 있다.
 
 {% include code-header.html %}
+
 ```groovy
 pipeline {
     agent any
@@ -333,7 +347,7 @@ pipeline {
         TARGET_SERVER_PATH = 'ubuntu@ec2-3-39-228-2.ap-northeast-2.compute.amazonaws.com'
         PUSHED_BRANCH = "${env.PUSHED_BRANCH}"
     }
-    
+
     options {
         disableConcurrentBuilds()
     }
@@ -354,7 +368,7 @@ pipeline {
                         checkoutCode('main', 'github-token', 'https://github.com/sehako/cicd-study.git', BACKEND_DIR)
                         buildSpringboot()
                     }
-                    
+
                     echo 'BUILD END'
                 }
             }
@@ -386,7 +400,7 @@ def buildSpringboot() {
             sh "./gradlew clean bootJar"
         }
     }
-    
+
     stage('Deploy on Server') {
         dir(BACKEND_DIR) {
             dir(BUILD_DIR) {
@@ -395,7 +409,7 @@ def buildSpringboot() {
                         scp -v -o StrictHostKeyChecking=no ./app.jar ${TARGET_SERVER_PATH}:/home/ubuntu
                         ssh -v -o StrictHostKeyChecking=no ${TARGET_SERVER_PATH} "bash /home/ubuntu/deploy_backend.sh"
                     '''
-                } 
+                }
             }
         }
 
@@ -408,6 +422,7 @@ def buildSpringboot() {
 여기서 위 파이프라인을 테스트 하면 오류가 발생할 것이다. 현재 서버에 `deploy_backend.sh` 파일이 없기 때문이다. 이를 다음과 같이 정의하도록 하자.
 
 {% include code-header.html %}
+
 ```bash
  #!/bin/bash
 
@@ -425,6 +440,7 @@ sudo docker-compose up -d --build
 이제 내 프로젝트를 변경해보도록 하겠다.
 
 {% include code-header.html %}
+
 ```java
 @RestController
 public class Controller {
@@ -443,6 +459,7 @@ public class Controller {
 초기에는 다음과 같은 코드가 있는데, 여기에 다음 요청 메소드를 추가하도록 해보자.
 
 {% include code-header.html %}
+
 ```java
   @GetMapping("/api/v1/test")
   public ResponseEntity<Return> test() {
@@ -456,15 +473,16 @@ public class Controller {
 
 .env 파일로 관리하는 경우에는 EC2에 .env 파일을 저장해두고 관리하는 것이 속편한 것 같다. 하지만 일반적으로 스프링 부트의 application.properties또는 application.yml 파일을 아예 깃 허브에 업로드 하지 않는 방법을 더 많이 사용하는 것 같아서 조금 생각해보았다.
 
-이 경우에는 application.yml 파일을 젠킨스의 credentials에 시크릿 파일로 등록을 한 다음에 빌드 직전에 이 파일을 프로젝트의 resources 디렉터리에 넣는 방법을 사용할 수 있을 것이다. 
+이 경우에는 application.yml 파일을 젠킨스의 credentials에 시크릿 파일로 등록을 한 다음에 빌드 직전에 이 파일을 프로젝트의 resources 디렉터리에 넣는 방법을 사용할 수 있을 것이다.
 
 테스트를 위해 간단한 텍스트 파일(text.txt)을 하나 만들어서 젠킨스에 시크릿 파일로 등록하도록 하겠다.
 
-![시크릿 파일 업로드](/assets/images/set-cicd-with-jenkins_14.png)
+![시크릿 파일 업로드](/assets/images/infrastructure/25-04-03-set-cicd-with-jenkins/14.png)
 
 앞서 작성한 파이프라인에서 `buildSpringBoot()` 부분을 다음과 같이 수정하도록 하자.
 
 {% include code-header.html %}
+
 ```groovy
 def buildSpringboot() {
     dir(BACKEND_DIR) {
@@ -480,7 +498,7 @@ def buildSpringboot() {
             sh "./gradlew clean bootJar"
         }
     }
-    
+
     stage('Deploy on Server') {
         dir(BACKEND_DIR) {
             dir(BUILD_DIR) {
@@ -489,14 +507,14 @@ def buildSpringboot() {
                         scp -v -o StrictHostKeyChecking=no ./app.jar ${TARGET_SERVER_PATH}:/home/ubuntu
                         ssh -v -o StrictHostKeyChecking=no ${TARGET_SERVER_PATH} "bash /home/ubuntu/deploy_backend.sh"
                     '''
-                } 
+                }
             }
         }
     }
 }
 ```
 
-![시크릿 파일 복사 결과](/assets/images/set-cicd-with-jenkins_15.png)
+![시크릿 파일 복사 결과](/assets/images/infrastructure/25-04-03-set-cicd-with-jenkins/15.png)
 
 워크스페이스를 보면 잘 저장된 것을 볼 수 있다.
 
@@ -509,21 +527,22 @@ def buildSpringboot() {
 
 그 다음 AWS에서 IAM으로 S3에 대한 권한을 가지는 사용자를 하나 생성하여 이 사용자에 대한 엑세스 키를 발급받는다.
 
-![IAM 발급](/assets/images/set-cicd-with-jenkins_16.png)
+![IAM 발급](/assets/images/infrastructure/25-04-03-set-cicd-with-jenkins/16.png)
 
 그리고 발급받은 엑세스 키와 엑세스 비밀 키를 젠킨스 Credentials에 다음과 같이 등록하면 된다.
 
-![IAM 키 설정](/assets/images/set-cicd-with-jenkins_17.png)
+![IAM 키 설정](/assets/images/infrastructure/25-04-03-set-cicd-with-jenkins/17.png)
 
 그리고 npm을 사용해서 빌드를 해야하기 때문에 앞서 설치한 NodeJS 플러그인을 설정해주도록하자. Jenkins 관리 -> Tools로 들어가면 설정이 가능하다.
 
-![npm 설정](/assets/images/set-cicd-with-jenkins_18.png)
+![npm 설정](/assets/images/infrastructure/25-04-03-set-cicd-with-jenkins/18.png)
 
 파이프라인 코드는 간단하게 작성하도록 하겠다.
 
 파이프라인 코드는 간단하게 작성하도록 하겠다.
 
 {% include code-header.html %}
+
 ```groovy
 pipeline {
     agent any
@@ -582,11 +601,12 @@ pipeline {
 
 - [Docker Pipeline](https://plugins.jenkins.io/docker-workflow/)
 
-그리고 Credentials에 도커 로그인을 위한 자신의 도커 계정의 아이디와 비밀번호를 등록하도록 하자. 
+그리고 Credentials에 도커 로그인을 위한 자신의 도커 계정의 아이디와 비밀번호를 등록하도록 하자.
 
-![도커 아이디 비밀번호 캡쳐](/assets/images/set-cicd-with-jenkins_19.png)
+![도커 아이디 비밀번호 캡쳐](/assets/images/infrastructure/25-04-03-set-cicd-with-jenkins/19.png)
 
 {% include code-header.html %}
+
 ```groovy
 def buildSpringboot() {
     dir(BACKEND_DIR) {
@@ -595,7 +615,7 @@ def buildSpringboot() {
             sh "./gradlew clean bootJar"
         }
     }
-    
+
     stage('Build Docker Image') {
         sh "docker build --rm -t ${YOUR_DOCKER_ACCOUNT_NAME}/${YOUR_DOCKER_HUB_NAME}:latest ."
     }
@@ -605,7 +625,7 @@ def buildSpringboot() {
             sh "docker push ${YOUR_DOCKER_ACCOUNT_NAME}/${YOUR_DOCKER_HUB_NAME}:latest"
         }
     }
-    
+
     stage('Deploy on Server') {
         sshagent(credentials: ['target_server']) {
             sh '''
@@ -619,6 +639,7 @@ def buildSpringboot() {
 사실 기억이 가물가물하다. 아무튼 젠킨스에서 빌드한 이미지를 자신이 구축한 도커 허브에 업로드하고. `deploy_backend.sh`를 실행시키면 된다. 해당 쉘 스크립트는 다음과 같다.
 
 {% include code-header.html %}
+
 ```sh
 #!/bin/bash
 
@@ -633,11 +654,11 @@ sudo docker-compose up -d --build
 
 이것이 마지막 배포 시리즈가 될 것이다. 최대한 자세히 쓰느라 글이 두서 없는 것 같지만 차근차근 따라가다보면 어느정도 흐름을 파악하여 자신이 원하는 배포 및 CI/CD 파이프라인을 구축할 수 있을 것이다.
 
-하다보니 초반에 자신있게 이 실습 파일로 처음부터 끝까지 다 된다고 해놓고는 마지막 시리즈에 수정한 부분이 있어서 조금 아쉽다. 특히 nginx 설정 문제인 줄 알고 nginx를 컨테이너에서 제외했는데 알고보니 EC2 자체에서 설치하지 않은 항목이 있어 생긴 문제였다... 
+하다보니 초반에 자신있게 이 실습 파일로 처음부터 끝까지 다 된다고 해놓고는 마지막 시리즈에 수정한 부분이 있어서 조금 아쉽다. 특히 nginx 설정 문제인 줄 알고 nginx를 컨테이너에서 제외했는데 알고보니 EC2 자체에서 설치하지 않은 항목이 있어 생긴 문제였다...
 
 다시 되돌릴까 생각했지만 이미 그때 EC2를 몇 번 내리고 다시 올리고 이것저것 한 뒤라 힘들어서 그냥 nginx 제외하고 보안 그룹도 바꿔 진행했다. 아마 보안 그룹을 HTTP/HTTPS로만 설정하고 nginx + spring boot + jenkins를 컨테이너로 실행해도 문제없이 위 과정을 따라할 수 있을 것이다. 참고로 그렇게 nginx를 적용하면 `{서버 주소}/jenkins`로 접속하면 된다.
 
-한 가지 유념할 점은 실제 프로젝트 배포 도중에 젠킨스가 자동 업데이트 되면서 도커 볼륨에 저장해둔 설정 몇몇 부분을 제대로 읽지 못하여 결과적으로 젠킨스가 실행조차 되지 않는 문제가 발생하였었다. 
+한 가지 유념할 점은 실제 프로젝트 배포 도중에 젠킨스가 자동 업데이트 되면서 도커 볼륨에 저장해둔 설정 몇몇 부분을 제대로 읽지 못하여 결과적으로 젠킨스가 실행조차 되지 않는 문제가 발생하였었다.
 
 따라서 generic webhook trigger 설정이나 파이프라인 코드는 주기적으로 백업해두자. 개인적으로 파이프라인 코드는 굳이 젠킨스에 정의하지 말고 저장할 레포지토리에 젠킨스 파일로 관리하는 방법인 Pipeline script from SCM를 고려하는 것도 좋은 방법일 것 같다.
 
@@ -649,7 +670,7 @@ sudo docker-compose up -d --build
 
 [**Jenkins 로고**](https://www.pngwing.com/en/free-png-tibbn)
 
-[**What is CI/CD?**](https://www.redhat.com/en/topics/devops/what-is-ci-cd) 
+[**What is CI/CD?**](https://www.redhat.com/en/topics/devops/what-is-ci-cd)
 
 [**[INFRA] AWS EC2 프리티어 인스턴스 생성하기**](https://olrlobt.tistory.com/83)
 

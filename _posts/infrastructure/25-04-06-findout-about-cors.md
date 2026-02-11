@@ -36,7 +36,7 @@ CORS(Cross-Origin Resource Sharing)는 서로 다른 출처(origin) 간의 리�
 
 따라서 우리는 서버에서 CORS를 허용하는 방법을 알아두어야 한다. 하지만 그 전에 앞서 말한 오리진이라는 것이 무엇인지 실제 요청을 통해 확인해보도록 하자. 이를 위해 CORS가 발생하는 상황에 대해서 임의 요청 페이지를 만들어서 OPTIONS 요청을 살펴보도록 하자.
 
-![OPTIONS 요청 예시](/assets/images/findout-about-cors_01.png)
+![OPTIONS 요청 예시](/assets/images/infrastructure/25-04-06-findout-about-cors/01.png)
 
 잘 보면 `Access-Control-Request`와 `Origin`이 보일 것이다. 결국 서버에서는 이 두 값을 가지고 확인하여 결과적으로 허용 여부를 결정하게 되는 것이다. 참고로 `Origin`은 브라우저가 현재 사용하고 있는 주소값이다. 따라서 `http://localhost:5500`과 `http://127.0.0.1:5500`은 개발자 입장에서는 같은 경로라고 생각하지만 `Origin` 헤더에는 저 문자열이 그대로 담기기 때문에 둘 모두 허용 처리를 해줘야 한다.
 

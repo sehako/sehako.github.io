@@ -14,7 +14,7 @@ last_modified_at: 2025-04-20
 
 몇 번의 포스팅에서 언급했던 것 처럼 스프링 클라우드를 통한 MSA를 구축하고 이를 나름대로 성공적으로 배포하였다. 오늘은 MSA를 구축할 때 고려하였던 개발 및 배포 환경 분리와 스웨거를 적용하는 법을 짧게 다뤄보겠다. 막간 자랑 타임으로 프로젝트의 최종적인 소프트웨어 아키텍처를 보여주겠다.
 
-![아키텍처 이미지](/assets/images/dev-deploy-env-separation-swagger-config-in-msa_01.png)
+![아키텍처 이미지](/assets/images/infrastructure/25-04-20-dev-deploy-env-separation-swagger-config-in-msa/01.png)
 
 상당히 복잡하다. 간략하게 설명하면 디스커버리 서비스로 마이크로 서비스를 등록해두고, 게이트웨이가 디스커버리 서비스를 활용하여 각각의 마이크로 서비스로 연결해준다고 생각하면 된다. FastAPI는 AI 서버를 구축하기 위해 사용되었다고 이해하면 된다.
 
