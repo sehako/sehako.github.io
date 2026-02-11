@@ -1,5 +1,5 @@
 ---
-title: Spring Batch - CSV 백업 및 알림 메일 처리
+title: Spring Batch - Flow를 이용한 CSV 백업 및 알림 메일 처리
 
 categories:
   - Spring Batch
