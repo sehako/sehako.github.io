@@ -1,10 +1,10 @@
 ---
-title: "Note"
+title: "OAuth 2.0"
 layout: archive
-permalink: categories/note
+permalink: categories/oauth2
 author_profile: true
 sidebar_main: true
 ---
 
-{% assign posts = site.categories['Note'] %}
+{% assign posts = site.categories['OAuth 2.0'] %}
 {% for post in posts %} {% include archive-single.html type=page.entries_layout %} {% endfor %}
