@@ -10,7 +10,6 @@ toc_sticky: true
 published: true
 
 date: 2025-07-28
-last_modified_at: 2025-07-28
 ---
 
 # 임베디드 라이브러리를 활용한 통합 테스트의 문제점

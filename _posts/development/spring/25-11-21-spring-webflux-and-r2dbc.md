@@ -9,7 +9,6 @@ toc_sticky: true
 published: true
 
 date: 2025-11-21
-last_modified_at: 2025-11-21
 ---
 
 Flow API와 프로젝트 리액터를 알아보았다. 이는 모두 Spring WebFlux를 사용하기 위해서 필요한 기초 지식들이었다. 그렇다면 이제 Spring WebFlux에 대해서 알아보도록 하자.

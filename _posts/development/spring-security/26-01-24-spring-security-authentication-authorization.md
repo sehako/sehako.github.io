@@ -9,7 +9,6 @@ toc_sticky: true
 published: true
 
 date: 2026-01-24
-last_modified_at: 2026-01-24
 ---
 
 앞선 포스팅에서 스프링 시큐리티의 아키텍처에 대해 살펴보았다. 구조는 다소 복잡해 보이지만, 핵심은 인증이 완료되면 `SecurityContextHolder`에 `Authentication` 객체가 설정된다는 것이다.

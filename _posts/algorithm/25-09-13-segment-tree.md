@@ -9,7 +9,6 @@ toc_sticky: true
 published: true
 
 date: 2025-09-13
-last_modified_at: 2025-09-13
 ---
 
 # 이론

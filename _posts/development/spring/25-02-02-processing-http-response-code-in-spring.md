@@ -9,7 +9,6 @@ toc_sticky: true
 published: true
 
 date: 2025-02-02
-last_modified_at: 2025-02-02
 ---
 
 # 스프링에서의 응답

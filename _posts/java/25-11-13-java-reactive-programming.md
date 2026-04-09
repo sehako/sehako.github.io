@@ -10,7 +10,6 @@ toc_sticky: true
 published: true
 
 date: 2025-11-13
-last_modified_at: 2025-11-13
 ---
 
 자바는 8 버전 이후 빠르게 진화하기 시작했다. Stream API를 통한 선언적 데이터 처리와 람다 표현식을 이용한 동작 파라미터화는 자바를 절차적 언어에서 함수형 스타일로 확장시켰다. 이어 자바 21에서는 가상 스레드(Virtual Thread) 를 통해 I/O Bound 작업을 훨씬 효율적으로 처리할 수 있게 되었다.

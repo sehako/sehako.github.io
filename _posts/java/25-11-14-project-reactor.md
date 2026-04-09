@@ -10,7 +10,6 @@ toc_sticky: true
 published: true
 
 date: 2025-11-14
-last_modified_at: 2025-11-14
 ---
 
 Spring Webflux로 넘어가기 전에 프로젝트 리액터부터 알아보고 가도록 하자. 프로젝트 리액터는 JVM 기반의 리액티브 프로그래밍 라이브러리로, 리액티브 스트림 사양을 구현한 대표적인 기술이다. Spring WebFlux는 이 Reactor를 기반으로 구축되었으며, Java 9의 Flow API와도 호환성을 지원한다.

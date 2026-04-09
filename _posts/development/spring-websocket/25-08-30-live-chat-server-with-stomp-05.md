@@ -10,7 +10,6 @@ toc_sticky: true
 published: true
 
 date: 2025-08-30
-last_modified_at: 2025-08-30
 ---
 
 # 소켓 서버 스케일아웃의 문제점

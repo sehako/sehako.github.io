@@ -10,7 +10,6 @@ toc_sticky: true
 published: true
 
 date: 2025-08-05
-last_modified_at: 2025-08-05
 ---
 
 # 전통적 웹 애플리케이션에서의 인증

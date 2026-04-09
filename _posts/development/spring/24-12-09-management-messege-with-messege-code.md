@@ -7,27 +7,27 @@ categories:
 toc: true
 toc_sticky: true
 published: true
- 
+
 date: 2024-12-09
-last_modified_at: 2024-12-13
 ---
 
-OAuth 관련 미니 프로젝트를 시작하려고 프로젝트의 사전 설정을 하던 도중에 응답에 관한 메시지를 스프링의 메시지 기능으로 관리하고 싶어졌다. 
+OAuth 관련 미니 프로젝트를 시작하려고 프로젝트의 사전 설정을 하던 도중에 응답에 관한 메시지를 스프링의 메시지 기능으로 관리하고 싶어졌다.
 
 ### 메시지
 
-스프링에서 제공하는 메시지 기능은  ***.properties**로 이루어진 파일에 정의된 다양한 메시지를 `MessageSource`의 구현체를 이용하여 불러오는 것이다. 이 방법의 장점은 별도 파일에 메시지를 모아서 관리할 수 있다는 것도 있지만, 가장 핵심은 국제화 기능이라고 생각한다.
+스프링에서 제공하는 메시지 기능은 **\*.properties**로 이루어진 파일에 정의된 다양한 메시지를 `MessageSource`의 구현체를 이용하여 불러오는 것이다. 이 방법의 장점은 별도 파일에 메시지를 모아서 관리할 수 있다는 것도 있지만, 가장 핵심은 국제화 기능이라고 생각한다.
 
 예를 들어 **resource** 디렉터리에 **errors.properties**를 메시지 파일로 사용한다고 가정했을 때, 영어를 사용하는 클라이언트의 요청에 대해서 메시지를 다르게 설정하고 싶다면 **errors_en.properties**라는 파일을 작성하고 다음과 같이 스프링 설정 파일에 파일 이름을 작성해주면 된다.
 
 {% include code-header.html %}
+
 ```yaml
 # application.yml
 spring:
- application:
-  name: playground
- messages:
-  basename: messages, errors
+  application:
+    name: playground
+  messages:
+    basename: messages, errors
 ```
 
 ### 메시지 파일 작성
@@ -55,6 +55,7 @@ NotBlank={0} value cannot be empty.
 기존의 메시지는 `enum` 파일로 관리하였는데, 이 방법은 메시지를 하드코드해야 했다.
 
 {% include code-header.html %}
+
 ```java
 // 응답 enum 예시
 INVALID_REQUEST(4000, HttpStatus.BAD_REQUEST, "잘못된 요청!");
@@ -63,6 +64,7 @@ INVALID_REQUEST(4000, HttpStatus.BAD_REQUEST, "잘못된 요청!");
 따라서 클라이언트의 `Accept-Language`와는 상관 없이 항상 같은 메시지를 응답한다. 하지만 이를 메시지 기능으로 관리하면 국제화를 손쉽게 할 수 있다. 또한 나중에 보게될 것이지만 검증 실패 시 클라이언트에게 실패한 검증 필드를 손쉽게 응답할 수도 있다.
 
 {% include code-header.html %}
+
 ```java
 @Getter
 @RequiredArgsConstructor
@@ -81,11 +83,12 @@ public enum ErrorCode {
 이제 메시지 파일을 불러와야 한다. 스프링은 `MessageSource`인터페이스의 구현체를 어플리케이션 시작 때 설정 파일로부터 메시지 파일을 읽어와 등록해둔다. 따라서 의존성 주입을 이용하여 `MessageSource`를 주입하여 사용할 것이다.
 
 {% include code-header.html %}
+
 ```java
 @Component
 @RequiredArgsConstructor
 public class MessageUtil {
-    private static MessageSource messageSource; 
+    private static MessageSource messageSource;
 
     @Autowired
         public void setMessageSource(MessageSource messageSource) {
@@ -104,6 +107,7 @@ public class MessageUtil {
 ### 응답 객체 만들기
 
 {% include code-header.html %}
+
 ```java
 @JsonPropertyOrder({"isSuccess", "code", "message", "result"})
 public record JSONResponse<T>(
@@ -127,6 +131,7 @@ public record JSONResponse<T>(
 예외 처리를 위해서 공통 예외 클래스를 만들고, 예외 처리를 하는 `@RestControllerAdvice`를 만든다.
 
 {% include code-header.html %}
+
 ```java
 @Getter
 public class CommonException extends RuntimeException {
@@ -139,6 +144,7 @@ public class CommonException extends RuntimeException {
 ```
 
 {% include code-header.html %}
+
 ```java
 @RestControllerAdvice
 public class CommonExceptionHandler {
@@ -189,6 +195,7 @@ public class CommonExceptionHandler {
 테스트를 위해 컨트롤러와 요청 객체를 만든다.
 
 {% include code-header.html %}
+
 ```java
 @RestController
 @RequestMapping("/api/user")
@@ -204,6 +211,7 @@ public class UserController {
 ```
 
 {% include code-header.html %}
+
 ```java
 public record UserRegisterRequest(
         @NotNull
@@ -214,7 +222,7 @@ public record UserRegisterRequest(
 }
 ```
 
-이제 테스트를 해보자. 
+이제 테스트를 해보자.
 
 **잘못된 경로 변수 입력(**`MethodArgumentTypeMismatchException`)
 
@@ -251,7 +259,7 @@ BODY
 
 **요청 값의 null 또는 공백(**`MethodArgumentNotValidException`)
 
-이 방법의 가장 큰 장점이 바로 이 부분인 것 같다. 
+이 방법의 가장 큰 장점이 바로 이 부분인 것 같다.
 
 ```
 POST http://localhost:8080/api/user/test
@@ -305,13 +313,14 @@ header: {
 메시지 파일을 이용하여 메시지 관리를 하는 방법을 알아보았다. 쳇 GPT나 여러 강의 정리를 참고하면서 만든거긴 한데 여러 개선 사항이 보이긴 한다.
 
 예를 들어 수정자 주입을 통해 현재 객체의 의존성을 설정했는데, 이는 `MessageUtil`을 정적 메소드를 사용하려고 `MessageSource`를 정적 필드로 선언했기 때문이다. 좀 더 설계를 잘한다면 메시지 파일을 관리하는 특정한 컴포넌트를 응답 객체가 아닌 다른 객체에서 어떻게 할 수 있지 않을까 생각한다.  
-이상으로 메시지 파일을 이용한 메시지 관리를 알아보았다. 국제화를 할 일이 많지 않을 것 같긴 한데 뭔가 해보고 싶었다. 
+이상으로 메시지 파일을 이용한 메시지 관리를 알아보았다. 국제화를 할 일이 많지 않을 것 같긴 한데 뭔가 해보고 싶었다.
 
 ### 리팩토링(24-12-11)
 
 `ErrorCode`를 살펴보던 도중 굳이 메시지 코드를 입력하지 않아도 된다는 생각이 들었다. 왜냐면 `enum`에 정의된 값들은 기본적으로 `name()`메소드를 가지게 되는데, 이 메소드들은 정의된 `enum`값을 문자열 형태로 출력할 수 있기 때문이다. 따라서 `JSONResponse`를 다음과 같이 수정하였다.
 
 {% include code-header.html %}
+
 ```java
 @Getter
 @RequiredArgsConstructor
@@ -348,6 +357,7 @@ INVALID_REQUEST=잘못된 요청
 `MessageUtil`을 사용하는 것은 응답 레코드 하나다. 응답 레코드에는 값을 받아서 리턴하는 것 외에는 다른 로직 처리를 최대한 자제해야 한다고 생각하였다. 따라서 이 방법을 사용하면 `MessageUtil`을 만들 때 스프링 컨테이너로부터 스프링 빈을 가져올 수 있다. 이 방법은 스프링 컨테이너와의 결합도를 강하게 만드므로 최대한 자제해야 한다고 한다.
 
 {% include code-header.html %}
+
 ```java
 @Component
 public class MessageUtil implements ApplicationContextAware {
@@ -369,6 +379,7 @@ public class MessageUtil implements ApplicationContextAware {
 스프링 설정 파일 `@Configuration`을 이용하면 `MessageUtil`을 컴포넌트로 등록시키지 않고도 스프링 빈 의존성 주입을 할 수 있었다.
 
 {% include code-header.html %}
+
 ```java
 @Configuration
 public class MessageUtilConfig {
@@ -380,6 +391,7 @@ public class MessageUtilConfig {
 ```
 
 {% include code-header.html %}
+
 ```java
 public class MessageUtil {
     private static MessageSource messageSource;
@@ -389,7 +401,6 @@ public class MessageUtil {
     }
 }
 ```
-
 
 **[전체 코드 참고](https://github.com/sehako/playground/tree/exception)**
 

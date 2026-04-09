@@ -9,7 +9,6 @@ toc_sticky: true
 published: true
 
 date: 2025-02-09
-last_modified_at: 2025-02-09
 ---
 
 # 카테고리 관리 방식

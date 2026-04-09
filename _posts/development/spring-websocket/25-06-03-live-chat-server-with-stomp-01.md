@@ -10,7 +10,6 @@ toc_sticky: true
 published: true
 
 date: 2025-06-03
-last_modified_at: 2025-06-03
 ---
 
 Spring에서 STOMP를 활용하여 실시간 채팅 서버를 단계적으로 구축해나갈 것이다. 최종 구현 목표는 다음과 같다.

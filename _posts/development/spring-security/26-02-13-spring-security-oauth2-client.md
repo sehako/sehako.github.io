@@ -9,7 +9,6 @@ toc_sticky: true
 published: true
 
 date: 2026-02-13
-last_modified_at: 2026-02-13
 ---
 
 OAuth 2.0이 무엇인지 알아봤다. 이제 스프링 시큐리티 공식 문서를 통해서 OAuth 2.0 로그인 관련한 핵심 컴포넌트를 알아보도록 하자. 우선 스프링 시큐리티는 OAuth 2.0과 관련하여 다음 의존성들을 제공한다.
@@ -49,7 +48,7 @@ public final class ClientRegistration {
     private ProviderDetails providerDetails;
     // 클라이언트를 설명하는 이름 (로그인 페이지 등 UI 표시용)
     private String clientName;
-    
+
     public class ProviderDetails {
         // Authorization Code Flow에서 사용되는 Authorization Endpoint URI
         private String authorizationUri;
@@ -63,7 +62,7 @@ public final class ClientRegistration {
         private String issuerUri;
         // issuer-uri 기반 discovery를 통해 조회된 Provider 설정 메타데이터
         private Map<String, Object> configurationMetadata;
-        
+
         public class UserInfoEndpoint {
             // 인증된 사용자의 claims/attributes를 조회하는 UserInfo Endpoint URI
             private String uri;
@@ -92,15 +91,15 @@ ClientRegistration clientRegistration =
 		    .build();
 ```
 
-이는 `issuer-uri`이 있는 경우에 스프링 시큐리티 자동 구성에서 사용하는 메서드로, OIDC 및 OAuth 2.0 규격에 따라서 정의된 엔드포인트 리스트에 대해서 최초로 정상 응답을 반환할 때까지 순차적으로 조회한다. 예를 들어 위 issuer-uri에 대한 엔드포인트 후보 리스트는 다음과 같다. 
+이는 `issuer-uri`이 있는 경우에 스프링 시큐리티 자동 구성에서 사용하는 메서드로, OIDC 및 OAuth 2.0 규격에 따라서 정의된 엔드포인트 리스트에 대해서 최초로 정상 응답을 반환할 때까지 순차적으로 조회한다. 예를 들어 위 issuer-uri에 대한 엔드포인트 후보 리스트는 다음과 같다.
 
 - idp.example.com/issuer/.well-known/openid-configuration
 - https://idp.example.com/.well-known/openid-configuration/issuer
 - https://idp.example.com/.well-known/oauth-authorization-server/issuer
 
-이때 4xx 응답은 다음 엔드포인트에 대한 요청으로 진행하고, 그 외 응답은 즉시 예외를 발생시킨다. 
+이때 4xx 응답은 다음 엔드포인트에 대한 요청으로 진행하고, 그 외 응답은 즉시 예외를 발생시킨다.
 
-조회가 성공하면 `ClientRegistration`의 `ProviderDetails`를 포함한 `authorization-uri,` `token-uri`, `jwk-set-uri`, `issuer-uri` 등 제공자 관련 메타데이터와 OAuth 2.0 로그인에 필요한 기본 설정 값들이 함께 구성된다. 
+조회가 성공하면 `ClientRegistration`의 `ProviderDetails`를 포함한 `authorization-uri,` `token-uri`, `jwk-set-uri`, `issuer-uri` 등 제공자 관련 메타데이터와 OAuth 2.0 로그인에 필요한 기본 설정 값들이 함께 구성된다.
 
 만약 OpenID Connect만 사용한다면 `ClientRegistrations.fromOidcIssuerLocation()`으로 OpenID Connect 제공자의 설정 엔드포인트만 조회할 수 있다.
 
@@ -137,9 +136,9 @@ public class OAuth2AuthorizedClient implements Serializable {
 
 ## OAuth2AuthorizedClientRepository / OAuth2AuthorizedClientService
 
-`OAuth2AuthorizedClientRepository`는 웹 요청을 기준으로  `OAuth2AuthorizedClient` (이미 OAuth 2.0 인가가 끝난 상태를 나타냄)를 저장 및 조회하고, `OAuth2AuthorizedClientService`는 애플리케이션 수준에서 `OAuth2AuthorizedClient`를 관리할 수 있도록 하는 컴포넌트다. 이 둘은 완전히 분리되는 개념이 아니라 구현에 따라  `OAuth2AuthorizedClientRepository`에서 `OAuth2AuthorizedClientService`로 위임하기도 한다.
+`OAuth2AuthorizedClientRepository`는 웹 요청을 기준으로 `OAuth2AuthorizedClient` (이미 OAuth 2.0 인가가 끝난 상태를 나타냄)를 저장 및 조회하고, `OAuth2AuthorizedClientService`는 애플리케이션 수준에서 `OAuth2AuthorizedClient`를 관리할 수 있도록 하는 컴포넌트다. 이 둘은 완전히 분리되는 개념이 아니라 구현에 따라 `OAuth2AuthorizedClientRepository`에서 `OAuth2AuthorizedClientService`로 위임하기도 한다.
 
-쉽게 말해 `OAuth2AuthorizedClientRepository`는 웹 요청 컨텍스트(`HttpServletRequest` / `Response`)에 종속된 방식 (예: 세션, 쿠키, 요청 속성 등)으로 관리하고, `OAuth2AuthorizedClientService`는 웹 요청과 무관한 저장소 (DB, 메모리 등)를 대상으로 관리한다고 보면 된다. 
+쉽게 말해 `OAuth2AuthorizedClientRepository`는 웹 요청 컨텍스트(`HttpServletRequest` / `Response`)에 종속된 방식 (예: 세션, 쿠키, 요청 속성 등)으로 관리하고, `OAuth2AuthorizedClientService`는 웹 요청과 무관한 저장소 (DB, 메모리 등)를 대상으로 관리한다고 보면 된다.
 
 `OAuth2AuthorizedClientService`/`Repository`는 보통 개발자가 직접 호출할 일은 많지 않지만, `oauth2Login()` 흐름 내부에서 토큰을 저장/조회하는 데 사용된다. 특히 OAuth 제공자의 API를 호출하거나(예: Google Calendar), 리프레시 토큰 기반 재발급, 또는 스케일아웃 환경에서 토큰 저장소를 Redis/DB로 바꾸는 경우에는 이 컴포넌트들의 설정과 동작을 이해하는 것이 중요하다.
 
@@ -169,7 +168,7 @@ public class OAuth2ClientController {
 
 또한 이들에 대한 커스텀 구현체를 만들면, 스프링 부트 자동 구성은 기본 구현체 대신에 커스텀 컴포넌트를 스프링 빈으로 등록한다.
 
-특히 `OAuth2AuthorizedClientService` 기본 제공 구현체로는 기본적으로 자동 등록되는 `InMemoryOAuth2AuthorizedClientService`와  별도 설정을 통해서 사용할 수 있는 `JdbcOAuth2AuthorizedClientService`가 있다. 
+특히 `OAuth2AuthorizedClientService` 기본 제공 구현체로는 기본적으로 자동 등록되는 `InMemoryOAuth2AuthorizedClientService`와 별도 설정을 통해서 사용할 수 있는 `JdbcOAuth2AuthorizedClientService`가 있다.
 
 하지만 JDBC 구현체는 다음과 같은 스키마를 강제로 사용해야 한다.
 
@@ -200,7 +199,7 @@ CREATE TABLE oauth2_authorized_client (
 - OAuth 2.0 클라이언트가 성공적으로 인가를 받았을 경우 `OAuth2AuthorizationSuccessHandler`에 후속 처리를 위임
 - OAuth 2.0 클라이언트가 인가를 실패했을 경우 `OAuth2AuthorizationFailureHandler`에 후속 처리를 위임
 
-`OAuth2AuthorizedClientProvider`는 OAuth 2.0 클라이언트를 인가하거나 이미 인가된 클라이언트의 토큰을 재인가하기 위한 전략(Grant Type)을 구현한 컴포넌트이다. 
+`OAuth2AuthorizedClientProvider`는 OAuth 2.0 클라이언트를 인가하거나 이미 인가된 클라이언트의 토큰을 재인가하기 위한 전략(Grant Type)을 구현한 컴포넌트이다.
 
 `OAuth2AuthorizedClientManager`의 기본 구현체는 `DefaultOAuth2AuthorizedClientManager`이며, 이는 위임 기반 컴포지트 디자인 패턴으로 여러 OAuth 2.0 인가 방식을 지원할 수 있는 `OAuth2AuthorizedClientProvider`와 연관되어 있다.
 
@@ -339,7 +338,7 @@ public AuthorizationRequestRepository<OAuth2AuthorizationRequest> authorizationR
 
 사용자 정보 엔드포인트에 요청하여 `Principal` 생성을 담당하는 컴포넌트다. OAuth 2.0에서는 `DefaultOAuth2UserService`가 기본 구현체로 사용되고, OIDC에서는 `OidcUserService`가 기본 구현체로 사용된다. `OidcUserService`는 ID 토큰을 처리하고, 사용자 정보가 필요하면 내부적으로 `DefaultOAuth2UserService`를 위임해서 사용자 정보를 요청하는 구조다.
 
-이 두 구현체는 각각 `OAuth2User`와 이를 한 번 더 상속한 `OidcUser`를 반환한다. 일반적으로 서비스 구현체를 상속하는 커스텀 컴포넌트를 만들고 사용자 정보 엔드포인트에 요청하는 것은 기본 구현체에 위임한 다음, 애플리케이션에 적합한 커스텀 `OAuth2User` 객체를 반환하는 식으로 만든다. 
+이 두 구현체는 각각 `OAuth2User`와 이를 한 번 더 상속한 `OidcUser`를 반환한다. 일반적으로 서비스 구현체를 상속하는 커스텀 컴포넌트를 만들고 사용자 정보 엔드포인트에 요청하는 것은 기본 구현체에 위임한 다음, 애플리케이션에 적합한 커스텀 `OAuth2User` 객체를 반환하는 식으로 만든다.
 
 ```java
 public class CustomOAuth2UserService extends DefaultOAuth2UserService {
@@ -361,9 +360,9 @@ public class CustomOidcUserService extends OidcUserService {
   @Override
   public OidcUser loadUser(OidcUserRequest userRequest) throws OAuth2AuthenticationException {
     OidcUser oidcUser = super.loadUser(userRequest);
-    
+
     // ...
-    
+
     return new CustomOidcUser(oidcUser);
   }
 }
@@ -414,7 +413,6 @@ public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Excepti
 2. 해당 핸들러를 통해서 이전에 저장된 `OAuth2AuthorizedClient`가 `OAuth2AuthorizedClientRepository`에서 제거된다.
 
 > `setAuthorizationSuccessHandler(OAuth2AuthorizationSuccessHandler)`와 `setAuthorizationFailureHandler(OAuth2AuthorizationFailureHandler)`를 통해 동작을 커스터마이징 할 수 있다.
-> 
 
 ### 웹 요청 URL 관점
 
@@ -426,16 +424,16 @@ public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Excepti
 2. 스프링 시큐리티는 `{registrationId}`에 해당하는 `ClientRegistration`을 `ClientRegistrationRepository`에서 조회한다.
 3. 조회된 `ClientRegistration`을 기반으로 `OAuth2AuthorizationRequest`(인가 요청 정보)를 생성한다.
 4. 생성된 `OAuth2AuthorizationRequest`는 `AuthorizationRequestRepository`에 저장된다.
-    
-    (기본 구현체는 세션 기반 `HttpSessionOAuth2AuthorizationRequestRepository`)
-    
+
+   (기본 구현체는 세션 기반 `HttpSessionOAuth2AuthorizationRequestRepository`)
+
 5. 이후 OAuth 2.0 제공자의 설정된 URI로 리다이렉트된다.
 
 **콜백 처리 (인가 코드 → 토큰 교환)**
 
 1. OAuth 2.0 제공자에서 인증/동의가 완료되면 사용자는 `/login/oauth2/code/{registrationId}` 로 리다이렉트된다.
 2. 스프링 시큐리티는 `AuthorizationRequestRepository`에서 앞서 저장해둔 `OAuth2AuthorizationRequest`를 조회/제거하여, callback 요청이 “이전 인가 요청”과 이어지는지 검증한다. (state 검증, redirectUri 매칭 등)
-3. 콜백으로 전달받은 `code` 파라미터를 사용해 토큰 엔드포인트로 요청하여 액세스 토큰(필요 시 리프레시 토큰 포함)을 교환한다. 
+3. 콜백으로 전달받은 `code` 파라미터를 사용해 토큰 엔드포인트로 요청하여 액세스 토큰(필요 시 리프레시 토큰 포함)을 교환한다.
 4. OIDC 제공자인 경우 ID Token(JWT) 검증이 수행되며, 설정에 따라 사용자 정보 엔드포인트로 사용자 정보를 추가 조회할 수 있다. (`OAuth2UserService`가 사용되는 지점)
 5. 최종적으로 인증이 완료되면 `OAuth2AuthorizedClientRepository`/`OAuth2AuthorizedClientService`를 통해 `OAuth2AuthorizedClient`가 저장된다.
 6. 인증된 사용자 정보는 `Authentication`으로 생성되어 `SecurityContext`에 저장되며, 이후 요청부터는 애플리케이션에서 인증된 사용자로 처리된다.
@@ -446,27 +444,27 @@ public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Excepti
 
 **Registration**
 
-| 설정  | ClientRegistration 필드명 | 설명 |
-| --- | --- | --- |
-| registrationId | registrationId | 클라이언트를 식별하는 ID (예: google, github) |
-| client-id | clientId | 발급받은 Client ID |
-| client-secret | clientSecret | 발급받은 Client Secret |
-| client-authentication-method | clientAuthenticationMethod | 클라이언트 인증 방식 (basic, post 등) |
-| authorization-grant-type | authorizationGrantType | 권한 부여 방식 (authorization_code 등) |
-| redirect-uri | redirectUri | 인증 후 리다이렉트될 URI |
-| scope | scopes | 요청할 권한 범위 |
-| client-name | clientName | 클라이언트의 이름 (UI 표시용 등) |
+| 설정                         | ClientRegistration 필드명  | 설명                                          |
+| ---------------------------- | -------------------------- | --------------------------------------------- |
+| registrationId               | registrationId             | 클라이언트를 식별하는 ID (예: google, github) |
+| client-id                    | clientId                   | 발급받은 Client ID                            |
+| client-secret                | clientSecret               | 발급받은 Client Secret                        |
+| client-authentication-method | clientAuthenticationMethod | 클라이언트 인증 방식 (basic, post 등)         |
+| authorization-grant-type     | authorizationGrantType     | 권한 부여 방식 (authorization_code 등)        |
+| redirect-uri                 | redirectUri                | 인증 후 리다이렉트될 URI                      |
+| scope                        | scopes                     | 요청할 권한 범위                              |
+| client-name                  | clientName                 | 클라이언트의 이름 (UI 표시용 등)              |
 
 **Registration.ProviderDetails**
 
-| 설정 정보 | ClientRegistration 필드명 | 설명 |
-| --- | --- | --- |
-| authorization-uri | providerDetails.authorizationUri | 인증 서버의 권한 부여 엔드포인트 |
-| token-uri | providerDetails.tokenUri | 액세스 토큰 발급 엔드포인트 |
-| jwk-set-uri | providerDetails.jwkSetUri | 토큰 검증을 위한 공개키(JWK) 경로 |
-| issuer-uri | providerDetails.issuerUri | 인증 서버의 발행자(Issuer) 식별 주소 |
-| user-info-uri | userInfoEndpoint.uri | 사용자 정보를 가져오는 엔드포인트 |
-| user-name-attribute | userNameAttributeName | 사용자 이름으로 사용할 속성 키값 |
+| 설정 정보           | ClientRegistration 필드명        | 설명                                 |
+| ------------------- | -------------------------------- | ------------------------------------ |
+| authorization-uri   | providerDetails.authorizationUri | 인증 서버의 권한 부여 엔드포인트     |
+| token-uri           | providerDetails.tokenUri         | 액세스 토큰 발급 엔드포인트          |
+| jwk-set-uri         | providerDetails.jwkSetUri        | 토큰 검증을 위한 공개키(JWK) 경로    |
+| issuer-uri          | providerDetails.issuerUri        | 인증 서버의 발행자(Issuer) 식별 주소 |
+| user-info-uri       | userInfoEndpoint.uri             | 사용자 정보를 가져오는 엔드포인트    |
+| user-name-attribute | userNameAttributeName            | 사용자 이름으로 사용할 속성 키값     |
 
 ## CommonOAuth2Provider
 
@@ -492,8 +490,8 @@ spring:
     oauth2:
       client:
         registration:
-          google-login:	
-            provider: google	
+          google-login:
+            provider: google
             client-id: google-client-id
             client-secret: google-client-secret
             scope: email, profile
@@ -513,7 +511,7 @@ spring:
             client-id: okta-client-id
             client-secret: okta-client-secret
         provider:
-          okta:	
+          okta:
             authorization-uri: https://your-subdomain.oktapreview.com/oauth2/v1/authorize
             token-uri: https://your-subdomain.oktapreview.com/oauth2/v1/token
             user-info-uri: https://your-subdomain.oktapreview.com/oauth2/v1/userinfo
@@ -524,12 +522,10 @@ spring:
 이와 같이 제공자를 직접 정의하면 Spring Security의 `CommonOAuth2Provider`에 포함되지 않은 OAuth 2.0 제공자이거나, 멀티 테넌시 구조로 인해 엔드포인트가 고정되지 않은 제공자를 명시된 속성 값으로 구성할 수 있다.
 
 > **테넌트, 태넌시, 멀티 테넌시**
-> 
-> 
+>
 > 테넌트란 특정 사용자나 조직을 뜻하며, 테넌시는 테넌트가 IT 자원을 사용하는 운영 구조를 말한다.
-> 
+>
 > 멀티 테넌시는 여러 사용자나 조직이 동일한 IT 자원을 사용하면서도 데이터, 설정, 보안 측면에서 논리적으로 격리되어 있는 것을 말한다.
-> 
 
 ## OAuth2Login DSL
 

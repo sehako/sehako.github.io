@@ -9,7 +9,6 @@ toc_sticky: true
 published: true
 
 date: 2025-10-08
-last_modified_at: 2025-10-08
 ---
 
 앞서 Spring Scheduler를 활용하여 대용량 데이터를 처리하면 어떤 치명적인 문제가 발생하는지 알아보고 해당 문제들을 해결하기 위해서 Spring Batch가 사용된다는 것을 알아보았다. 그렇다면 Spring Batch는 무엇일까?

@@ -9,7 +9,6 @@ toc_sticky: true
 published: true
 
 date: 2025-12-09
-last_modified_at: 2025-12-09
 ---
 
 Spring Batch로 전환한 덕분에 메모리 점유율과 처리 시간을 90% 정도 개선할 수 있었다. 여기서 추가적으로 처리가 완료된 다음에 처리된 데이터를 CSV 파일로 백업한 다음에 해당 파일을 메일로 보내도록 만들어봤다.

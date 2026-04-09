@@ -10,7 +10,6 @@ toc_sticky: true
 published: true
 
 date: 2025-11-24
-last_modified_at: 2025-11-24
 ---
 
 Spring WebFlux의 장점인 안정성을 확인해보기 위해서 데이터베이스에 INSERT 작업을 하는 엔드포인트를 하나 만들어 K6로 부하 테스트를 진행해봤다.

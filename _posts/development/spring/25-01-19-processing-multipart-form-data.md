@@ -7,9 +7,8 @@ categories:
 toc: true
 toc_sticky: true
 published: true
- 
+
 date: 2025-01-19
-last_modified_at: 2025-01-26
 ---
 
 HTTP 통신 프로토콜에서 클라이언트가 파일을 보낼 때 어떻게 서버에 전송하는 지 간단하게 알아보고 스프링에서 이런 파일을 처리하는 두 가지 방법을 소개하고자 한다.
@@ -20,8 +19,8 @@ HTTP 통신 프로토콜에서 클라이언트가 파일을 보낼 때 어떻게
 
 ```html
 <form action="/send" method="post" enctype="multipart/form-data">
-    <input type="text" name="name">
-    <input type="file" name="profile">
+  <input type="text" name="name" />
+  <input type="file" name="profile" />
 </form>
 ```
 
@@ -49,19 +48,20 @@ Content-Type: [파일의 MIME 타입]
 
 # 서버에서 파일 처리
 
-그렇다면 서버, 특히 스프링에서는 어떻게 이런 데이터를 처리할 수 있을까? 우선 스프링은 요청 매핑 어노테이션에서 `consumes`라는 속성을 지원한다. 이는 단어 뜻 그대로 **클라이언트에서 보낸 요청 형식 중에서 어떠한 특정 요청 형식을 소비한다**는 뜻이다. 
+그렇다면 서버, 특히 스프링에서는 어떻게 이런 데이터를 처리할 수 있을까? 우선 스프링은 요청 매핑 어노테이션에서 `consumes`라는 속성을 지원한다. 이는 단어 뜻 그대로 **클라이언트에서 보낸 요청 형식 중에서 어떠한 특정 요청 형식을 소비한다**는 뜻이다.
 
-이는 명시하지 않으면 기본적으로 클라이언트에서 보내준 메시지 형식에 맞춰서 요청 메시지의 폼 데이터를 클래스 또는 레코드로 변환하는 리졸버가 동작한다. 이때 `multipart/form-data` 형식으로 요청을 보내면 해당 폼의 파일 부분은 `MultipartFile`이라는 클래스로 변활하여 처리할 수 있다. 
+이는 명시하지 않으면 기본적으로 클라이언트에서 보내준 메시지 형식에 맞춰서 요청 메시지의 폼 데이터를 클래스 또는 레코드로 변환하는 리졸버가 동작한다. 이때 `multipart/form-data` 형식으로 요청을 보내면 해당 폼의 파일 부분은 `MultipartFile`이라는 클래스로 변활하여 처리할 수 있다.
 
 스프링에서는 이를 처리하기 위한 어노테이션으로 `@ModelAttribute`와 `@RequestPart`가 있다. 이 두 어노테이션을 소개하기 전에 요청의 전체 크기와 파일 크기를 먼저 설정한다.
 
 {% include code-header.html %}
+
 ```yaml
 spring:
   servlet:
     multipart:
-      max-request-size: 150MB  # (1) 전체 HTTP 요청의 최대 크기 제한 (멀티파트 포함)
-      max-file-size: 100MB     # (2) 단일 파일 업로드의 최대 크기 제한
+      max-request-size: 150MB # (1) 전체 HTTP 요청의 최대 크기 제한 (멀티파트 포함)
+      max-file-size: 100MB # (2) 단일 파일 업로드의 최대 크기 제한
 ```
 
 요청의 크기는 파일을 포함한 전체 요청 크기이기 때문에 조금 더 넉넉하게 잡아야 한다. 아직 실무를 경험해보지 않아서 그냥 파일의 크기보다 대강 1.5배로 잡았다.
@@ -91,9 +91,10 @@ Content-Disposition: form-data; name="content"
 ------WebKitFormBoundary7MA4YWxkTrZu0gW--
 ```
 
-스프링에서 위와 같은 `multipart/form-data`를 `@ModelAttribute`로 처리하면 받은 요청에 대해서 내부적으로 기본 생성자 + `setter`를 호출하여 값을 매핑한다. 
+스프링에서 위와 같은 `multipart/form-data`를 `@ModelAttribute`로 처리하면 받은 요청에 대해서 내부적으로 기본 생성자 + `setter`를 호출하여 값을 매핑한다.
 
 {% include code-header.html %}
+
 ```java
 @Setter
 @Getter
@@ -105,6 +106,7 @@ public class MultipartRequestNoRecord {
 ```
 
 {% include code-header.html %}
+
 ```java
 @PostMapping(value = "/upload/model-attribute")
 public void uploadModelAttribute(
@@ -116,7 +118,7 @@ public void uploadModelAttribute(
 }
 ```
 
-하지만 이 방식은 개인적으로 마음에 들지 않는데, 그 이유는 값을 설정하기 위해서 `setter`를 활욯해야 하기 때문이다. 실제로 `@Setter` 롬복 어노테이션을 제거하고 요청 값을 받으면 기본 생성자만 생성된 다음에 필드는 `null`이 되는 것을 볼 수 있다. 
+하지만 이 방식은 개인적으로 마음에 들지 않는데, 그 이유는 값을 설정하기 위해서 `setter`를 활욯해야 하기 때문이다. 실제로 `@Setter` 롬복 어노테이션을 제거하고 요청 값을 받으면 기본 생성자만 생성된 다음에 필드는 `null`이 되는 것을 볼 수 있다.
 
 개인적으로 개발을 할 때 `@RequestBody`를 이용하여 개발을 하기 때문에 `record`를 통해 요청 값들을 매핑한다. 이 방식의 장점은 내부적으로 JSON 데이터 처리를 위해 Jackson 라이브러리를 사용하여 값을 매핑하는데, 이 과정에서 `setter`가 없는 경우에 자동으로 리플랙션을 사용하여 객체에 값을 매핑한다. 이 덕분에 `setter`를 사용하지 않아도 되어 비즈니스 로직에서 혹시 모를 `setter` 호출을 아예 방지할 수 있다.
 
@@ -145,6 +147,7 @@ Content-Type: application/pdf
 ```
 
 {% include code-header.html %}
+
 ```java
 @PostMapping(value = "/upload/record")
 public void upload(
@@ -159,6 +162,7 @@ public void upload(
 이렇게 함으로써 모든 DTO를 `record`로 관리할 수 있게 되어 통일성과 혹시 모를 `setter` 호출을 방지할 수 있다. 하지만 이 방식은 클라이언트 입장에서 추가적인 처리가 필요하다. `title`과 `content`라는 변수로 사용자 입력 값을 받았다고 가정하면 클라이언트에서 요청을 보내기 전에 다음과 같이 값들을 정리해야 한다.
 
 {% include code-header.html %}
+
 ```js
 const jsonData = JSON.stringify({ title: title, content: content });
 const jsonBlob = new Blob([jsonData], { type: "application/json" });
@@ -166,7 +170,7 @@ const jsonBlob = new Blob([jsonData], { type: "application/json" });
 // FormData 객체 생성
 const formData = new FormData();
 formData.append("data", jsonBlob); // JSON 데이터를 "data" 필드로 추가
-formData.append("image", file);   // 파일을 "image" 필드로 추가
+formData.append("image", file); // 파일을 "image" 필드로 추가
 ```
 
 그 이유는 `Blob`으로 JSON 타입을 직렬화한 문자열과 해당 문자열이 JSON(`application/json`) 타입이라는 것을 명시해주어야 하기 때문이다. 따라서 `@RequestPart`를 사용하기 전에 클라이언트에게 API 명세서 등으로 적절하게 일러두어야 작업을 할 때 클라이언트가 개발 할 때 헷갈리지 않을 것이다.
@@ -176,6 +180,7 @@ formData.append("image", file);   // 파일을 "image" 필드로 추가
 파일 관련 API 테스트를 진행하는데, 위 방법이 지극히 JS 중심적인 것을 깨달아 버렸다. 또한 최근 스프링 부트가 업데이트 되어서 그런 건지 잘 모르겠는데 굳이 저런 식으로 하지 않고 단순히 multipart/form-data로 보내고 컨트롤러에서 다음과 같이 선언하면 요청을 잘 받는 것을 알게 되었다.
 
 {% include code-header.html %}
+
 ```java
 @PostMapping(value = "/upload/record")
 public void upload(

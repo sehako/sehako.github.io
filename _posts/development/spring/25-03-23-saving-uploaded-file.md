@@ -9,7 +9,6 @@ toc_sticky: true
 published: true
 
 date: 2025-03-23
-last_modified_at: 2025-03-23
 ---
 
 # 파일 업로드 처리

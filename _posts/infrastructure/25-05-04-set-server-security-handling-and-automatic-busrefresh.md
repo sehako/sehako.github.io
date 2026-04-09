@@ -9,7 +9,6 @@ toc_sticky: true
 published: true
 
 date: 2025-05-04
-last_modified_at: 2025-05-04
 ---
 
 # application.yml vs bootstrap.yml

@@ -9,7 +9,6 @@ toc_sticky: true
 published: true
 
 date: 2026-03-02
-last_modified_at: 2026-03-02
 ---
 
 스프링 시큐리티를 통해서 OAuth 2.0 로그인을 구현할 것이다. 구글과 카카오 로그인을 구현할 것이며, 구글 로그인은 OpenID Connect로, 카카오 로그인은 일반적인 OAuth 2.0 프로토콜로 구현할 것이다. 그리고 인가 정책은 Authorization Code 방식으로 구현할 것이다.
@@ -69,10 +68,8 @@ spring:
 카카오는 이메일을 조회하기 위해서는 비즈 앱을 등록해야 하기 때문에 간단하게 닉네임을 조회해서 애플리케이션의 ID로 쓰도록 하겠다.
 
 > 백엔드 주도 방식은 OAuth 2.0 인가 이후의 리다이렉트가 백엔드 서버로 이어져야 한다. 스프링 시큐리티는 내부적으로 `{baseUrl}/login/oauth2/code/{registrationId}`로 리다이렉트하면 OAuth 2.0 로그인 이후의 과정을 알아서 처리해준다.
-> 
-> 
-> 따라서 구글 OAuth 2.0 로그인을 구현하고자 한다면 구글 클라우드 OAuth 2.0 설정 부분에서 승인된 리다이렉션 URI를 `{baseUrl}/login/oauth2/code/google`로 설정해야 한다. 
-> 
+>
+> 따라서 구글 OAuth 2.0 로그인을 구현하고자 한다면 구글 클라우드 OAuth 2.0 설정 부분에서 승인된 리다이렉션 URI를 `{baseUrl}/login/oauth2/code/google`로 설정해야 한다.
 
 ## 회원 가입 및 로그인
 
@@ -307,7 +304,7 @@ public class CustomOidcUserService extends OidcUserService {
 
 ### 공통 UserDetails 객체 만들기
 
-애플리케이션에서 `UserDetails`를 활용하여 사용자를 식별할 수 있지만 상황에 따라서 별도의 식별 정보를 이용해야 할 수도 있다. 이 경우에는 `@AuthenticationPrincipal` 로 `UserDetails` 객체를 컨트롤러 메서드에서 주입받는 것 보다는 별도의 인터페이스를 정의하여 모든 `UserDetails`의 하위 객체에 구현 사항으로 명시할 수도 있다. 
+애플리케이션에서 `UserDetails`를 활용하여 사용자를 식별할 수 있지만 상황에 따라서 별도의 식별 정보를 이용해야 할 수도 있다. 이 경우에는 `@AuthenticationPrincipal` 로 `UserDetails` 객체를 컨트롤러 메서드에서 주입받는 것 보다는 별도의 인터페이스를 정의하여 모든 `UserDetails`의 하위 객체에 구현 사항으로 명시할 수도 있다.
 
 앞서 인증 정보에서 사용자의 ID 번호를 통해 식별을 하고자 한다면 `OAuth2User`객체와 `OidcUser` 객체를 다음 인터페이스로 묶어서 처리할 수 있다.
 
@@ -324,12 +321,12 @@ public interface AuthPrincipal {
 이를 다음과 같이 공통적으로 명시한다.
 
 ```java
-public class CustomOidcUser 
+public class CustomOidcUser
 		implements OidcUser, AuthPrincipal {...}
 ```
 
 ```java
-public class CustomOAuth2User 
+public class CustomOAuth2User
 		implements OAuth2User, AuthPrincipal {...}
 ```
 
@@ -469,9 +466,9 @@ public class JwtProvider {
 	  if (!(authentication.getPrincipal() instanceof AuthPrincipal userDetails)) {
       throw new RuntimeException("User is not authenticated");
 	  }
-	
+
 	  Date issuedAt = new Date();
-	
+
 	  return Jwts.builder()
         .claim(ID_CLAIM, userDetails.getId())
         .claim(USERNAME_CLAIM, userDetails.getUsername())
@@ -484,9 +481,9 @@ public class JwtProvider {
 
   public UserDetails getUserDetails(String token) {
 	  Claims claims = parseToken(token);
-	
+
 	  User user = createAuthenticatedUser(claims);
-	
+
 	  return new JwtUser(
 		    user.getId(),
 		    user.getUsername(),
@@ -530,7 +527,7 @@ OAuth 성공과 실패를 핸들링하는 SPA 주소로 보내도록 각각 다�
 
 **쿠키 기반 토큰 전송**
 
-리프레시 토큰과 액세스 토큰 모두를 쿠키에 담아서 보내는 방식이다. 
+리프레시 토큰과 액세스 토큰 모두를 쿠키에 담아서 보내는 방식이다.
 
 ```java
 @Component
@@ -564,7 +561,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         .toUriString();
 
     response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
-    
+
     clearAuthenticationAttributes(request); // 인증이 성공했으므로 세션 정리
 
     getRedirectStrategy().sendRedirect(request, response, redirectUrl);
@@ -602,12 +599,12 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 		  Authentication authentication
   ) throws IOException {
 	  TokenInformation tokenInformation = jwtProvider.generateToken(authentication);
-	
+
 	  String redirectUrl = UriComponentsBuilder
 			  .fromUriString("http://localhost:3000")
         .queryParam("accessToken", tokenInformation.accessToken())
         .toUriString();
-	
+
 	  getRedirectStrategy().sendRedirect(request, response, redirectUrl);
   }
 }
@@ -658,7 +655,7 @@ public class SecurityConfiguration {
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
     return http
 			    // HTTP 헤더를 통한 액세스 토큰 전달 시 사용 (파라미터로 액세스 토큰을 전달)
-          // .csrf(AbstractHttpConfigurer::disable) 
+          // .csrf(AbstractHttpConfigurer::disable)
           // 쿠키 기반 인증 시 사용
 					.csrf(csrf -> csrf.
 							// HTTP Only가 false인 CSRF 토큰을 쿠키 형태로 프론트엔드에 넘겨줌
@@ -699,7 +696,7 @@ public class SecurityConfiguration {
 	  configuration.setAllowedHeaders(List.of("*"));
 	  configuration.setAllowCredentials(true);
 	  configuration.setMaxAge(3600L);
-	
+
 	  UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 	  source.registerCorsConfiguration("/**", configuration);
 	  return source;

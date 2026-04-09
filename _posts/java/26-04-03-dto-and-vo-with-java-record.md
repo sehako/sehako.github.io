@@ -9,7 +9,6 @@ toc_sticky: true
 published: true
 
 date: 2026-04-03
-last_modified_at: 2026-04-03
 ---
 
 # DTO
