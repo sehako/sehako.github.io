@@ -1,12 +1,12 @@
 ---
-title: 우테코 프리코스 - 2주차 과제 회고
+title: MCP와 Gemini CLI 알아보기
 
 categories:
   - Note
 
 toc: true
 toc_sticky: true
-published: true
+published: false
 
 date: 2025-11-09
 last_modified_at: 2025-11-09
