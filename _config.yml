@@ -113,7 +113,7 @@ analytics:
 # Site Author
 author:
   name: "Sehako"
-  avatar: # path of avatar image, e.g. "/assets/images/bio-photo.jpg"
+  avatar: "/assets/images/profile.png"
   bio: "백엔드 개발자 지망생"
   location: "South Korea"
   email:
