@@ -10,6 +10,7 @@ module BlogSync
   class Error < StandardError; end
 
   class Synchronizer
+    CATEGORIES_PATH = "_data/blog_categories.yml"
     MANIFEST_PATH = "_data/blog_sync_manifest.yml"
     SOURCE_POSTS = "area/블로그/글"
     SOURCE_ASSETS = "_assets/area/블로그/글"
@@ -34,6 +35,7 @@ module BlogSync
       managed = managed_files
       stale = managed - desired.keys
       changes = compare(desired, stale)
+      warn_unregistered_categories
 
       if write
         apply(desired, stale)
@@ -70,6 +72,19 @@ module BlogSync
         names = items.map { |item| item.fetch("name") }
         slugs = items.map { |item| item.fetch("slug") }
         raise Error, "Category names and slugs must be unique" unless names.uniq == names && slugs.uniq == slugs
+      end
+    end
+
+    def warn_unregistered_categories
+      posts = source.join(SOURCE_POSTS)
+      return unless posts.directory?
+
+      registered = categories.map { |category| category.fetch("name") }
+      posts.children.select(&:directory?).sort.each do |directory|
+        name = directory.basename.to_s
+        next if registered.include?(name) || directory.glob("*.md").empty?
+
+        @output.puts("WARNING: unregistered category folder skipped: #{name} (add it to #{CATEGORIES_PATH})")
       end
     end
 

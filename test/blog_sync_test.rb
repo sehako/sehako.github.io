@@ -65,6 +65,18 @@ class BlogSyncTest < Minitest::Test
     assert_includes post, "#{header}\n````md\n```java"
   end
 
+  def test_unregistered_category_folder_with_posts_warns
+    source_post("25-03-04-new-post")
+    write("#{@source}/area/블로그/글/새 카테고리/25-03-05-draft.md", "---\ntitle: Draft\n---\n")
+    write("#{@source}/area/블로그/글/빈 폴더/.keep", "")
+    output = StringIO.new
+
+    BlogSync::Synchronizer.new(root: @root, source: @source, output: output).run(write: false)
+
+    assert_includes output.string, "WARNING: unregistered category folder skipped: 새 카테고리"
+    refute_includes output.string, "빈 폴더"
+  end
+
   def test_markdown_and_html_images_are_copied_and_rewritten
     encoded = "_assets/area/%EB%B8%94%EB%A1%9C%EA%B7%B8/%EA%B8%80/%EC%9D%B8%EC%A6%9D%EA%B3%BC%20%EB%B3%B4%EC%95%88/25-03-04-new-post/01.png"
     source_post("25-03-04-new-post", body: "![diagram](#{encoded})\n<img src=\"#{encoded}\">\n")
