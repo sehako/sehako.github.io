@@ -27,6 +27,7 @@ Nginx를 통해 경유하기 때문에 `{SERVER_URL}/service/`에 요청을 보�
 
 {% include code-header.html %}
 
+{% include code-header.html %}
 ```groovy
 ext {
     set('springCloudVersion', "2024.0.0")
@@ -49,6 +50,7 @@ dependencies {
 
 {% include code-header.html %}
 
+{% include code-header.html %}
 ```groovy
 dependencies {
     if (project.hasProperty("profile") && project.profile == "prod") {
@@ -63,6 +65,7 @@ dependencies {
 
 {% include code-header.html %}
 
+{% include code-header.html %}
 ```bash
 ./gradlew clean bootJar -Pprofile=prod
 ```
@@ -77,6 +80,7 @@ dependencies {
 
 {% include code-header.html %}
 
+{% include code-header.html %}
 ```groovy
 implementation 'org.springdoc:springdoc-openapi-starter-webflux-ui:2.8.6'
 ```
@@ -85,6 +89,7 @@ implementation 'org.springdoc:springdoc-openapi-starter-webflux-ui:2.8.6'
 
 {% include code-header.html %}
 
+{% include code-header.html %}
 ```yaml
 springdoc:
   api-docs:
@@ -109,6 +114,7 @@ springdoc:
 
 {% include code-header.html %}
 
+{% include code-header.html %}
 ```java
 @OpenAPIDefinition
 @Configuration
@@ -133,6 +139,7 @@ public class SwaggerConfig {
 
 {% include code-header.html %}
 
+{% include code-header.html %}
 ```yaml
 springdoc:
   api-docs:

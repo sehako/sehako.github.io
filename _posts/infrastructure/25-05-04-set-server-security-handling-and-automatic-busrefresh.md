@@ -21,6 +21,7 @@ permalink: "/infrastructure/set-server-security-handling-and-automatic-busrefres
 
 {% include code-header.html %}
 
+{% include code-header.html %}
 ```yaml
 spring:
   application:
@@ -34,6 +35,7 @@ spring:
 
 {% include code-header.html %}
 
+{% include code-header.html %}
 ```yaml
 spring:
   cloud:
@@ -73,6 +75,7 @@ spring:
 
 {% include code-header.html %}
 
+{% include code-header.html %}
 ```groovy
 ext {
     set('springCloudVersion', "2024.0.1")
@@ -98,6 +101,7 @@ dependencyManagement {
 
 {% include code-header.html %}
 
+{% include code-header.html %}
 ```yaml
 spring:
   security:
@@ -110,6 +114,7 @@ spring:
 
 {% include code-header.html %}
 
+{% include code-header.html %}
 ```yaml
 spring:
   cloud:
@@ -125,6 +130,7 @@ MSA를 처음 구축했을 때, 저는 매번 설정 정보가 변경되면 서�
 
 {% include code-header.html %}
 
+{% include code-header.html %}
 ```yaml
 curl -X POST http://localhost:8081/actuator/busrefresh
 ```
@@ -135,6 +141,7 @@ curl -X POST http://localhost:8081/actuator/busrefresh
 
 {% include code-header.html %}
 
+{% include code-header.html %}
 ```yaml
 name: Refresh Spring Config Server
 

@@ -45,6 +45,7 @@ Flux와 Mono는 불변 시퀀스이며, 각 연산자는 기존 시퀀스를 변
 
 코드로 Flux나 Mono를 생성해 각각의 데이터 처리 연산자에 대한 실습을 수행하면서 그 외의 연산자들도 추가적으로 학습해보았습니다. 이를 위해서 우선 다음과 같이 프로젝트 리액터 관련 의존성을 추가하였습니다. 그리고 각 연산자마다 이해를 돕기 위해서 공식 Javadoc에서 시간의 흐름에 다른 데이터의 변환을 시각화한 마블 다이어그램을 첨부합니다.
 
+{% include code-header.html %}
 ```groovy
 dependencies {
     implementation 'io.projectreactor:reactor-core:3.8.0'
@@ -56,6 +57,7 @@ dependencies {
 
 Flux나 Mono는 다음과 같이 코드로 만들 수 있습니다.
 
+{% include code-header.html %}
 ```java
 Flux.just(1, 2, 3, 4, 5);
 // 연속된 값으로 이루어진 경우
@@ -72,6 +74,7 @@ Mono.just(1);
 
 `map()`은 각 요소를 새로운 값으로 매핑한다는 의미입니다. `Flux`를 다음과 같이 생성해보겠습니다.
 
+{% include code-header.html %}
 ```java
 Flux<Integer> flux = Flux.just(1, 2, 3, 4, 5)
         .map(i -> i * 10)
@@ -87,6 +90,7 @@ Flux<Integer> flux = Flux.just(1, 2, 3, 4, 5)
 
 앞서 생성한 `Flux`를 구독해서 데이터를 처리해보도록 하겠습니다. `Flux` 또는 `Mono`에 대한 소비자는 `subscribe()`로 구현할 수 있으며, 다음과 같은 메서드들을 지원합니다.
 
+{% include code-header.html %}
 ```java
 subscribe();
 
@@ -107,6 +111,7 @@ subscribe(Consumer<? super T> consumer,
 
 각 상황에 따라서 소비자와 작업 종료 시 콜백, 그리고 `Subscription`을 정의합니다. 참고로 `subscribe()`가 호출되지 않으면 데이터의 생산은 이루어지지 않기 때문에 `doOnNext()`를 통한 출력도 이루어지지 않습니다.
 
+{% include code-header.html %}
 ```java
 flux.subscribe(
     data -> System.out.println("onNext: " + data),
@@ -117,6 +122,7 @@ flux.subscribe(
 
 출력 결과는 다음과 같습니다.
 
+{% include code-header.html %}
 ```
 result : 10
 result : 20
@@ -135,6 +141,7 @@ onComplete
 
 Flux나 Mono에 대한 테스트 코드 작성법이 궁금해서 공식문서를 살펴봤는데, `StepVerifier`라는 객체로 대부분 해결되는 것 같아서 앞서 작성한 Flux에 대한 테스트 코드를 다음과 같이 작성해봤습니다.
 
+{% include code-header.html %}
 ```java
 StepVerifier.create(fluxUsingMap)
         .expectNext(30, 40, 50)
@@ -143,6 +150,7 @@ StepVerifier.create(fluxUsingMap)
 
 여기서 디버깅을 좀 더 수월하게 테스트와 테스트 단계별로 이름을 명칭할 수 있습니다.
 
+{% include code-header.html %}
 ```java
 StepVerifierOptions option = StepVerifierOptions
         .create()
@@ -164,6 +172,7 @@ StepVerifier.create(fluxUsingMap, option)
 
 해당 연산자는 각 요소를 비동기 작업으로 매핑한다고 하였는데, 이 말이 어떤 말인지 직접 알아보겠습니다.
 
+{% include code-header.html %}
 ```java
 // flatMap을 통해 비동기적으로 여러 Mono의 결과를 병합하여 Flux<User>를 생성한다.
 Flux.just("user1", "user2", "user3")
@@ -185,6 +194,7 @@ Thread.sleep(500);
 
 출력 결과를 보겠습니다.
 
+{% include code-header.html %}
 ```
 processing: user2
 result: user2
@@ -200,6 +210,7 @@ result: user3
 
 만약에 순서를 보장하고자 한다면 `concatMap()`을 활용하면 됩니다.
 
+{% include code-header.html %}
 ```java
 Flux.just("user1", "user2", "user3")
         .concatMap(id -> Mono.just(id)
@@ -214,6 +225,7 @@ Flux.just("user1", "user2", "user3")
 
 `zip()`은 둘 이상의 Flux나 Mono를 인덱스 기준으로 묶어서 동시에 방출하는 연산자입니다.
 
+{% include code-header.html %}
 ```java
 Flux<String> fluxA = Flux.just("A1", "A2", "A3");
 Flux<String> fluxB = Flux.just("B1", "B2", "B3");
@@ -226,6 +238,7 @@ zipped.subscribe(t ->
 
 `Tuple`은 전달받은 Flux/Mono의 개수에 따라서 최대 8개까지 생성할 수 있으며 명명은 전달된 Flux/Mono의 개수가 N이라면 `TupleN` 입니다. 즉 위의 경우에는 두 개의 Flux가 전달되었으므로 `Tuple2`가 사용되었습니다. 이후 해당 튜플에 대한 조회는 순서대로 `getT1()`으로 전달된 순서의 튜플을 조회할 수 있습니다. 실행 결과는 다음과 같습니다.
 
+{% include code-header.html %}
 ```
 Zipped: A1, B1
 Zipped: A2, B2
@@ -234,6 +247,7 @@ Zipped: A3, B3
 
 그러면 성능은 어떨까요? 여기서 만약에 `fluxA`가 1초 주기로 데이터를 방출하고, `fluxB`가 데이터를 10초 주기로 방출한다고 가정하면 `zip()`의 전체 성능은 10초 주기가 됩니다. 그리고 각 스트림의 끝나는 시점이 다르면 가장 빠르게 끝나는 스트림에 의해 조기 종료됩니다.
 
+{% include code-header.html %}
 ```java
 Flux<String> fluxA = Flux.just("A1", "A2");
 Flux<String> fluxB = Flux.just("B1", "B2", "B3");
@@ -252,6 +266,7 @@ zipped.subscribe(t ->
 
 `concatWith`는 첫 번째 스트림이 `onComplete()` 시그널을 보낸 이후에 두 번째 스트림을 실행하도록 두 스트림을 순차적으로 연결하는 연산자입니다. 두 스트림의 요소 타입은 동일해야 하며, 앞선 스트림이 완료되어야만 뒤이어 오는 스트림이 실행됩니다. 따라서 SSE, WebSocket, `Flux.interval()` 같은 onComplete 시그널이 없는 무한 스트림과 함께 사용할 경우, 후속 스트림은 절대 실행되지 않습니다.
 
+{% include code-header.html %}
 ```java
 Flux<String> fluxA = Flux.just("A1", "A2", "A3");
 Flux<String> fluxB = Flux.just("B1", "B2", "B3");
@@ -262,6 +277,7 @@ concatenated.subscribe(item -> System.out.println("Concat: " + item));
 
 실행 결과는 다음과 같습니다.
 
+{% include code-header.html %}
 ```
 Concat: A1
 Concat: A2
@@ -279,6 +295,7 @@ Concat: B3
 
 이 연산자는 두 스트림을 병렬로 섞는 연산자로, 병렬로 합친다는 특성 때문에 순서가 보장되지 않습니다. 이를 확인하기 위해서 각각 Flux를 생성할 때 지연을 추가해서 확인해봤습니다.
 
+{% include code-header.html %}
 ```java
 Flux<String> fluxA = Flux.just("A1", "A2", "A3")
         .delayElements(Duration.ofMillis(100));
@@ -295,6 +312,7 @@ Thread.sleep(1000);
 
 실행 결과는 다음과 같습니다.
 
+{% include code-header.html %}
 ```
 B1
 A1
@@ -312,6 +330,7 @@ A3
 
 지정된 횟수만큼 재시도를 수행하도록 설정합니다.
 
+{% include code-header.html %}
 ```java
 Flux<Integer> errorFlux = Flux.range(1, 5)
     .map(i -> {
@@ -333,6 +352,7 @@ errorFlux.subscribe(
 
 `onErrorResume()`는 에러 발생 시 대체 흐름을 제공하는 연산자입니다. 대체 흐름을 제공하기 때문에 예외가 발생하지 않고 새로운 `Flux` 또는 `Mono`를 방출합니다. 현재 코드에서는 1부터 5까지의 요소가 있고, 요소가 3일 때 의도적으로 `RuntimeException`을 던지도록 하고 코드를 실행해봤습니다.
 
+{% include code-header.html %}
 ```
 Result: 10
 Result: 20
@@ -394,6 +414,7 @@ Result: 999
 
 ### 스케줄러 전환 예시
 
+{% include code-header.html %}
 ```java
 Flux.range(1, 5)
         .map(i -> {
@@ -420,6 +441,7 @@ Thread.sleep(1000);
 
 실제로 이러한 스케줄러에서 동작하는지 확인하기 위해서 출력문으로 현재 스레드의 이름을 출력하도록 하였고, 그 결과는 다음과 같습니다.
 
+{% include code-header.html %}
 ```
 Map on Thread: boundedElastic-1
 Map on Thread: boundedElastic-1
@@ -441,6 +463,7 @@ Next on Thread: parallel-1
 2. `connect()`를 호출해야만 데이터 방출이 시작됨
 3. 이후 구독자들이 `ConnectableFlux`에 구독하면, 모두 같은 시점부터 데이터를 공유
 
+{% include code-header.html %}
 ```java
 ConnectableFlux<Long> connectable = Flux.interval(Duration.ofMillis(300))
                                         .publish(); // Cold → Hot 전환
@@ -458,6 +481,7 @@ Thread.sleep(900);
 
 300ms 주기로 데이터를 방출하도록 `ConnectableFlux`를 만들었습니다. 그리고 총 1500ms 동안 데이터를 방출하도록 `Thread.sleep()`을 호출하였는데, 이렇게 처리하기 때문에 초기 값인 0부터 4까지 생산됩니다. 그리고 첫 번째 구독자의 구독 이후 600ms 동안 대기를 한 다음에 두 번째 구독자가 구독을 하도록 처리했습니다. 이렇게 처리하면 출력은 어떻게 되는지 확인해보겠습니다.
 
+{% include code-header.html %}
 ```
 Subscriber1: 0
 Subscriber1: 1
@@ -479,6 +503,7 @@ Cold Publisher와 Hot Publisher의 차이를 이해하면 데이터 방출 시�
 
 인자로 전달한 n명의 구독자가 모이면 자동으로 `connect()`를 호출하는 방식입니다.
 
+{% include code-header.html %}
 ```java
 Flux<Long> flux = Flux.interval(Duration.ofMillis(300))
         .publish()
@@ -499,6 +524,7 @@ Thread.sleep(1000);
 
 구독자 수가 n명 이상일 대만 Hot Publisher로 동작하고, 구독자가 n 미만으로 떨어지면 Hot Publisher가 종료되고 다시 Cold Publisher로 작동하는 방식입니다.
 
+{% include code-header.html %}
 ```java
 Flux<Long> flux = Flux.interval(Duration.ofMillis(300))
         .publish()
@@ -523,6 +549,7 @@ Thread.sleep(500);
 
 리액터도 리액티브 스트림 명세를 따르기 때문에 백프레셔가 설계되어 있습니다. 하지만 지금까지 백프레셔를 다루는 부분이 존재하지 않았습니다. 이는 `Flux`와 `Mono`가 기본적으로 백프레셔를 지원하기 때문입니다. 일반적인 `subscribe()`는 내부적으로 `LambdaSubscriber<T>`의 `onSubscribe()`에 무제한으로 데이터를 요청합니다.
 
+{% include code-header.html %}
 ```java
 // LambdaSubscriber
 @Override
@@ -570,6 +597,7 @@ HTTP 응답, 데이터베이스 조회 결과, 파일 스트림 등 소비자가
 
 만약에 백프레셔를 직접 구현해서 처리하고자 한다면 `BaseSubscriber<T>`를 상속해서 `hookOnSubscribe()`와 `hookOnNext()`를 재정의하면 됩니다.
 
+{% include code-header.html %}
 ```java
 class MySubscriber extends BaseSubscriber<Integer> {
 
@@ -588,6 +616,7 @@ class MySubscriber extends BaseSubscriber<Integer> {
 
 해당 클래스를 다음과 같이 사용할 수 있습니다.
 
+{% include code-header.html %}
 ```java
 Flux<Integer> fastProducer =
         Flux.range(1, 5)  // 사실상 무한정 빨리 생산 가능
@@ -600,6 +629,7 @@ Thread.sleep(5000);
 
 실행 결과는 다음과 같습니다.
 
+{% include code-header.html %}
 ```
 Produced: 1
 Got: 1
@@ -635,6 +665,7 @@ Got: 5
 
 애플리케이션 자체적으로 `Sink`를 활용하여 각 구독자에게 데이터를 푸시하는 코드를 간단하게 작성해봤습니다.
 
+{% include code-header.html %}
 ```java
 Sinks.Many<String> sink = Sinks.many().multicast().onBackpressureBuffer();
 
@@ -652,6 +683,7 @@ sink.tryEmitNext("!!!");
 
 실행 결과는 다음과 같습니다.
 
+{% include code-header.html %}
 ```
 Sub1: Hello
 Sub1: !!!
@@ -662,12 +694,14 @@ Sub2: !!!
 
 여기서 `tryEmitNext()`는 실패해도 예외를 던지지 않지만 `emitNext()`는 실패 시 즉시 예외를 발생하고 재시도에 관한 정책을 `Sink.EmitFailureHandler`에게 위임해야 합니다. 현재는 가장 단순하게 실패하면 재시도 없이 바로 실패를 반환하는 구조로 작성되어 있고, 만약에 재시도를 처리하고자 한다면 다음과 같이 설정하면 됩니다.
 
+{% include code-header.html %}
 ```java
 sink.emitNext("!!!", EmitFailureHandler.busyLooping(Duration.ofSeconds(10)));
 ```
 
 이는 10초동안 성공할 때 까지 재시도를 처리하라는 의미입니다. 만약에 필요하다면 직접 정의해서 사용할 수도 있습니다.
 
+{% include code-header.html %}
 ```java
 AtomicInteger retryCount = new AtomicInteger(0);
 

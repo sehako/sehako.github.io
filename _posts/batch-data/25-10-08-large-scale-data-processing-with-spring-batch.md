@@ -58,6 +58,7 @@ Spring Batch는 다음 인터페이스로 데이터의 조회, 처리, 쓰기를
 
 **ItemReader**
 
+{% include code-header.html %}
 ```java
 public interface ItemReader<T> {
     T read() throws Exception,
@@ -71,6 +72,7 @@ read() 메서드는 아이템을 하나씩 반환합니다. 아이템이란 파�
 
 **ItemProcessor**
 
+{% include code-header.html %}
 ```java
 public interface ItemProcessor<I, O> {
     O process(I item) throws Exception;
@@ -81,6 +83,7 @@ ItemReader로부터 받은 아이템(I)을 비즈니스 로직이 요구하는 �
 
 **ItemWriter**
 
+{% include code-header.html %}
 ```java
 public interface ItemWriter<T> {
     void write(Chunk<? extends T> chunk) throws Exception;
@@ -122,6 +125,7 @@ Spring Batch는 Job, Step, Chunk, Item의 실행 주기에 따른 이벤트 처�
 
 다음 배치 관련 의존성을 불러오도록 하겠습니다.
 
+{% include code-header.html %}
 ```groovy
 implementation 'org.springframework.boot:spring-boot-starter-batch'
 ```
@@ -130,6 +134,7 @@ implementation 'org.springframework.boot:spring-boot-starter-batch'
 
 기존 작업의 모든 설정을 삭제하고, 다음과 같이 작성하겠습니다.
 
+{% include code-header.html %}
 ```yaml
 spring:
   application:
@@ -159,6 +164,7 @@ spring:
 
 운영 환경에서는 Maven 기준으로 다음 경로로 찾아 들어가서 스키마 파일을 찾아 사용하려는 메타데이터 데이터베이스에 맞는 스키마를 실행시키면 됩니다.
 
+{% include code-header.html %}
 ```
 org/springframework/batch/core/
 ```
@@ -177,6 +183,7 @@ org/springframework/batch/core/
 
 JPA의 기능을 사용하지 않기 때문에 `ManagementRow`라는 별도의 DTO를 만들도록 하겠습니다.
 
+{% include code-header.html %}
 ```java
 public record ManagementRow(
     Long id,
@@ -201,6 +208,7 @@ public record ManagementRow(
 
 즉, 엔티티를 그대로 사용하려면 모든 필드에 대한 setter를 열어둬야 합니다. 하지만 이는 JPA 관점에서도 권장되지 않고, 배치 처리 과정에서 JPA 영속성 컨텍스트를 활용하지도 않는데 불필요하게 비즈니스 로직 전반에 setter를 허용하는 위험을 감수해야 합니다. 따라서 배치 전용 DTO나 record를 별도로 두는 것이 더 안전하고 유지보수에도 유리합니다.
 
+{% include code-header.html %}
 ```java
 @Configuration
 public class ItemReaderConfig {
@@ -236,6 +244,7 @@ public class ItemReaderConfig {
 
 조회한 `ManagementRow` 객체를 변환해야 합니다. 이를 위해서 `History` 엔티티가 아닌 `HistoryRow`라는 이름의 DTO를 다음과 같이 작성하였습니다.
 
+{% include code-header.html %}
 ```java
 public record HistoryRow(
     Long managementId,
@@ -270,6 +279,7 @@ public record HistoryRow(
 
 그리고 `ItemProcessor`를 다음과 같이 작성하였습니다.
 
+{% include code-header.html %}
 ```java
 @Configuration
 public class ItemProcessorConfig {
@@ -289,6 +299,7 @@ public class ItemProcessorConfig {
 
 이제 변환된 `HistoryRow`를 `history` 테이블에 INSERT 하도록 하겠습니다. `ItemWriter` 역시 JPA가 아닌 `JdbcBatchItemWriter`를 사용하여 다음과 같이 작성하였습니다.
 
+{% include code-header.html %}
 ```java
 @Configuration
 public class ItemWriterConfig {
@@ -333,6 +344,7 @@ public class ItemWriterConfig {
 
 이것이 가능한 이유는 바로 `itemSqlParameterSourceProvider()` 설정 덕분입니다. 이를 통해 객체의 필드 이름을 활용하여 간편하게 데이터베이스에 INSERT 처리를 해줄 수 있습니다. 만약 외부 값을 사용해야 한다면 아래와 같이 `ItemPreparedStatementSetter()`를 사용하면 됩니다.
 
+{% include code-header.html %}
 ```java
 @Configuration
 public class ItemWriterConfig {
@@ -382,6 +394,7 @@ public class ItemWriterConfig {
 
 여기서 Tasklet을 실행하는 Step이 하나 필요한데, 그 이유는 데이터 저장 처리가 끝나면 해당되는 일자에 대한 복용 여부 정보를 모두 `false`로 초기화 시켜야 하기 때문입니다. 단일 쿼리는 데이터 읽기 - 처리 - 쓰기 작업인 청크 지향 처리가 아니므로 태스크릿 지향 처리로 다음과 같이 쿼리를 작성하였습니다.
 
+{% include code-header.html %}
 ```java
 @Slf4j
 @Component
@@ -422,6 +435,7 @@ public class ManagementResetTasklet implements Tasklet {
 
 이제 작성한 컴포넌트를 사용해서 Step들을 구성하고, 해당 Step들을 실행시키는 Job까지 구성해보도록 하겠습니다.
 
+{% include code-header.html %}
 ```java
 @Slf4j
 @Configuration
@@ -474,6 +488,7 @@ public class HistoryBatchConfig {
 
 그 전에 이전 작업에서 매 쓰기 작업마다 메모리 사용량 관련 로그를 보는 게 생각보다 번거로워서 `logMemory()`를 호출하면 내부적으로 연산을 거친 다음에 `end()` 호출 시 전체 메모리 사용량의 평균과 최대 메모리 사용량을 출력하도록 수정하였습니다.
 
+{% include code-header.html %}
 ```java
 @Slf4j
 public class ExecutionMonitor {
@@ -522,6 +537,7 @@ public class ExecutionMonitor {
 
 그리고 다음과 같이 이벤트 리스너를 작성합니다.
 
+{% include code-header.html %}
 ```java
 @Slf4j
 @Component
@@ -545,6 +561,7 @@ public class WriteHistoryBatchListener {
 
 필요한 이벤트 리스너가 정의된 인터페이스를 구현하는 것이 기본이지만 이렇게 어노테이션으로 하면 깔끔하게 코드를 작성할 수 있습니다. 이제 이렇게 작성한 것을 Job과 Step에 다음과 같이 등록하면 됩니다.
 
+{% include code-header.html %}
 ```java
 @Slf4j
 @Configuration
@@ -600,6 +617,7 @@ public class HistoryBatchConfig {
 
 배치 작업을 실행 하는 방법은 몇 가지 존재하지만, 여기서는 가장 무난하게 IDE의 gradlew 명령어로 작업을 실행하여 결과를 확인해보도록 하겠습니다. 그 전에 `@EnableScheduling`을 비활성화 하여 기존 작업의 실행을 방지하겠습니다.
 
+{% include code-header.html %}
 ```java
 // @EnableScheduling
 @SpringBootApplication
@@ -614,12 +632,14 @@ public class SpringBatchApplication {
 
 그리고 다음 명령어를 입력하면 배치 작업이 실행됩니다.
 
+{% include code-header.html %}
 ```bash
 ./gradlew bootRun --args='--spring.batch.job.name=writeHistoryJob targetDate=2025-10-02,java.time.LocalDate'
 ```
 
 이제 실행 결과를 살펴보겠습니다.
 
+{% include code-header.html %}
 ```
 [writeHistoryJob 실행]
 Executing step: [writeStep]
@@ -653,6 +673,7 @@ the following status: [COMPLETED] in 2m37s962ms
 
 `management` 테이블에 1000만 건의 무작위 데이터 생성을 위해서 다음 쿼리를 실행시켰습니다.
 
+{% include code-header.html %}
 ```sql
 CREATE TABLE IF NOT EXISTS digits (d TINYINT UNSIGNED PRIMARY KEY);
 
@@ -696,6 +717,7 @@ LIMIT 10000000;
 
 그리고 처리해야 할 데이터가 많기 때문에 청크 크기와 한 번에 조회하는 레코드의 개수 크기도 좀 더 늘려서 5000으로 조정하였습니다.
 
+{% include code-header.html %}
 ```java
 @Slf4j
 @Configuration
@@ -721,6 +743,7 @@ public class HistoryBatchConfig {
 
 ```
 
+{% include code-header.html %}
 ```java
 @Configuration
 public class ItemReaderConfig {
@@ -743,6 +766,7 @@ public class ItemReaderConfig {
 
 이제 1000만 건의 데이터를 대상으로 배치 작업을 처리해보겠습니다. 명령어는 앞서 실행했던 명령어와 동일합니다.
 
+{% include code-header.html %}
 ```
 [writeHistoryJob 실행]
 Executing step: [writeStep]
@@ -770,6 +794,7 @@ the following status: [COMPLETED] in 23m10s857ms
 
 애플리케이션의 데이터베이스 관련 설정이 대용량 데이터를 처리하기에는 미비하다는 판단을 하였습니다. 따라서 연결 정보에 추가적인 파라미터를 전달하는 것이 어떻겠냐는 조언을 하여 다음과 같이 설정하였습니다.
 
+{% include code-header.html %}
 ```yaml
 spring:
   application:
@@ -809,14 +834,17 @@ spring:
 
 데이터베이스 자체에도 몇몇 설정을 해줘야 한다고 합니다. 따라서 다음 명령어들로 MySQL 컨테이너에 접속한 다음에 파일을 하나 생성하였습니다.
 
+{% include code-header.html %}
 ```bash
 docker exec -it mysql-batch bash
 ```
 
+{% include code-header.html %}
 ```bash
 cd /etc/mysql/conf.d
 ```
 
+{% include code-header.html %}
 ```bash
 echo '[mysqld]
 innodb_flush_log_at_trx_commit=2
@@ -845,6 +873,7 @@ Docker는 기본적으로 overlay2(Copy-on-Write) 파일 시스템을 사용하�
 
 따라서 호스트 PC에 직접 데이터베이스를 설치하거나 아니면 WSL 환경에서 아래 명령어로 데이터베이스 컨테이너의 데이터들을 WSL 환경에 마운트하고, 배치 작업 또한 WSL 환경에서 실행하여 이러한 I/O 병목을 줄이는 방법이 있다고 합니다. 기존 컨테이너를 삭제하고 WSL에 접속하여 다음 명령어로 새로운 MySQL 컨테이너를 실행하였습니다.
 
+{% include code-header.html %}
 ```bash
 docker run -d \
   --name mysql-batch \
@@ -858,12 +887,14 @@ docker run -d \
 
 그 다음 jar를 빌드하여 WSL 내부에서 배치 작업을 실행시킬 수 있도록 WSL에서 다음 명령어로 jar 파일을 WSL 홈 디렉터리로 복사하였습니다.
 
+{% include code-header.html %}
 ```bash
 cp /mnt/c/{JAR_FILE_PATH} ~/
 ```
 
 테이블과 데이터 설정 이후, 앞서 처리한 모든 애플리케이션과 데이터베이스 관련 설정을 한 다음에 테스트를 진행해봤습니다. jar 파일일 때의 배치 실행 명령어는 다음과 같습니다.
 
+{% include code-header.html %}
 ```bash
 java -jar {JAR_FILE_NAME}.jar \
   --spring.batch.job.name=writeHistoryJob \
@@ -874,6 +905,7 @@ java -jar {JAR_FILE_NAME}.jar \
 
 **청크 크기가 3000인 경우**
 
+{% include code-header.html %}
 ```
 Executing step: [writeStep]
 Step: [writeStep] executed in 11m21s544ms
@@ -892,6 +924,7 @@ the following status: [COMPLETED] in 12m32s437ms
 
 **청크 크기가 5000인 경우**
 
+{% include code-header.html %}
 ```
 Executing step: [writeStep]
 Step: [writeStep] executed in 11m39s501ms
@@ -912,6 +945,7 @@ the following status: [COMPLETED] in 12m56s781ms
 
 **청크 크기가 1000인 경우**
 
+{% include code-header.html %}
 ```
  Executing step: [writeStep]
  Step: [writeStep] executed in 1m24s243ms
@@ -930,6 +964,7 @@ the following status: [COMPLETED] in 12m56s781ms
 
 **청크 크기가 5000인 경우**
 
+{% include code-header.html %}
 ```
 Executing step: [writeStep]
 Step: [writeStep] executed in 1m14s970ms

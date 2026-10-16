@@ -23,6 +23,7 @@ OAuth 관련 미니 프로젝트를 시작하려고 프로젝트의 사전 설�
 
 {% include code-header.html %}
 
+{% include code-header.html %}
 ```yaml
 # application.yml
 spring:
@@ -36,6 +37,7 @@ spring:
 
 우선 properties 파일부터 작성해보겠습니다. 파일 이름은 앞서 예시로 들었던 **errors**와 **errors_en**으로 만듭니다.
 
+{% include code-header.html %}
 ```
 # errors.properties
 server.error=서버 내부 오류 발생
@@ -58,6 +60,7 @@ NotBlank={0} value cannot be empty.
 
 {% include code-header.html %}
 
+{% include code-header.html %}
 ```java
 // 응답 enum 예시
 INVALID_REQUEST(4000, HttpStatus.BAD_REQUEST, "잘못된 요청!");
@@ -67,6 +70,7 @@ INVALID_REQUEST(4000, HttpStatus.BAD_REQUEST, "잘못된 요청!");
 
 {% include code-header.html %}
 
+{% include code-header.html %}
 ```java
 @Getter
 @RequiredArgsConstructor
@@ -86,6 +90,7 @@ public enum ErrorCode {
 
 {% include code-header.html %}
 
+{% include code-header.html %}
 ```java
 @Component
 @RequiredArgsConstructor
@@ -110,6 +115,7 @@ public class MessageUtil {
 
 {% include code-header.html %}
 
+{% include code-header.html %}
 ```java
 @JsonPropertyOrder({"isSuccess", "code", "message", "result"})
 public record JSONResponse<T>(
@@ -134,6 +140,7 @@ public record JSONResponse<T>(
 
 {% include code-header.html %}
 
+{% include code-header.html %}
 ```java
 @Getter
 public class CommonException extends RuntimeException {
@@ -147,6 +154,7 @@ public class CommonException extends RuntimeException {
 
 {% include code-header.html %}
 
+{% include code-header.html %}
 ```java
 @RestControllerAdvice
 public class CommonExceptionHandler {
@@ -198,6 +206,7 @@ public class CommonExceptionHandler {
 
 {% include code-header.html %}
 
+{% include code-header.html %}
 ```java
 @RestController
 @RequestMapping("/api/user")
@@ -214,6 +223,7 @@ public class UserController {
 
 {% include code-header.html %}
 
+{% include code-header.html %}
 ```java
 public record UserRegisterRequest(
         @NotNull
@@ -228,10 +238,12 @@ public record UserRegisterRequest(
 
 **잘못된 경로 변수 입력(**`MethodArgumentTypeMismatchException`)
 
+{% include code-header.html %}
 ```
 GET http://localhost:8080/api/user/test/string
 ```
 
+{% include code-header.html %}
 ```
 {
     "isSuccess": false,
@@ -242,6 +254,7 @@ GET http://localhost:8080/api/user/test/string
 
 **요청 키 값의 누락(**`HttpMessageNotReadableException`**)**
 
+{% include code-header.html %}
 ```
 POST http://localhost:8080/api/user/test
 
@@ -251,6 +264,7 @@ BODY
 }
 ```
 
+{% include code-header.html %}
 ```
 {
     "isSuccess": false,
@@ -263,6 +277,7 @@ BODY
 
 이 방법의 가장 큰 장점이 바로 이 부분인 것 같습니다.
 
+{% include code-header.html %}
 ```
 POST http://localhost:8080/api/user/test
 {
@@ -271,6 +286,7 @@ POST http://localhost:8080/api/user/test
 }
 ```
 
+{% include code-header.html %}
 ```
 {
     "isSuccess": false,
@@ -286,6 +302,7 @@ POST http://localhost:8080/api/user/test
 반복문을 돌며 검증에 실패한 필드에 대해서 오류 코드를 가져오고, 그것을 리스트로 만들어 데이터에 넣은 것입니다.
 이제 마지막으로 국제화에 성공했는지 보겠습니다. `Accept-Language` 헤더를 `en-US`로 설정해보겠습니다.
 
+{% include code-header.html %}
 ```
 POST http://localhost:8080/api/user/test
 
@@ -298,6 +315,7 @@ header: {
 }
 ```
 
+{% include code-header.html %}
 ```
 {
     "isSuccess": false,
@@ -323,6 +341,7 @@ header: {
 
 {% include code-header.html %}
 
+{% include code-header.html %}
 ```java
 @Getter
 @RequiredArgsConstructor
@@ -336,6 +355,7 @@ public enum ErrorCode {
 }
 ```
 
+{% include code-header.html %}
 ```java
 public static <T> JSONResponse<T> onFailure(ErrorCode errorCode, T data) {
     String message = MessageUtil.getMessage(errorCode.name());
@@ -343,6 +363,7 @@ public static <T> JSONResponse<T> onFailure(ErrorCode errorCode, T data) {
 }
 ```
 
+{% include code-header.html %}
 ```
 # errors.properties
 SERVER_ERROR=서버 내부 오류 발생
@@ -360,6 +381,7 @@ INVALID_REQUEST=잘못된 요청
 
 {% include code-header.html %}
 
+{% include code-header.html %}
 ```java
 @Component
 public class MessageUtil implements ApplicationContextAware {
@@ -382,6 +404,7 @@ public class MessageUtil implements ApplicationContextAware {
 
 {% include code-header.html %}
 
+{% include code-header.html %}
 ```java
 @Configuration
 public class MessageUtilConfig {
@@ -394,6 +417,7 @@ public class MessageUtilConfig {
 
 {% include code-header.html %}
 
+{% include code-header.html %}
 ```java
 public class MessageUtil {
     private static MessageSource messageSource;

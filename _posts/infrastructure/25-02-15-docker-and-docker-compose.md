@@ -47,6 +47,7 @@ permalink: "/infrastructure/docker-and-docker-compose/"
 
 {% include code-header.html %}
 
+{% include code-header.html %}
 ```Dockerfile
 FROM openjdk:17-jdk
 LABEL maintainer "sehako"
@@ -71,6 +72,7 @@ ENTRYPOINT ["java", "-jar", "/app.jar"]
 
 - `LABEL`: 생성할 이미지에 메타 데이터를 추가할 수 있습니다. 위 명령어의 경우에는 이미지를 생성한 제 닉네임을 넣었습니다. 만약 이메일도 넣고 싶으면 다음과 같이 표현하기도 합니다.
 
+{% include code-header.html %}
 ```Dockerfile
 LABEL maintainer "sehako <dhtpgkr1999@gmail.com>"
 ```
@@ -79,6 +81,7 @@ LABEL maintainer "sehako <dhtpgkr1999@gmail.com>"
 
 {% include code-header.html %}
 
+{% include code-header.html %}
 ```Dockerfile
 FROM jenkins/jenkins:2.492.1-lts-jdk17
 
@@ -137,6 +140,7 @@ CMD ["/usr/local/bin/jenkins.sh"]
 
 {% include code-header.html %}
 
+{% include code-header.html %}
 ```sh
 sudo apt-get update
 sudo apt-get install docker-compose-plugin
@@ -146,6 +150,7 @@ sudo apt-get install docker-compose-plugin
 
 {% include code-header.html %}
 
+{% include code-header.html %}
 ```yaml
 services:
   mysql:
@@ -208,6 +213,7 @@ networks:
 
 참고로 젠킨스는 기본적으로 8080포트를 사용하기 때문에 저는 9000번으로 바꿔서 진행하였습니다. 아무튼 도커 컴포즈 파일을 작성할 때 초기에는 yaml 파일에 버전을 정의해줘야 했습니다.
 
+{% include code-header.html %}
 ```yaml
 version: 3.0
 ```
@@ -216,6 +222,7 @@ version: 3.0
 
 {% include code-header.html %}
 
+{% include code-header.html %}
 ```sh
 docker-compose up -d
 ```
@@ -224,6 +231,7 @@ docker-compose up -d
 
 {% include code-header.html %}
 
+{% include code-header.html %}
 ```sh
 docker-compose up -d spring
 ```
@@ -244,6 +252,7 @@ docker-compose up -d spring
 
 정의된 도커 파일을 실행하여 이미지를 빌드하여 서비스의 컨테이너를 생성하도록 합니다. 이때 도커 파일에 사용될 컨텍스트나 도커 파일의 이름 등을 지정할 수 있습니다.
 
+{% include code-header.html %}
 ```yaml
 build:
   context: .
@@ -254,6 +263,7 @@ build:
 
 컨테이너를 실행할 때 내부에서 사용할 환경변수를 지정하는 옵션입니다. mysql의 경우에는 루트 비밀번호를 초기에 설정해줘야 하는데, 이를 환경 변수를 통해서 정의할 수 있습니다.
 
+{% include code-header.html %}
 ```yaml
 environment:
   MYSQL_ROOT_PASSWORD: 1234
@@ -263,6 +273,7 @@ environment:
 
 스프링 부트의 경우에는 다양한 환경 변수가 존재하고, 이를 .env 파일로 관리하는 것이 일반적입니다. 도커 컴포즈를 이용하여 컨테이너를 만들 때 이런 환경 변수들을 하나하나 설정하지 않고 환경 변수 파일을 불러오는 방식을 사용할 수 있습니다.
 
+{% include code-header.html %}
 ```yaml
 env_file:
   - ./.env
@@ -274,6 +285,7 @@ env_file:
 
 어떤 컨테이너의 상태를 명시하기 위한 부분입니다.
 
+{% include code-header.html %}
 ```yaml
 healthcheck:
   test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot"]
@@ -288,6 +300,7 @@ healthcheck:
 
 컨테이너의 실행 순서를 명시하거나, 특정 컨테이너가 다 실행되었을 때 실행되도록 할 수 있는 의존관계 설정입니다. 스프링 부트의 경우에는 mysql 컨테이너가 완전히 실행된 상태일 때 실행되어야 예외가 발생하지 않고 정상적으로 동작합니다. 따라서 스프링 부트에 `depends_on` 옵션을 사용하여야 합니다.
 
+{% include code-header.html %}
 ```yaml
 depends_on:
   mysql:
@@ -296,6 +309,7 @@ depends_on:
 
 단순히 실행되는 순서만을 정의하고 싶다면 다음과 같이 작성하면 됩니다. 이 경우에는 실행의 순서만 보장하고 컨테이너의 준비가 완료되는 순서는 보장되지 않습니다.
 
+{% include code-header.html %}
 ```yaml
 depends_on:
   - mysql
@@ -305,6 +319,7 @@ depends_on:
 
 `docker run`의 `-p` 옵션과 같으며, 서비스 컨테이너를 개방할 포트를 설정합니다. 만약 외부에서의 접속을 차단하고, 컨테이너 내부 통신 용도로만 사용하고 싶다면 다음과 같이 작성하면 됩니다.
 
+{% include code-header.html %}
 ```yaml
 ports:
   - 127.0.0.1:3306:3306
@@ -314,6 +329,7 @@ ports:
 
 호스트의 특정 파일또는 디렉터리를 마운트 시키거나, 도커 볼륨 기능으로 데이터를 영속적으로 저장하게 할 수 있습니다. 젠킨스의 설정을 보도록 하겠습니다.
 
+{% include code-header.html %}
 ```yaml
 volumes:
   - jenkins_home:/var/jenkins_home # Jenkins 데이터를 Docker Volume으로 저장
@@ -322,6 +338,7 @@ volumes:
 
 볼륨에 지정된 옵션 중에서 첫 번째 부분은 컨테이너에서 `/var/jenkins_home` 경로의 해당 디렉터리를 포함한 하위 파일들을 `jenkins_home`이라는 도커 볼륨에 저장하도록 한 것입니다. 만약 그러한 도커 볼륨이 없다면 도커는 해당 이름을 가진 도커 볼륨을 생성하여 저장합니다. 그리고 도커 컴포즈 내에 다음과 같은 볼륨 지정 명령어가 있어야 합니다.
 
+{% include code-header.html %}
 ```yaml
 volumes:
   jenkins_home: # Jenkins 홈 디렉터리 저장
@@ -343,6 +360,7 @@ volumes:
 
 {% include code-header.html %}
 
+{% include code-header.html %}
 ```sh
 docker run --name {CONTAINER_NAME} --net {CONTAINER_NETWORK} -p {HOST_PORT:PORT} -d {IMAGE_NAME:TAG}
 ```
@@ -353,6 +371,7 @@ docker run --name {CONTAINER_NAME} --net {CONTAINER_NETWORK} -p {HOST_PORT:PORT}
 
 {% include code-header.html %}
 
+{% include code-header.html %}
 ```sh
 docker build --rm -t {IMAGE_NAME:TAG} .
 ```
@@ -361,6 +380,7 @@ docker build --rm -t {IMAGE_NAME:TAG} .
 
 {% include code-header.html %}
 
+{% include code-header.html %}
 ```sh
 docker push ${IMAGE_NAME}:latest
 ```
@@ -369,12 +389,14 @@ docker push ${IMAGE_NAME}:latest
 
 {% include code-header.html %}
 
+{% include code-header.html %}
 ```sh
 docker ps | docker-compose ps
 ```
 
 {% include code-header.html %}
 
+{% include code-header.html %}
 ```sh
 docker rmi {IMAGE_ID}
 ```
@@ -385,6 +407,7 @@ docker rmi {IMAGE_ID}
 
 {% include code-header.html %}
 
+{% include code-header.html %}
 ```sh
 docker logs [-f] [CONTAINER_NAME] | docker-compose logs [-f] [SERVICE_NAME]
 ```
@@ -393,6 +416,7 @@ docker logs [-f] [CONTAINER_NAME] | docker-compose logs [-f] [SERVICE_NAME]
 
 {% include code-header.html %}
 
+{% include code-header.html %}
 ```sh
 docker-compose up [-d] [--no-deps] [--build] [SERVICE_NAME]
 ```
@@ -403,6 +427,7 @@ docker-compose up [-d] [--no-deps] [--build] [SERVICE_NAME]
 
 {% include code-header.html %}
 
+{% include code-header.html %}
 ```sh
 docker-compose down [SERVICE_NAME]
 ```

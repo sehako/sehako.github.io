@@ -154,6 +154,7 @@ Spring Data R2DBC를 활용하는 방법은 상황에 따라서 다르다고 볼
 
 간단한 INSERT 기능을 레포지토리와 `R2dbcEntityTemplate`를 활용해서 한 번 만들어보겠습니다. 데이터베이스 스키마와 객체는 다음과 같습니다.
 
+{% include code-header.html %}
 ```java
 CREATE TABLE IF NOT EXISTS post (
     `no`         INTEGER      NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -165,6 +166,7 @@ CREATE TABLE IF NOT EXISTS post (
 
 `no`와 `created_at`이 기본값을 가지는 컬럼이므로 이 점에 유의해서 다음과 같이 엔티티를 만들었습니다.
 
+{% include code-header.html %}
 ```java
 @Table("post")
 @Getter
@@ -189,6 +191,7 @@ public class Post {
 
 **레포지토리 활용**
 
+{% include code-header.html %}
 ```java
 public interface PostRepository extends ReactiveCrudRepository<Post, Integer> {
 }
@@ -196,6 +199,7 @@ public interface PostRepository extends ReactiveCrudRepository<Post, Integer> {
 
 이렇게 `ReactiveCrudRepository`를 상속받기만 하면 됩니다. 간단하게 테스트 코드도 작성해봤습니다.
 
+{% include code-header.html %}
 ```java
 @ActiveProfiles("test")
 @DataR2dbcTest
@@ -237,6 +241,7 @@ class PostRepositoryTest {
 
 위와 같은 기능을 하는 쿼리를 작성하려면 어떻게 해야할까요? 간단한 기능이라서 사실 별 차이 없지만 `R2dbcEntityTemplate`는 QueryDSL 처럼 메서드를 활용해서 쿼리를 작성할 수 있습니다. 공식 문서의 예시를 살펴보겠습니다.
 
+{% include code-header.html %}
 ```java
 Mono<Person> first = template.select(Person.class)
 	.from("other_person")
@@ -248,6 +253,7 @@ Mono<Person> first = template.select(Person.class)
 
 이를 통해 기본적인 SQL 문법은 모두 메서드로 지원하는 것을 알 수 있습니다. 따라서 다음과 같이 작성하면 됩니다.
 
+{% include code-header.html %}
 ```java
 @Repository
 @RequiredArgsConstructor
@@ -263,6 +269,7 @@ public class CustomPostRepository {
 
 이를 테스트한 코드는 다음과 같습니다.
 
+{% include code-header.html %}
 ```java
 @SpringBootTest
 @ActiveProfiles("test")
@@ -298,12 +305,14 @@ class CustomPostRepository {
 
 이 방법을 생각하다가 QueryDSL을 활용할 때 처럼 별도 인터페이스를 만들어 거기에 추상 메서드를 정의하고, 해당 인터페이스 구현체에 `R2dbcEntityTemplate`를 활용하는 식으로 만들면 될 것 같다고 생각했습니다. 코드를 보겠습니다.
 
+{% include code-header.html %}
 ```java
 public interface CustomPostRepository {
     Mono<Post> customSave(Post post);
 }
 ```
 
+{% include code-header.html %}
 ```java
 @RequiredArgsConstructor
 public class CustomPostRepositoryImpl implements CustomPostRepository {
@@ -319,6 +328,7 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
 
 이렇게 구현한 다음에 `ReactiveCrudRepository`를 상속한 레포지토리에 추가 상속을 시키면 됩니다.
 
+{% include code-header.html %}
 ```java
 public interface PostRepository extends ReactiveCrudRepository<Post, Integer>,
         CustomPostRepository {

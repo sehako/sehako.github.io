@@ -17,6 +17,7 @@ permalink: "/spring/processing-http-response-code-in-spring/"
 
 {% include code-header.html %}
 
+{% include code-header.html %}
 ```java
 public record User(
     String username,
@@ -28,6 +29,7 @@ public record User(
 
 {% include code-header.html %}
 
+{% include code-header.html %}
 ```java
 @RestController
 public class RequestController {
@@ -42,6 +44,7 @@ public class RequestController {
 
 실제로 위의 요청 메소드를 실행시키면 HTTP 상태 코드 200과 함께 다음과 같은 결과를 받을 수 있습니다.
 
+{% include code-header.html %}
 ```json
 {
   "username": "test-user",
@@ -59,6 +62,7 @@ public class RequestController {
 
 {% include code-header.html %}
 
+{% include code-header.html %}
 ```java
 @ResponseStatus(HttpStatus.CREATED)
 @PostMapping("/create-user")
@@ -71,6 +75,7 @@ public User createUser(
 
 이를 통해서 다음과 같은 요청을 보냈을 때
 
+{% include code-header.html %}
 ```
 POST /create-user HTTP/1.1
 Host: localhost:8080
@@ -85,6 +90,7 @@ Content-Length: 41
 
 201 Created HTTP 상태 코드와 함께 다음과 같은 응답을 서버로부터 받을 수 있는 것을 볼 수 있습니다.
 
+{% include code-header.html %}
 ```json
 {
   "username": "created-user",
@@ -100,6 +106,7 @@ Content-Length: 41
 
 {% include code-header.html %}
 
+{% include code-header.html %}
 ```java
 @PostMapping("/create-user/v2")
 public ResponseEntity<User> createUserV2(
@@ -121,6 +128,7 @@ public ResponseEntity<User> createUserV2(
 
 {% include code-header.html %}
 
+{% include code-header.html %}
 ```java
 @ResponseStatus(HttpStatus.CREATED)
 @PostMapping("/create-user")
@@ -144,6 +152,7 @@ public ResponseEntity<User> createUserV2(
 
 {% include code-header.html %}
 
+{% include code-header.html %}
 ```java
 @RequiredArgsConstructor
 public enum SuccessCode {
@@ -164,6 +173,7 @@ public enum SuccessCode {
 
 {% include code-header.html %}
 
+{% include code-header.html %}
 ```java
 @JsonPropertyOrder({"isSuccess", "code", "message", "result"})
 public record ApiResponse<T>(
@@ -192,6 +202,7 @@ public record ApiResponse<T>(
 
 {% include code-header.html %}
 
+{% include code-header.html %}
 ```java
 @PostMapping("/create-user/v3")
 public ResponseEntity<ApiResponse<User>> createUserV3(
@@ -205,6 +216,7 @@ public ResponseEntity<ApiResponse<User>> createUserV3(
 
 그러면 요청에 대한 결과로 201 Created와 다음과 같은 응답 값이 반환됩니다.
 
+{% include code-header.html %}
 ```json
 {
   "isSuccess": true,
@@ -225,6 +237,7 @@ public ResponseEntity<ApiResponse<User>> createUserV3(
 
 {% include code-header.html %}
 
+{% include code-header.html %}
 ```java
 @Getter
 @RequiredArgsConstructor
@@ -242,6 +255,7 @@ public enum FailureCode {
 
 {% include code-header.html %}
 
+{% include code-header.html %}
 ```java
 @Getter
 public class CommonException extends RuntimeException {
@@ -258,6 +272,7 @@ public class CommonException extends RuntimeException {
 
 {% include code-header.html %}
 
+{% include code-header.html %}
 ```java
 @Slf4j
 @RestControllerAdvice
@@ -284,6 +299,7 @@ public class GlobalExceptionHandler {
 
 {% include code-header.html %}
 
+{% include code-header.html %}
 ```java
 public class UserNotFoundException extends CommonException {
     public UserNotFoundException(FailureCode failureCode) {
@@ -294,6 +310,7 @@ public class UserNotFoundException extends CommonException {
 
 {% include code-header.html %}
 
+{% include code-header.html %}
 ```java
 @GetMapping("/find-user")
 public ResponseEntity<ApiResponse<User>> findUser(
@@ -314,6 +331,7 @@ public ResponseEntity<ApiResponse<User>> findUser(
 
 {% include code-header.html %}
 
+{% include code-header.html %}
 ```java
 @PostMapping("/create-user/v3")
 public ResponseEntity<ApiResponse<User>> createUserV3(
@@ -329,6 +347,7 @@ public ResponseEntity<ApiResponse<User>> createUserV3(
 
 {% include code-header.html %}
 
+{% include code-header.html %}
 ```java
 @JsonPropertyOrder({"isSuccess", "code", "message", "result"})
 public record ResponseEntityHelper<T>(
@@ -394,6 +413,7 @@ public record ResponseEntityHelper<T>(
 
 {% include code-header.html %}
 
+{% include code-header.html %}
 ```java
 @GetMapping("/find-user")
 public ResponseEntity<ResponseEntityHelper<User>> findUser(
@@ -407,6 +427,7 @@ public ResponseEntity<ResponseEntityHelper<User>> findUser(
 
 잘 응답되는 것을 확인할 수 있습니다.
 
+{% include code-header.html %}
 ```json
 {
   "isSuccess": true,

@@ -52,6 +52,19 @@ class BlogSyncTest < Minitest::Test
     refute_match(/[ \t]+$/, post)
   end
 
+  def test_code_blocks_get_copy_header_once
+    header = "{% include code-header.html %}"
+    body = "```java\nint a;\n```\n\n#{header}\n```bash\nls\n```\n\n````md\n```java\nx\n```\n````\n"
+    source_post("25-03-04-new-post", body: body)
+
+    sync.run(write: true)
+    post = read("#{@root}/_posts/authentication-security/25-03-04-new-post.md")
+
+    assert_equal 3, post.scan(header).length
+    assert_includes post, "#{header}\n```java\nint a;"
+    assert_includes post, "#{header}\n````md\n```java"
+  end
+
   def test_markdown_and_html_images_are_copied_and_rewritten
     encoded = "_assets/area/%EB%B8%94%EB%A1%9C%EA%B7%B8/%EA%B8%80/%EC%9D%B8%EC%A6%9D%EA%B3%BC%20%EB%B3%B4%EC%95%88/25-03-04-new-post/01.png"
     source_post("25-03-04-new-post", body: "![diagram](#{encoded})\n<img src=\"#{encoded}\">\n")

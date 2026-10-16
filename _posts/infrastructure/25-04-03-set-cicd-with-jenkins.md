@@ -27,6 +27,7 @@ CI/CD를 쉽게 말하자면 어플리케이션의 변경 사항을 감지하고
 
 {% include code-header.html %}
 
+{% include code-header.html %}
 ```groovy
 bootJar {
     archiveFileName = 'app.jar'
@@ -37,6 +38,7 @@ jar 파일의 이름을 프로젝트의 이름으로 빌드되도록 설정할 �
 
 {% include code-header.html %}
 
+{% include code-header.html %}
 ```groovy
 bootJar {
     archiveFileName = "${rootProject.name}.jar"
@@ -55,26 +57,32 @@ EC2는 다음 [블로그](https://olrlobt.tistory.com/83)를 참고하여 생성
 
 또한 여러 어플리케이션이 띄워지면 메모리가 부족해질 수 있으니 혹시 몰라 스왑 메모리 설정도 해주었습니다. 다음 [블로그](https://diary-developer.tistory.com/32)를 참고하도록 하겠습니다.
 
+{% include code-header.html %}
 ```bash
 sudo dd if=/dev/zero of=/swapfile bs=128M count=16
 ```
 
+{% include code-header.html %}
 ```bash
 sudo chmod 600 /swapfile
 ```
 
+{% include code-header.html %}
 ```bash
 sudo mkswap /swapfile
 ```
 
+{% include code-header.html %}
 ```bash
 sudo swapon /swapfile
 ```
 
+{% include code-header.html %}
 ```bash
 sudo vim /etc/fstab
 ```
 
+{% include code-header.html %}
 ```bash
 # 파일 최하단 아래에 추가
 LABEL=SWAP      /swapfile       swap    swap defaults 0 0
@@ -86,6 +94,7 @@ EC2에 띄우기에 앞서 nginx나 데이터베이스는 필요가 없으니 �
 
 {% include code-header.html %}
 
+{% include code-header.html %}
 ```yaml
 services:
   spring:
@@ -136,6 +145,7 @@ volumes:
 
 {% include code-header.html %}
 
+{% include code-header.html %}
 ```dockerfile
 FROM jenkins/jenkins:2.492.1-lts-jdk17
 
@@ -168,6 +178,7 @@ CMD ["/usr/local/bin/jenkins.sh"]
 
 {% include code-header.html %}
 
+{% include code-header.html %}
 ```bash
 scp -i {EC2 pem 키} -r ./DeploySet {사용자이름}@{서버주소}:{경로}
 ```
@@ -178,30 +189,35 @@ EC2를 우분투로 생성하였을 거라고 가정하고 다음 명령어들�
 
 {% include code-header.html %}
 
+{% include code-header.html %}
 ```bash
 sudo apt update
 ```
 
 {% include code-header.html %}
 
+{% include code-header.html %}
 ```bash
 sudo apt install apt-transport-https ca-certificates curl software-properties-common -y
 ```
 
 {% include code-header.html %}
 
+{% include code-header.html %}
 ```bash
 sudo wget -qO- http://get.docker.com/ | sh
 ```
 
 {% include code-header.html %}
 
+{% include code-header.html %}
 ```bash
 sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
 ```
 
 {% include code-header.html %}
 
+{% include code-header.html %}
 ```bash
 sudo chmod +x /usr/local/bin/docker-compose
 ```
@@ -210,6 +226,7 @@ sudo chmod +x /usr/local/bin/docker-compose
 
 {% include code-header.html %}
 
+{% include code-header.html %}
 ```bash
 sudo docker-compose up -d
 ```
@@ -224,10 +241,12 @@ sudo docker-compose up -d
 
 {% include code-header.html %}
 
+{% include code-header.html %}
 ```bash
 sudo docker-compose logs jenkins
 ```
 
+{% include code-header.html %}
 ```
 jenkins  | *************************************************************
 jenkins  | *************************************************************
@@ -318,6 +337,7 @@ CI/CD를 위해 젠킨스에서 지원하는 플러그인을 설치하도록 하
 
 제대로 연동이 된다면 젠킨스에 어떤 값을 보낼까요? 이벤트를 발생시켜 페이로드를 살펴보았습니다.
 
+{% include code-header.html %}
 ```json
 {
   "ref": "refs/heads/main",
@@ -336,6 +356,7 @@ CI/CD를 위해 젠킨스에서 지원하는 플러그인을 설치하도록 하
 
 {% include code-header.html %}
 
+{% include code-header.html %}
 ```groovy
 pipeline {
     agent any
@@ -424,6 +445,7 @@ def buildSpringboot() {
 
 {% include code-header.html %}
 
+{% include code-header.html %}
 ```bash
  #!/bin/bash
 
@@ -442,6 +464,7 @@ sudo docker-compose up -d --build
 
 {% include code-header.html %}
 
+{% include code-header.html %}
 ```java
 @RestController
 public class Controller {
@@ -461,6 +484,7 @@ public class Controller {
 
 {% include code-header.html %}
 
+{% include code-header.html %}
 ```java
   @GetMapping("/api/v1/test")
   public ResponseEntity<Return> test() {
@@ -484,6 +508,7 @@ public class Controller {
 
 {% include code-header.html %}
 
+{% include code-header.html %}
 ```groovy
 def buildSpringboot() {
     dir(BACKEND_DIR) {
@@ -544,6 +569,7 @@ def buildSpringboot() {
 
 {% include code-header.html %}
 
+{% include code-header.html %}
 ```groovy
 pipeline {
     agent any
@@ -608,6 +634,7 @@ pipeline {
 
 {% include code-header.html %}
 
+{% include code-header.html %}
 ```groovy
 def buildSpringboot() {
     dir(BACKEND_DIR) {
@@ -641,6 +668,7 @@ def buildSpringboot() {
 
 {% include code-header.html %}
 
+{% include code-header.html %}
 ```sh
 #!/bin/bash
 

@@ -120,6 +120,7 @@ Flow API는 자바 9 부터 `java.util.concurrent.Flow`에 추가된 클래스�
 
 ### Publisher
 
+{% include code-header.html %}
 ```java
 @FunctionalInterface
 public interface Publisher<T> {
@@ -131,6 +132,7 @@ public interface Publisher<T> {
 
 ### Subscriber
 
+{% include code-header.html %}
 ```java
 public interface Subscriber<T> {
     void onSubscribe(Subscription s);
@@ -144,6 +146,7 @@ public interface Subscriber<T> {
 
 ### Subscription
 
+{% include code-header.html %}
 ```java
 public interface Subscription {
     public void request(long n);
@@ -173,6 +176,7 @@ public interface Subscription {
 
 ### Processor
 
+{% include code-header.html %}
 ```java
 public interface Processor<T, R> extends Subscriber<T>, Publisher<R> {}
 ```
@@ -187,6 +191,7 @@ public interface Processor<T, R> extends Subscriber<T>, Publisher<R> {}
 
 이제 각 도시의 온도를 보여주는 온도계 프로그램을 리액티브 프로그래밍으로 구현해보도록 하겠습니다. 온도와 관련된 도메인 객체는 다음과 같습니다.
 
+{% include code-header.html %}
 ```java
 import java.util.Random;
 
@@ -218,6 +223,7 @@ public class TempInfo {
 
 `Subscriber`가 요청할때마다 해당 도시의 온도를 전송하도록 `Subscription`을 구현합니다.
 
+{% include code-header.html %}
 ```java
 public class TempSubscription implements Subscription {
 
@@ -259,6 +265,7 @@ public class TempSubscription implements Subscription {
 
 새 데이터를 얻을 때마다 Subscription이 전달한 온도를 출력하고 새로운 온도 정보를 요청하는 Subscriber를 다음과 같이 구현합니다.
 
+{% include code-header.html %}
 ```java
 public class TempSubscriber implements Subscriber<TempInfo> {
     private Subscription subscription;
@@ -293,6 +300,7 @@ public class TempSubscriber implements Subscriber<TempInfo> {
 
 이제 이 구조가 동작하도록 `Publisher`를 만들고 구독을 해봤습니다.
 
+{% include code-header.html %}
 ```java
 public class Main {
 
@@ -312,6 +320,7 @@ public class Main {
 
 `TempInfo`의 작업 실패 코드를 삭제하면 어떤 일이 발생할까요?
 
+{% include code-header.html %}
 ```java
 // 10 분의 1 확률로 온도 가져오기 작업 실패
 if (random.nextInt(10) == 0) {
@@ -321,6 +330,7 @@ if (random.nextInt(10) == 0) {
 
 해당 코드를 삭제한 상태에서 실행을 하면 StackOverflowError가 발생합니다. 왜 그럴까요? onNext()로 받을 때마다 TempSubscription으로 요청을 보내면 다시 또 재귀 호출을 하는 문제가 있습니다. 그렇게 호출 스택이 쌓이다가 결국 StackOverflowError가 발생합니다. 해당 문제를 해결하기 위해서 Executor를 활용해서 다른 스레드에서 TempSubscriber로 전달하는 방법이 있습니다.
 
+{% include code-header.html %}
 ```java
 public class TempSubscription implements Subscription {
 
@@ -356,6 +366,7 @@ public class TempSubscription implements Subscription {
 
 `Processor`는 `Subscriber`이며 동시에 `Publisher`입니다. 이를 활용해서 `Publisher`를 구독한 다음 수신한 데이터를 가공해서 `Subscriber`를 다시 제공하도록 하겠습니다. 앞서 생성된 온도가 화씨라고 가정하고 이를 섭씨로 변환해서 `Subscriber`에 전달하도록 하겠습니다.
 
+{% include code-header.html %}
 ```java
 public class TempProcessor implements Processor<TempInfo, TempInfo> {
 
@@ -399,6 +410,7 @@ public class TempProcessor implements Processor<TempInfo, TempInfo> {
 
 그 다음 다음과 같이 `Processor`를 등록합니다.
 
+{% include code-header.html %}
 ```java
 public class Main {
 
@@ -420,6 +432,7 @@ public class Main {
 
 왜 `register()`같은 메서드 네이밍도 있는데 굳이 이렇게 했나 궁금해서 AI에게 물어보니까 이는 리액티브 스트림이 옵저버 패턴의 확장으로 설계되었기 때문이라고 했습니다. 전통적인 옵저버 패턴에서는 다음과 같은 코드로 옵저버를 등록했습니다.
 
+{% include code-header.html %}
 ```java
 observable.subscribe(observer);
 ```

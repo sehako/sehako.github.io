@@ -33,6 +33,7 @@ permalink: "/algorithm/dijkstra/"
 
 {% include code-header.html %}
 
+{% include code-header.html %}
 ```java
 class Node implements Comparable<Node> {
     int to;
@@ -56,6 +57,7 @@ class Node implements Comparable<Node> {
 
 {% include code-header.html %}
 
+{% include code-header.html %}
 ```java
 Node[] graph = new Node[9];
 graph[1] = new Node(2, 3, new Node(3, 4, null));
@@ -74,6 +76,7 @@ graph[8] = new Node(4, 3, new Node(6, 2, new Node(7, 5, null)));
 
 최단 경로를 탐색하기 위해서는 우선 현재 정점의 최단 경로를 저장하고 있는 배열을 만들어야 합니다. 또한 만들어진 최단 경로 배열을 가중치의 합이 도달할 수 없는 최대 값으로 미리 사전 세팅을 해둬야 합니다. 여기서는 편하게 `Integer.MAX_VALUE`로 설정하도록 하겠습니다.
 
+{% include code-header.html %}
 ```java
 int[] dist = new int[9];
 Arrays.fill(dist, Integer.MAX_VALUE);
@@ -83,6 +86,7 @@ Arrays.fill(dist, Integer.MAX_VALUE);
 
 최단 경로를 탐색하기 위해서 우선순위 큐를 이용하겠습니다. 다익스트라의 종료 조건은 우선 순위 큐에 노드가 더 이상 남아있지 않을 때 종료됩니다.
 
+{% include code-header.html %}
 ```java
 Queue<Node> pq = new PriorityQueue<>();
 pq.offer(new Node(1, 0, null));
@@ -108,6 +112,7 @@ while(!pq.isEmpty()) {
 
 {% include code-header.html %}
 
+{% include code-header.html %}
 ```java
 import java.util.*;
 

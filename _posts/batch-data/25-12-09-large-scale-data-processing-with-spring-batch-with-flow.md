@@ -25,6 +25,7 @@ Spring Batch로 전환한 덕분에 메모리 점유율과 처리 시간을 90% 
 
 `history` 테이블에서 주어진 날에 대한 데이터를 조회해야 하므로 `JdbcPagingItemReader`를 다음과 같이 설계하였습니다.
 
+{% include code-header.html %}
 ```java
 @Configuration
 public class ItemReaderConfig {
@@ -54,6 +55,7 @@ public class ItemReaderConfig {
 
 CSV 파일을 만들어야 하기 때문에 이전 작업에서 사용했던 데이터베이스 쓰기용 객체인 `JdbcBatchItemWriterBuilder` 대신에 파일 쓰기용 객체인 `FlatFileItemWriter`를 사용하였습니다.
 
+{% include code-header.html %}
 ```java
 @Configuration
 public class ItemWriterConfig {
@@ -88,6 +90,7 @@ public class ItemWriterConfig {
 
 ### Step 구성 및 등록
 
+{% include code-header.html %}
 ```java
 @Slf4j
 @Configuration
@@ -137,12 +140,14 @@ public class HistoryBatchConfig {
 
 메일을 보내기 위해서 Spring Mail 의존성을 불러옵니다.
 
+{% include code-header.html %}
 ```groovy
 implementation 'org.springframework.boot:spring-boot-starter-mail'
 ```
 
 그리고 application.yml에 다음 설정을 추가합니다.
 
+{% include code-header.html %}
 ```yaml
 spring:
   mail:
@@ -159,6 +164,7 @@ spring:
 
 ### Tasklet 구성
 
+{% include code-header.html %}
 ```java
 @Component
 @StepScope
@@ -235,6 +241,7 @@ public class HistoryResultSendingTasklet implements Tasklet {
 
 Tasklet에서 정보를 가져오기 위해서 각 Step이 끝난 뒤 실행되는 리스너를 하나 설정해야 합니다.
 
+{% include code-header.html %}
 ```java
 @Component
 public class HistoryBackupStepListener implements StepExecutionListener {
@@ -278,6 +285,7 @@ public class HistoryBackupStepListener implements StepExecutionListener {
 
 만일 Step이 정상적으로 종료되지 않으면 예외와 정상적으로 처리되지 않은 Step의 이름을 `JobExecutionContext`에 저장합니다. 그리고 이 리스너를 각 Step의 리스너로 등록해주면 됩니다.
 
+{% include code-header.html %}
 ```java
 @Slf4j
 @Configuration
@@ -332,6 +340,7 @@ public class HistoryBatchConfig {
 
 작성한 Tasklet을 실행하는 Step을 만들고 이를 Job의 가장 마지막 순서에 배치하였습니다.
 
+{% include code-header.html %}
 ```java
 @Slf4j
 @Configuration
@@ -372,6 +381,7 @@ public class HistoryBatchConfig {
 
 이제 작업 성공의 유무에 따라서 메일로 CSV 파일이 보내지거나 작업 실패에 대한 원인을 담은 이메일이 보내질 것입니다. 다음 명령어로 CSV 파일이 보내지는지 확인해보도록 하겠습니다.
 
+{% include code-header.html %}
 ```bash
 ./gradlew bootRun --args='--spring.batch.job.name=writeHistoryJob targetDate=2025-10-02,java.time.LocalDate'
 ```
@@ -380,6 +390,7 @@ public class HistoryBatchConfig {
 
 정상적으로 CSV 파일이 보내진 것을 확인할 수 있습니다. 그렇다면 오류 상황은 어떨까요? ItemProcessor에 임의의 예외를 던져서 확인해보았습니다.
 
+{% include code-header.html %}
 ```java
 @Configuration
 public class ItemProcessorConfig {
@@ -396,6 +407,7 @@ public class ItemProcessorConfig {
 
 다음과 같이 오류가 발생하면서 작업 자체가 종료되었습니다.
 
+{% include code-header.html %}
 ```
 Factory method 'historyProcessor' threw exception with message: 임의의 예외 발생!
 ...
@@ -422,6 +434,7 @@ Spring Batch Flow는 3개의 핵심 요소가 존재합니다.
 
 분기 기준으로, Spring Batch Flow에서는 `ExitStatus`의 `exitCode` 필드가 다음 전이를 결정하는 핵심 조건이 됩니다. 기본으로 제공되는 `COMPLETED`, `FAILED` 외에도 직접 정의한 커스텀 `ExitStatus`를 정의해 세밀한 분기가 가능합니다.
 
+{% include code-header.html %}
 ```java
 ExitStatus{
     public static final ExitStatus COMPLETED = new ExitStatus("COMPLETED");
@@ -448,6 +461,7 @@ ExitStatus{
 
 이제 작업에 대해서 Flow를 적용해서 각 Step에서 작업 실패 시 바로 `resultSendingStep`으로 전이하도록 만들어보겠습니다. 기본적으로 `ExitCode`는 `COMPLETED`와 `FAILED`가 존재합니다. 따라서 `COMPLETED`가 아니면 바로 `resultSendingStep`으로 전이하도록 다음과 같이 Flow를 구성해봤습니다.
 
+{% include code-header.html %}
 ```java
 @Slf4j
 @Configuration
@@ -485,6 +499,7 @@ public class HistoryBatchConfig {
 
 이를 시각화하면 다음과 같습니다.
 
+{% include code-header.html %}
 ```
 historyStep
  ├─ FAILED → resultSendingStep
@@ -508,6 +523,7 @@ Spring Batch 시리즈로 Spring Batch의 기본 개념과 대용량 데이터 �
 
 Spring Batch를 활용하면서 굉장히 간단한 설정으로 복잡한 데이터 처리 로직을 빠르게 구성할 수 있다고 느꼈습니다. 참고로 일반적으로 배치 작업은 jar 파일을 만들어서 해당 파일을 실행시키는 방식으로 많이 처리한다고 합니다. 이런 경우에는 메인 메서드의 코드를 다음과 같이 수정해야 합니다.
 
+{% include code-header.html %}
 ```java
 @SpringBootApplication
 public class SpringBatchApplication {

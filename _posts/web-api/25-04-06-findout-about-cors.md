@@ -51,6 +51,7 @@ CORS(Cross-Origin Resource Sharing)는 서로 다른 출처(origin) 간의 리�
 
 {% include code-header.html %}
 
+{% include code-header.html %}
 ```
  http {
 		# ...
@@ -125,6 +126,7 @@ CORS(Cross-Origin Resource Sharing)는 서로 다른 출처(origin) 간의 리�
 
 {% include code-header.html %}
 
+{% include code-header.html %}
 ```java
 @Configuration
 public class CorsConfig implements WebMvcConfigurer {
@@ -153,6 +155,7 @@ public class CorsConfig implements WebMvcConfigurer {
 
 {% include code-header.html %}
 
+{% include code-header.html %}
 ```java
 import java.util.List;
 import org.springframework.context.annotation.Bean;
@@ -193,6 +196,7 @@ public class CorsConfig {
 
 {% include code-header.html %}
 
+{% include code-header.html %}
 ```java
 @Configuration
 @EnableWebSocketMessageBroker

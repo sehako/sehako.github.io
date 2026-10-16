@@ -24,6 +24,7 @@ permalink: "/infrastructure/deploy-frontend/"
 
 1번 방식은 웹 서버가 설치된 시스템에 dist 디렉터리를 저장하고, nginx.conf에 index.html 파일을 지정하면 됩니다.
 
+{% include code-header.html %}
 ```
 location / {
     root /usr/share/nginx/html;
@@ -39,6 +40,7 @@ location / {
 
 {% include code-header.html %}
 
+{% include code-header.html %}
 ```yaml
 nginx:
   container_name: nginx
@@ -67,6 +69,7 @@ nginx:
 
 {% include code-header.html %}
 
+{% include code-header.html %}
 ```
 location /api/ {
     proxy_pass http://spring:8080;

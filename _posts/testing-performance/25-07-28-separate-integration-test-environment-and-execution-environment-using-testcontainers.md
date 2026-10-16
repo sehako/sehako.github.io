@@ -46,6 +46,7 @@ permalink: "/spring/test/separate-integration-test-environment-and-execution-env
 
 임베디드 라이브러리를 사용했던 포스팅에서는 H2를 활용하여 MySQL에 대한 테스트를 진행하였었습니다. 이를 변경하기 위해서 MySQL 컨테이너를 활용하여 테스트를 진행하도록 하겠습니다. 우선 다음 의존성이 필요합니다.
 
+{% include code-header.html %}
 ```groovy
 ext {
     set('testcontainers.version', "1.21.3")
@@ -67,6 +68,7 @@ dependencies {
 
 코드는 임베디드 라이브러리 때 작성했던 비즈니스 코드와 테스트 코드를 그대로 사용할 것입니다.
 
+{% include code-header.html %}
 ```java
 @Entity
 @Getter
@@ -90,6 +92,7 @@ public class Member {
 }
 ```
 
+{% include code-header.html %}
 ```java
 @Repository
 public interface MemberRepository extends JpaRepository<Member, Integer> {
@@ -100,6 +103,7 @@ public interface MemberRepository extends JpaRepository<Member, Integer> {
 
 스프링 부트에서는 인터페이스를 활용하여 필요한 컨테이너들을 정적 불변 객체로 생성하여 이를 `@ImportTestcontainers`로 로드하여 사용할 수 있습니다. 따라서 인터페이스에 MySQL을 정의하도록 하겠습니다.
 
+{% include code-header.html %}
 ```java
 public interface ContainersForIntegrationTest {
     @Container
@@ -127,6 +131,7 @@ public interface ContainersForIntegrationTest {
 
 물론 이를 위해서 선언하는 클래스를 인터페이스가 아니라 테스트를 진행하는 클래스에 컨테이너 객체를 선언해야 할 것입니다.
 
+{% include code-header.html %}
 ```java
 class Example {
     static MySQLContainer<?> mysqlContainer = new MySQLContainer<>("mysql:8.4.5")
@@ -148,6 +153,7 @@ class Example {
 
 `@ServiceConnection` 어노테이션은 컨테이너의 사전 설정과 연결에 대한 설정을 자동화 해줍니다. 해당 어노테이션을 명시하지 않는다면 `@DynamicPropertySource` 어노테이션으로 다음과 같은 설정을 개발자가 직접 작성해야 합니다.
 
+{% include code-header.html %}
 ```java
 class Example {
     @Container
@@ -167,6 +173,7 @@ class Example {
 
 또는 테스트용으로 사용하는 yml파일에 접속 정보를 설정해야 합니다.
 
+{% include code-header.html %}
 ```yaml
 spring:
   datasource:
@@ -179,6 +186,7 @@ spring:
 
 접속 정보는 코드를 통해서 설정이 끝났기 때문에 application-test.yml에는 JPA 관련 설정만 해줄 것입니다.
 
+{% include code-header.html %}
 ```yaml
 spring:
   jpa:
@@ -198,6 +206,7 @@ spring:
 
 인터페이스를 불러오고 간단한 저장 기능을 검증하는 테스트 코드를 작성하였습니다.
 
+{% include code-header.html %}
 ```java
 @DataJpaTest
 @Transactional
@@ -242,6 +251,7 @@ Redis, Kafka등 여러 인프라들이 함께 사용되기 시작하면 마찬�
 
 따라서 이를 추상 클래스 하나로 만들어 통합 테스트에 필요한 모든 컨테이너를 로드하고 공통된 컨텍스트에서 사용하도록 유도하면 어떨까 생각하였습니다.
 
+{% include code-header.html %}
 ```java
 @DataJpaTest
 @ImportTestcontainers(ContainersForIntegrationTest.class)
@@ -252,6 +262,7 @@ public abstract class IntegrationTestContainers {
 
 이 추상 클래스가 필요한 테스트 클래스에 `extends` 하였고, MySQL 컨테이너가 정상적으로 실행 및 테스트가 통과되는 것을 확인할 수 있었습니다.
 
+{% include code-header.html %}
 ```java
 @Transactional
 class TestContainersTest extends IntegrationTestContainers {...}

@@ -27,6 +27,7 @@ Union-Find에서는 집합에 속한 하나의 특정 멤버를 통해 각 집�
 
 - `make()`: 서로소 집합 초기화
 
+{% include code-header.html %}
 ```java
 class DisjointSet {
     private int[] parent;
@@ -52,6 +53,7 @@ class DisjointSet {
 
 - `find()`: `x`가 속한 집합 탐색 (집합 식별 -> 대표자 찾기)
 
+{% include code-header.html %}
 ```java
 class DisjointSet {
     public int find(int x) {
@@ -68,6 +70,7 @@ class DisjointSet {
 
 거쳐가는 경로 상의 모든 노드가 직접 루트(대표자)를 가리키도록 설정하여 트리의 높이를 줄이는 최적화 기법입니다.
 
+{% include code-header.html %}
 ```java
 if (a == parent[a]) {
     return a;
@@ -77,6 +80,7 @@ return parent[a] = find(parents[a]);
 
 - `union(x, y)`: `x`와 `y`의 합집합
 
+{% include code-header.html %}
 ```java
 class DisjointSet {
     public boolean union(int x, int y) {
@@ -105,6 +109,7 @@ class DisjointSet {
 
 트리의 높이를 랭크로 간주하여 높이가 낮은 쪽의 루트 노드를 높은 쪽의 루트 노드에 연결하는 방식입니다. 트리의 균형을 유지하여 높이를 최소화하기 때문에 성능 최적화를 할 수 있습니다.
 
+{% include code-header.html %}
 ```java
 if (rank[rootX] > rank[rootY]) {
     parent[rootY] = rootX;
@@ -122,6 +127,7 @@ if (rank[rootX] > rank[rootY]) {
 
 ## 전체 코드
 
+{% include code-header.html %}
 ```java
 class DisjointSet {
     private int[] parent;

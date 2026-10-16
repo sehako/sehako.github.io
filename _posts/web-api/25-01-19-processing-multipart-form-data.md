@@ -19,6 +19,7 @@ HTTP 통신 프로토콜에서 클라이언트가 파일을 보낼 때 어떻게
 
 일반적으로 클라이언트에서 파일 처리를 위해서는 `<form>` 양식에 `enctype="multipart/form-data"` 속성을 추가합니다.
 
+{% include code-header.html %}
 ```html
 <form action="/send" method="post" enctype="multipart/form-data">
   <input type="text" name="name" />
@@ -28,6 +29,7 @@ HTTP 통신 프로토콜에서 클라이언트가 파일을 보낼 때 어떻게
 
 그러면 HTTP 메시지는 다음과 같이 요청됩니다.
 
+{% include code-header.html %}
 ```
 POST /send HTTP/1.1
 Host: example.com
@@ -58,6 +60,7 @@ Content-Type: [파일의 MIME 타입]
 
 {% include code-header.html %}
 
+{% include code-header.html %}
 ```yaml
 spring:
   servlet:
@@ -72,6 +75,7 @@ spring:
 
 `multipart/form-data`는 다음과 같은 요청 형식을 사용합니다.
 
+{% include code-header.html %}
 ```
 POST /api/user-request/upload/record HTTP/1.1
 Host: localhost:8080
@@ -97,6 +101,7 @@ Content-Disposition: form-data; name="content"
 
 {% include code-header.html %}
 
+{% include code-header.html %}
 ```java
 @Setter
 @Getter
@@ -109,6 +114,7 @@ public class MultipartRequestNoRecord {
 
 {% include code-header.html %}
 
+{% include code-header.html %}
 ```java
 @PostMapping(value = "/upload/model-attribute")
 public void uploadModelAttribute(
@@ -130,6 +136,7 @@ public void uploadModelAttribute(
 
 따라서 `record`로 `multipart/form-data`의 데이터를 처리할 방법을 생각해야 합니다. 이때 `@RequestBody`는 `application/json` 형태를 기대하므로 이를 사용하면 에러가 발생합니다. 스프링은 `@RequestPart`를 사용하여 JSON 값은 리플랙션으로 처리하고 파일은 `MultipartFile`로 처리할 수 있게 하였습니다. 요청 메시지는 다음과 같습니다.
 
+{% include code-header.html %}
 ```
 POST /api/user-request/upload/record HTTP/1.1
 Host: localhost:8080
@@ -150,6 +157,7 @@ Content-Type: application/pdf
 
 {% include code-header.html %}
 
+{% include code-header.html %}
 ```java
 @PostMapping(value = "/upload/record")
 public void upload(
@@ -165,6 +173,7 @@ public void upload(
 
 {% include code-header.html %}
 
+{% include code-header.html %}
 ```js
 const jsonData = JSON.stringify({ title: title, content: content });
 const jsonBlob = new Blob([jsonData], { type: "application/json" });
@@ -183,6 +192,7 @@ formData.append("image", file); // 파일을 "image" 필드로 추가
 
 {% include code-header.html %}
 
+{% include code-header.html %}
 ```java
 @PostMapping(value = "/upload/record")
 public void upload(

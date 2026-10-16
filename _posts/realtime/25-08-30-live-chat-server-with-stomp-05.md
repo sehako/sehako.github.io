@@ -17,6 +17,7 @@ permalink: "/spring/websocket/live-chat-server-with-stomp-05/"
 
 채팅 애플리케이션을 설정부터 인증, 예외 처리, 읽음 처리까지 모두 개발하였습니다. 이제 채팅 서버를 스케일 아웃 했을 때 발생하는 문제를 살펴보도록 하겠습니다. 애플리케이션에 다음과 같은 설정을 추가하였습니다.
 
+{% include code-header.html %}
 ```yaml
 server:
 	port: 0
@@ -32,6 +33,7 @@ server:
 
 복제한 두 개의 서버 인스턴스가 랜덤 포트로 실행된 것을 확인할 수 있을 것입니다.
 
+{% include code-header.html %}
 ```
 # 1
 Tomcat started on port 49602 (http) with context path '/'
@@ -45,6 +47,7 @@ Tomcat started on port 49632 (http) with context path '/'
 
 **1번 사용자**
 
+{% include code-header.html %}
 ```
 # ws://localhost:49602/w
 
@@ -74,6 +77,7 @@ destination: /topic/chat.1
 
 **2번 사용자**
 
+{% include code-header.html %}
 ```
 # ws://localhost:49632/ws
 >>> SUBSCRIBE
@@ -124,6 +128,7 @@ destination: /user/queue/chat.log
 
 이 메서드를 호출하면 내부적으로 `AbstractMessageSendingTemplate<O>.convertAndSend()`가 호출되고 다음과 같은 코드가 동작합니다.
 
+{% include code-header.html %}
 ```java
 @Override
 public void convertAndSend(
@@ -144,6 +149,7 @@ public void send(D destination, Message<?> message) {
 
 여기서 메시지의 변환이 일어나고, 여기서 `doSend()`를 호출하면 다시 `SimpMessagingTemplate.doSend()`가 호출됩니다.
 
+{% include code-header.html %}
 ```java
 @Override
 protected void doSend(String destination, Message<?> message) {
@@ -170,6 +176,7 @@ private void sendInternal(Message<?> message) {
 
 ### AbstractMessageChannel
 
+{% include code-header.html %}
 ```java
 @Override
 public final boolean send(Message<?> message) {
@@ -186,6 +193,7 @@ public final boolean send(Message<?> message, long timeout) {
 
 이후 MessageChannel의 또 다른 구현체인 `ExecutorSubscribableChannel.sendInternal()`이 호출됩니다.
 
+{% include code-header.html %}
 ```java
 @Override
 public boolean sendInternal(Message<?> message, long timeout) {
@@ -229,6 +237,7 @@ private class SendTask implements MessageHandlingRunnable {
 
 그리고 `SendTask.run()` 에서 `AbstractBrokerMessageHandler.handleMessage()`를 호출하고,
 
+{% include code-header.html %}
 ```java
 @Override
 public void handleMessage(Message<?> message) {
@@ -246,6 +255,7 @@ public void handleMessage(Message<?> message) {
 
 ### SimpleBrokerMessageHandler
 
+{% include code-header.html %}
 ```java
 private SubscriptionRegistry subscriptionRegistry;
 private final Map<String, SessionInfo> sessions = new ConcurrentHashMap<>();
@@ -297,6 +307,7 @@ protected void sendMessageToSubscribers(@Nullable String destination, Message<?>
 
 `DefaultSubscriptionRegistry`는 `AbstractSubscriptionRegistry`를 상속하며, `AbstractSubscriptionRegistry.findSubscriptions()`를 호출하면 내부적으로 `DefaultSubscriptionRegistry.findSubscriptionsInternal()`을 호출합니다.
 
+{% include code-header.html %}
 ```java
 @Override
 protected MultiValueMap<String, String> findSubscriptionsInternal(String destination, Message<?> message) {
@@ -322,6 +333,7 @@ protected MultiValueMap<String, String> findSubscriptionsInternal(String destina
 
 더 깊게 들어가면 머리가 아파질 질 것 같으니 여기서 멈추도록 하자… 아무튼 여기서는 내부 정적 불변 클래스인 `SessionRegistry`를 사용하고, 드디어 여기서 `ConcurrentHashMap` 으로 각 세션 ID가 가지는 구독 정보를 관리하는 것을 알 수 있습니다.
 
+{% include code-header.html %}
 ```java
 private static final class SessionRegistry {
 
@@ -371,12 +383,14 @@ private static final class SessionRegistry {
 
 **Redis**
 
+{% include code-header.html %}
 ```bash
 docker run -d --name redis-broker -p 6379:6379 redis:latest
 ```
 
 **RabbitMQ**
 
+{% include code-header.html %}
 ```bash
 docker run -d \
   --name rabbitmq \
@@ -388,12 +402,14 @@ docker run -d \
   rabbitmq:3-management
 ```
 
+{% include code-header.html %}
 ```bash
 docker exec -it rabbitmq rabbitmq-plugins enable rabbitmq_stomp
 ```
 
 **Kafka**
 
+{% include code-header.html %}
 ```bash
 docker run -d --name=kafka -p 9092:9092 \
   -e KAFKA_PROCESS_ROLES=broker,controller \
@@ -414,12 +430,14 @@ docker run -d --name=kafka -p 9092:9092 \
 
 **build.gradle**
 
+{% include code-header.html %}
 ```groovy
 implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 ```
 
 **application.yml**
 
+{% include code-header.html %}
 ```yaml
 spring:
   data:
@@ -430,6 +448,7 @@ spring:
 
 ### Redis Config
 
+{% include code-header.html %}
 ```java
 @Configuration
 @RequiredArgsConstructor
@@ -475,6 +494,7 @@ public class RedisConfig {
 
 ### RedisSubscriber
 
+{% include code-header.html %}
 ```java
 @Service
 @RequiredArgsConstructor
@@ -515,6 +535,7 @@ chatGPT에게 질문하여 다음과 같은 상황에서는 `SimpMessagingTempla
 
 서비스에서는 컨트롤러에서 전달받은 메시지를 `RedisTemplate.converAndSend()`에 문자열 형식으로 객체를 변환하여 전달하면 됩니다.
 
+{% include code-header.html %}
 ```java
 @Service
 @Transactional
@@ -554,6 +575,7 @@ public class ChatService {
 
 이때 컨트롤러에서 브로드캐스트를 처리하지 않기 때문에 메시지 객체에 채팅방 ID가 존재해야 합니다. 따라서 응답 객체를 다음과 같이 수정하였습니다.
 
+{% include code-header.html %}
 ```java
 public record MessageResponse(
         Long id,
@@ -574,6 +596,7 @@ public record MessageResponse(
 
 컨트롤러에서는 단순히 요청받은 객체를 DTO로 변환하여 서비스에 전달하면 됩니다.
 
+{% include code-header.html %}
 ```java
 @Slf4j
 @Controller
@@ -599,6 +622,7 @@ RabbitMQ를 사용하기 위해서는 다음 의존성과 설정이 필요합니
 
 **build.gradle**
 
+{% include code-header.html %}
 ```groovy
 implementation 'org.springframework.boot:spring-boot-starter-amqp'
 implementation 'io.projectreactor.netty:reactor-netty'
@@ -606,6 +630,7 @@ implementation 'io.projectreactor.netty:reactor-netty'
 
 **application.yml**
 
+{% include code-header.html %}
 ```yaml
 spring:
   rabbitmq:
@@ -618,6 +643,7 @@ spring:
 
 ### StompConfig
 
+{% include code-header.html %}
 ```java
 @Configuration
 @EnableWebSocketMessageBroker
@@ -666,6 +692,7 @@ public class StompConfig implements WebSocketMessageBrokerConfigurer {
 
 이렇게 설정만 하면 애플리케이션에서는 `SimpMessageSendingOperations`나 `SimpMessagingTemplate`를 활용해서 메시지를 처리하면 됩니다.
 
+{% include code-header.html %}
 ```java
 @Service
 @Transactional
@@ -700,12 +727,14 @@ Kafka는 RabbitMQ와는 다르게 STOMP 설정에서 브로커를 선택하지 �
 
 **build.gradle**
 
+{% include code-header.html %}
 ```groovy
 implementation 'org.springframework.kafka:spring-kafka:3.3.9'
 ```
 
 **application.yml**
 
+{% include code-header.html %}
 ```yaml
 spring:
   kafka:
@@ -716,6 +745,7 @@ spring:
 
 ### StompConfig
 
+{% include code-header.html %}
 ```groovy
 @Configuration
 @EnableWebSocketMessageBroker
@@ -742,6 +772,7 @@ public class StompConfig implements WebSocketMessageBrokerConfigurer {
 
 Kafka의 특정 토픽에 메시지를 발행하기 위해서 사용하는 `KafkaTemplate`를 설정하는 코드를 작성하겠습니다.
 
+{% include code-header.html %}
 ```java
 @Configuration
 public class KafkaProducerConfig {
@@ -768,6 +799,7 @@ public class KafkaProducerConfig {
 
 ### KafkaConsumerConfig
 
+{% include code-header.html %}
 ```java
 @EnableKafka
 @Configuration
@@ -819,6 +851,7 @@ public class KafkaConsumerConfig {
 
 ### 서비스
 
+{% include code-header.html %}
 ```java
 @Service
 @Transactional
@@ -864,6 +897,7 @@ public class ChatService {
 
 3개의 외부 브로커를 활용하는 방법을 각각 알아봤습니다. 이제 테스트를 진행해보겠습니다.
 
+{% include code-header.html %}
 ```
 # ws://localhost:54698/ws
 
@@ -873,6 +907,7 @@ content-length:36
 {"userId": "2", "message": "Hello?"}
 ```
 
+{% include code-header.html %}
 ```
 # ws://localhost:54697/ws
 >>> SUBSCRIBE

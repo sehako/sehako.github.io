@@ -105,6 +105,7 @@ permalink: "/note/wooteco-precourse-review-week-1/"
 
 저는 하나의 테스트 케이스에서 두 개의 입력을 검증할 때 다음과 같이 처리했습니다.
 
+{% include code-header.html %}
 ```java
 @Test
 @DisplayName("사용자가 아무런 수식을 입력하지 않거나 공백만 입력하면 계산 결과가 0이 된다.")
@@ -122,6 +123,7 @@ public void blankExpressionTest() {
 
 저는 코드를 어느정도 작성하다가 이 부분에 대한 리팩토링을 하고 싶으면 AI와 함께 대화를 나누면서 처리하곤 했습니다. 하지만 이번 과제에서 문제가 드러났습니다.
 
+{% include code-header.html %}
 ```java
 public int calculate(String input) {
     String[] numbers = delimiterParser.parse(input);
@@ -145,6 +147,7 @@ public int calculate(String input) {
 
 여러 given이 존재하면 `@ParameterizedTest`를 활용합니다.
 
+{% include code-header.html %}
 ```java
 @ParameterizedTest
 @DisplayName("사용자가 아무런 수식을 입력하지 않거나 공백만 입력하면 계산 결과가 0이 된다.")

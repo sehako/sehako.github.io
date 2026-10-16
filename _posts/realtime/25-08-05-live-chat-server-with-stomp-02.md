@@ -39,6 +39,7 @@ JWT 인증 기반의 애플리케이션이라면 이야기가 조금 달라집�
 
 공식 문서에 나온 `ChannelInterceptor` 코드는 다음과 같습니다.
 
+{% include code-header.html %}
 ```java
 @Configuration
 @EnableWebSocketMessageBroker
@@ -62,6 +63,7 @@ public class WebSocketConfiguration implements WebSocketMessageBrokerConfigurer 
 
 `WebSocketMessageBrokerConfigurer` 인터페이스를 구현한 것을 볼 수 있습니다. 앞서 `StompConfig` 역시 해당 인터페이스를 구현하였으므로 저는 다음과 같이 코드를 작성하였습니다.
 
+{% include code-header.html %}
 ```java
 @Slf4j
 @Configuration
@@ -88,6 +90,7 @@ public class StompConfig implements WebSocketMessageBrokerConfigurer {
 
 `StompHeaderAccessor` 객체를 확인하기 위해서 로그를 작성해봤습니다. 서버에 연결하여 로그를 확인해보도록 하겠습니다.
 
+{% include code-header.html %}
 ```
 $ _INFO_:Connect STOMP server success,
 url = ws://localhost:8080/ws, connectHeader = {"Authorization": "TOKEN"}
@@ -95,6 +98,7 @@ url = ws://localhost:8080/ws, connectHeader = {"Authorization": "TOKEN"}
 
 `connectHeader`에서 JSON의 키-값 구조로 토큰을 보냈다는 것을 확인할 수 있습니다. 애플리케이션에서는 다음과 같은 로그를 출력하였습니다.
 
+{% include code-header.html %}
 ```
 accessor: StompHeaderAccessor
 [headers={simpMessageType=CONNECT, stompCommand=CONNECT,
@@ -105,6 +109,7 @@ simpHeartbeat=[J@566f4bc8, simpSessionId=26f313e8-87b7-e0b0-04cf-765c038e6067}]
 
 `nativeHeaders`에 클라이언트가 전달한 토큰이 존재한다는 것을 확인할 수 있습니다. 이는 `getNativeHeader(String headerName)` 를 이용하여 조회할 수 있습니다. 따라서 다음과 같이 인증 절차를 완성하도록 하겠습니다.
 
+{% include code-header.html %}
 ```java
 @Override
 public void configureClientInboundChannel(ChannelRegistration registration) {
@@ -135,6 +140,7 @@ private String getToken(StompHeaderAccessor accessor) {
 
 우선 EXAMPLE_TOKEN을 전달하면 정상적으로 연결이 진행되는 것을 확인할 수 있었습니다.
 
+{% include code-header.html %}
 ```java
 $ _INFO_:Connect STOMP server success,
 url = ws://localhost:8080/ws, connectHeader = {"Authorization": "EXAMPLE_TOKEN"}
@@ -142,6 +148,7 @@ url = ws://localhost:8080/ws, connectHeader = {"Authorization": "EXAMPLE_TOKEN"}
 
 하지만 그 외에 토큰을 전달하지 않거나 잘못된 토큰을 전달하면 애플리케이션에서 에러가 발생하여 제대로 연결이 되지 않고 다음과 같은 로그가 출력되는 것을 확인하였습니다.
 
+{% include code-header.html %}
 ```java
 토큰 검증 과정에서 문제 발생
 ```
@@ -150,6 +157,7 @@ url = ws://localhost:8080/ws, connectHeader = {"Authorization": "EXAMPLE_TOKEN"}
 
 다음 코드를 살펴보도록 하겠습니다.
 
+{% include code-header.html %}
 ```java
 if (token == null || !"EXAMPLE_TOKEN".equals(token)) {
     log.info("토큰 검증 과정에서 문제 발생");
@@ -163,6 +171,7 @@ if (token == null || !"EXAMPLE_TOKEN".equals(token)) {
 
 단순하게 `MessageDeliveryException` 예외 클래스를 던지면 클라이언트에서 토큰 인증이 처리되지 않았다는 것을 확인할 수 있습니다.
 
+{% include code-header.html %}
 ```java
 if (token == null || !"EXAMPLE_TOKEN".equals(token)) {
     log.info("토큰 검증 과정에서 문제 발생");
@@ -172,6 +181,7 @@ if (token == null || !"EXAMPLE_TOKEN".equals(token)) {
 
 이러면 다음과 같은 STOMP ERROR 프레임이 클라이언트에게 전송됩니다.
 
+{% include code-header.html %}
 ```
 <<< ERROR
 message:UNAUTHORIZED
@@ -184,6 +194,7 @@ content-length:0
 
 다음 예외를 던져봤습니다.
 
+{% include code-header.html %}
 ```java
 public class AuthenticationFailedException extends RuntimeException {
     public AuthenticationFailedException(String message) {
@@ -192,6 +203,7 @@ public class AuthenticationFailedException extends RuntimeException {
 }
 ```
 
+{% include code-header.html %}
 ```java
 if (token == null || !"EXAMPLE_TOKEN".equals(token)) {
     throw new AuthenticationFailedException("UNAUTHORIZED");
@@ -200,6 +212,7 @@ if (token == null || !"EXAMPLE_TOKEN".equals(token)) {
 
 이를 `Throwable.getCause()`를 통해 다음과 같이 예외 발생 시 상황에 맞는 오류 메시지를 클라이언트에게 전달할 수 있습니다.
 
+{% include code-header.html %}
 ```java
 public class StompErrorHandler extends StompSubProtocolErrorHandler {
 
@@ -226,6 +239,7 @@ public class StompErrorHandler extends StompSubProtocolErrorHandler {
 
 이후 `StompConfig`에 다음과 같이 작성한 `StompErrorHandler`를 등록하였습니다.
 
+{% include code-header.html %}
 ```java
 @Slf4j
 @Configuration
@@ -246,6 +260,7 @@ public class StompConfig implements WebSocketMessageBrokerConfigurer {
 
 이제 잘못된 토큰으로 연결을 시도하면 다음과 같은 에러 메시지가 반환되는 것을 확인할 수 있습니다.
 
+{% include code-header.html %}
 ```
 <<< ERROR
 message:토큰 인증에 실패했습니다.
@@ -262,6 +277,7 @@ content-length:36
 
 따라서 스프링 시큐리티를 사용하는 경우에 `StompConfig`에 다음 어노테이션을 선언하도록 하겠습니다.
 
+{% include code-header.html %}
 ```java
 @Slf4j
 @Configuration

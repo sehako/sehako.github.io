@@ -61,6 +61,7 @@ N개의 도시가 있습니다. 그리고 한 도시에서 출발하여 다른 �
 
 입력값에 따라서 그래프를 구성해야 합니다. 간선에 대한 정보는 간단하게 2차원 배열을 통해 구현할 것입니다. 주어진 M값에 따른 M크기의 2차원 배열에는 3개의 요소가 저장되는데, 0번 인덱스부터 순서대로 출발지, 도착지, 소요 시간을 저장할 것입니다.
 
+{% include code-header.html %}
 ```java
 public static void main(String[] args) throws IOException {
 	BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -97,6 +98,7 @@ private static int stoi(String number) {
 
 벨만-포드 알고리즘을 구현할 차례입니다.
 
+{% include code-header.html %}
 ```java
 private static long[] getDist(int N, int M, int start, int[][] graph) {
 	// 모든 정점의 최단 거리를 구하기 위한 배열 생성
@@ -150,6 +152,7 @@ private static long[] getDist(int N, int M, int start, int[][] graph) {
 
 메서드의 결과에 따라서 -1을 출력하거나, 출발지인 1번 정점을 제외한 나머지 정점의 최단 경로를 출력하도록 하겠습니다.
 
+{% include code-header.html %}
 ```java
 StringBuilder sb = new StringBuilder();
 long[] result = getDist(N, M, 1, graph);
@@ -169,6 +172,7 @@ System.out.println(sb);
 
 전체 코드는 다음과 같습니다.
 
+{% include code-header.html %}
 ```java
 import java.util.*;
 import java.io.*;

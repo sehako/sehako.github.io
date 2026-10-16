@@ -43,6 +43,7 @@ permalink: "/spring/saving-uploaded-file/"
 
 {% include code-header.html %}
 
+{% include code-header.html %}
 ```yaml
 spring:
   application:
@@ -59,6 +60,7 @@ spring:
 
 {% include code-header.html %}
 
+{% include code-header.html %}
 ```java
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
@@ -81,6 +83,7 @@ public class WebConfig implements WebMvcConfigurer {
 
 {% include code-header.html %}
 
+{% include code-header.html %}
 ```java
 @RestController
 @RequiredArgsConstructor
@@ -104,6 +107,7 @@ public class RequestController {
 
 {% include code-header.html %}
 
+{% include code-header.html %}
 ```java
 @Service
 public class FileService {
@@ -156,6 +160,7 @@ public class FileService {
 
 그리고 버킷 정책을 다음과 같이 작성하겠습니다.
 
+{% include code-header.html %}
 ```json
 {
   "Version": "2012-10-17",
@@ -191,6 +196,7 @@ public class FileService {
 
 이제 스프링부트에서 AWS S3에 접근할 수 있도록 설정해주겠습니다. 다음 의존성이 필요합니다.
 
+{% include code-header.html %}
 ```groovy
 implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
 ```
@@ -199,6 +205,7 @@ implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE
 
 {% include code-header.html %}
 
+{% include code-header.html %}
 ```yaml
 cloud:
   aws:
@@ -219,6 +226,7 @@ S3에 접근하기 위해서는 `AmazonS3` 스프링 빈을 생성해야 합니�
 
 {% include code-header.html %}
 
+{% include code-header.html %}
 ```java
 @Configuration
 public class S3Config {
@@ -250,6 +258,7 @@ public class S3Config {
 
 {% include code-header.html %}
 
+{% include code-header.html %}
 ```java
 @RestController
 @RequiredArgsConstructor
@@ -271,6 +280,7 @@ public class RequestController {
 
 {% include code-header.html %}
 
+{% include code-header.html %}
 ```java
 @Slf4j
 @Service

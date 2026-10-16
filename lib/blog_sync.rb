@@ -101,6 +101,7 @@ module BlogSync
         permalink = legacy_urls[stem] || "/#{slug}/#{post_slug(stem)}/"
         transformed = transform_asset_references(raw, name, slug, stem)
         transformed = transform_internal_links(transformed)
+        transformed = add_code_headers(transformed)
         transformed = normalize_trailing_whitespace(transformed)
         files["_posts/#{slug}/#{post.basename}"] = with_permalink(transformed, permalink)
 
@@ -149,6 +150,27 @@ module BlogSync
 
         "/assets/images/#{category_slug}/#{stem}/#{relative}"
       end
+    end
+
+    CODE_HEADER = "{% include code-header.html %}"
+    FENCE = /\A(`{3,}|~{3,})/
+
+    # Adds the copy-button include before every top-level fenced code block.
+    def add_code_headers(raw)
+      fence = nil
+      previous = nil
+      raw.each_line.map do |line|
+        original = line
+        marker = line[FENCE, 1]
+        if fence.nil? && marker
+          fence = marker
+          line = "#{CODE_HEADER}\n#{line}" unless previous&.strip == CODE_HEADER
+        elsif fence && marker && marker[0] == fence[0] && marker.length >= fence.length && line.strip == marker
+          fence = nil
+        end
+        previous = original
+        line
+      end.join
     end
 
     def normalize_trailing_whitespace(raw)

@@ -21,6 +21,7 @@ permalink: "/spring batch/large-scale-data-processing-spring-scheduler-risks/"
 
 데이터베이스는 MySQL을 도커 환경에서 활용할 것이기 때문에 다음 도커 명령어로 MySQL 컨테이너를 실행하도록 하겠습니다.
 
+{% include code-header.html %}
 ```bash
 docker run --name mysql-batch -e MYSQL_ROOT_PASSWORD=1234 -d -p 3306:3306 mysql:latest
 
@@ -28,6 +29,7 @@ docker run --name mysql-batch -e MYSQL_ROOT_PASSWORD=1234 -d -p 3306:3306 mysql:
 
 스프링 배치로 리팩토링 하기 전에 테이블 구조를 조금 변경할 필요가 있습니다. 기존의 테이블 구조는 다음과 같았습니다.
 
+{% include code-header.html %}
 ```sql
 
 DROP TABLE IF EXISTS `member`;
@@ -117,6 +119,7 @@ CREATE TABLE `history`
 
 즉, `management` 테이블을 적절하게 수정한다면 해당 테이블과 `history` 테이블만 활용하여 배치 작업을 처리할 수 있습니다. 따라서 `member`와 `information` 테이블을 없애고 필요한 두 개의 테이블만 사용하기 위해 컬럼을 추가 및 삭제하여 다음과 같이 테이블을 간소화 하였습니다.
 
+{% include code-header.html %}
 ```sql
 CREATE DATABASE IF NOT EXISTS batch;
 
@@ -171,6 +174,7 @@ CREATE TABLE `history`
 
 100만 건의 데이터를 대상으로 한 번 Spring Scheduler의 문제점을 파악해보도록 하겠습니다. 다음 쿼리를 실행하도록 하겠습니다.
 
+{% include code-header.html %}
 ```sql
 CREATE TABLE IF NOT EXISTS digits (d TINYINT UNSIGNED PRIMARY KEY);
 
@@ -219,6 +223,7 @@ LIMIT 1000000;
 
 **build.gradle**
 
+{% include code-header.html %}
 ```groovy
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
@@ -234,6 +239,7 @@ dependencies {
 
 **application.yml**
 
+{% include code-header.html %}
 ```yaml
 spring:
   application:
@@ -249,6 +255,7 @@ spring:
 
 기존 기능인 Spring Scheduler를 통한 데이터 처리 작업을 먼저 알아보기 위해서 메인 클래스에 `@EnableScheduling`이라는 어노테이션을 명시하였습니다.
 
+{% include code-header.html %}
 ```java
 @EnableScheduling
 @SpringBootApplication
@@ -262,6 +269,7 @@ public class SpringBatchApplication {
 
 ## 엔티티 작성
 
+{% include code-header.html %}
 ```java
 @Entity
 @Getter
@@ -318,6 +326,7 @@ public class History extends BaseEntity {
 }
 ```
 
+{% include code-header.html %}
 ```java
 @Entity
 @Getter
@@ -365,12 +374,14 @@ public class Management extends BaseEntity {
 
 ## 레포지토리 작성
 
+{% include code-header.html %}
 ```java
 @Repository
 public interface HistoryRepository extends JpaRepository<History, Long> {
 }
 ```
 
+{% include code-header.html %}
 ```java
 @Repository
 public interface ManagementRepository extends JpaRepository<Management, Long> {
@@ -384,6 +395,7 @@ public interface ManagementRepository extends JpaRepository<Management, Long> {
 
 메모리 사용량과 실행 시간을 간단하게 확인하기 위해서 다음과 같은 클래스를 작성하였습니다.
 
+{% include code-header.html %}
 ```java
 import lombok.extern.slf4j.Slf4j;
 
@@ -425,6 +437,7 @@ public class ExecutionMonitor {
 
 이제 제가 구현했던 과거의 기능이 어떤 치명적인 문제를 가지고 있는 지 살펴보도록 하겠습니다. 이를 위해서 `@Scheduled`의 실행 시간을 매 1분마다 실행되도록 설정하고, 제가 구현했던 기능과 유사하게 다음 데이터 처리 코드를 작성하였습니다.
 
+{% include code-header.html %}
 ```java
 @Component
 @RequiredArgsConstructor
@@ -475,6 +488,7 @@ public class HistoryScheduler {
 
 마지막으로 테이블에서 전체 데이터를 조회하고 한 번에 저장하기 때문에 많은 시간이 소요될 것으로 보입니다. 그렇다면 실제로 이러한 단점이 존재하는 지 확인해보도록 하겠습니다. 다음은 해당 스케줄러 실행 결과입니다.
 
+{% include code-header.html %}
 ```
 [스케줄러 시작] Memory Used: 50 MB / Max: 4022 MB (1.243 %)
 [현재 메모리 사용량] Memory Used: 1290 MB / Max: 4022 MB (32.073 %)
@@ -488,6 +502,7 @@ public class HistoryScheduler {
 
 그렇다면 현재 구조에서 이러한 비효율을 개선해볼 수 있지 않을까요? 가장 문제되는 것은 전체 테이블을 조회하는 쿼리입니다. 그렇다면 단순하게 이 부분을 최대 1000건의 커서 기반 페이지네이션으로 변경해보겠습니다.
 
+{% include code-header.html %}
 ```java
 @Repository
 public interface ManagementRepository extends JpaRepository<Management, Long> {
@@ -502,6 +517,7 @@ public interface ManagementRepository extends JpaRepository<Management, Long> {
 
 여기에 맞춰서 데이터 처리 작업도 `while`로 데이터가 빌 때 까지 반복하도록 처리하는 것입니다. 그러면 적어도 메모리 최적화는 가능할 것으로 보입니다. 이 과정에서 `EntityManager`로 `history` 테이블에 INSERT를 할 때마다 영속성 컨텍스트를 비워 메모리 누적을 방지하도록 해봤습니다.
 
+{% include code-header.html %}
 ```java
 @Component
 @RequiredArgsConstructor
@@ -543,6 +559,7 @@ public class HistoryScheduler {
 
 그리고 **application.yml**에서 다음과 같이 JPA 관련 설정을 작성하겠습니다.
 
+{% include code-header.html %}
 ```yaml
 spring:
   jpa:
@@ -556,6 +573,7 @@ spring:
 
 이제 애플리케이션을 실행시켜 실제로 메모리 점유를 개선할 수 있는지 확인해보겠습니다.
 
+{% include code-header.html %}
 ```
 [스케줄러 시작] Memory Used: 49 MB / Max: 4022 MB (1.218 %)
 [현재 메모리 사용량 [id: 1000, count: 0]] Memory Used: 73 MB / Max: 4022 MB (1.815 %)

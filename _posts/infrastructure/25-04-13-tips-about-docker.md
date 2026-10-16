@@ -25,6 +25,7 @@ permalink: "/infrastructure/tips-about-docker/"
 
 그렇게 찾아보던 도중에 도커 파일에 인자를 전달할 수 있다는 사실을 알게되었습니다. 이를 통해서 하나의 도커 파일로 여러 jar 파일을 도커 이미지로 만들 수 있게 되었습니다.
 
+{% include code-header.html %}
 ```docker
 FROM openjdk:17-jdk
 
@@ -45,6 +46,7 @@ ENTRYPOINT ["java", "-jar", "/app.jar"]
 
 {% include code-header.html %}
 
+{% include code-header.html %}
 ```yaml
 services:
   spring-auth:
@@ -78,6 +80,7 @@ services:
 
 {% include code-header.html %}
 
+{% include code-header.html %}
 ```bash
 docker-compose -f docker-compose.mq.yml up -d
 ```
@@ -88,6 +91,7 @@ docker-compose -f docker-compose.mq.yml up -d
 
 {% include code-header.html %}
 
+{% include code-header.html %}
 ```bash
 docker network create compose-network
 ```
@@ -96,6 +100,7 @@ docker network create compose-network
 
 {% include code-header.html %}
 
+{% include code-header.html %}
 ```yaml
 networks:
   compose-network:
@@ -108,6 +113,7 @@ networks:
 
 {% include code-header.html %}
 
+{% include code-header.html %}
 ```yaml
 services:
   spring-eureka:

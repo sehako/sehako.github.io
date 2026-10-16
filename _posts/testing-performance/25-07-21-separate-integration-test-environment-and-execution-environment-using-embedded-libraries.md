@@ -29,6 +29,7 @@ permalink: "/spring/test/separate-integration-test-environment-and-execution-env
 
 애플리케이션 개발을 위해서 RDBMS, Redis, MongoDB, Kafka를 활용한다고 가정하고 초기 라이브러리는 다음과 같이 설정하였습니다.
 
+{% include code-header.html %}
 ```groovy
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
@@ -47,6 +48,7 @@ dependencies {
 
 H2를 테스트 목적의 데이터베이스로 활용하여 테스트를 진행해보도록 하겠습니다. 다음과 같은 H2 라이브러리를 사용하도록 하겠습니다.
 
+{% include code-header.html %}
 ```groovy
 testImplementation 'com.h2database:h2'
 
@@ -58,6 +60,7 @@ testImplementation 'com.h2database:h2'
 
 그리고 테스트를 진행할 때 test라는 프로필을 활용하여 테스트를 진행할 것입니다. 따라서 application-test.yml이라는 파일을 하나 생성하고, 다음과 같이 작성하였습니다.
 
+{% include code-header.html %}
 ```yaml
 spring:
   application:
@@ -79,6 +82,7 @@ spring:
 
 테스트를 위해 다음과 같은 엔티티와 레포지토리를 만들었습니다.
 
+{% include code-header.html %}
 ```java
 @Entity
 @Getter
@@ -103,6 +107,7 @@ public class Member {
 
 ```
 
+{% include code-header.html %}
 ```java
 @Repository
 public interface MemberRepository extends JpaRepository<Member, Integer> {
@@ -114,6 +119,7 @@ public interface MemberRepository extends JpaRepository<Member, Integer> {
 
 이제 테스트 코드를 작성해서 제대로 테스트가 이루어지는지 살펴보도록 하겠습니다.
 
+{% include code-header.html %}
 ```java
 @SpringBootTest
 @Transactional
@@ -157,6 +163,7 @@ class MemberRepositoryTest {
 
 레디스를 테스트하기 위해서 다음 라이브러리를 불러오도록 하겠습니다.
 
+{% include code-header.html %}
 ```groovy
 implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 testImplementation 'com.github.codemonstur:embedded-redis:1.4.3'
@@ -173,6 +180,7 @@ testImplementation 'com.github.codemonstur:embedded-redis:1.4.3'
 
 application-test.yml 파일에 다음과 같은 설정 정보를 추가하였습니다.
 
+{% include code-header.html %}
 ```yaml
 spring:
   data:
@@ -189,6 +197,7 @@ spring:
 
 레디스를 세션으로 활용하여 사용자 이름을 키로, 사용자 닉네임을 값으로 하여 레디스에 저장한다고 가정하였습니다.
 
+{% include code-header.html %}
 ```java
 @Component
 @RequiredArgsConstructor
@@ -212,6 +221,7 @@ public class SessionManager {
 
 임베디드 레디스를 사용하기 위해서는 테스트 환경에서만 컨텍스트에 로드되도록 하는 @TestConfiguration을 활용하여 다음과 같이 코드를 작성해야 합니다. 여기서 중요한 것이 해당 파일의 위치는 src/main이 아닌 src/test라는 것입니다. 이 점에 유의하도록 하겠습니다.
 
+{% include code-header.html %}
 ```java
 @TestConfiguration
 public class RedisTestConfiguration {
@@ -237,6 +247,7 @@ public class RedisTestConfiguration {
 
 테스트 코드는 다음과 같이 작성하였고, 통과되는 것을 확인하였습니다.
 
+{% include code-header.html %}
 ```java
 @ActiveProfiles("test")
 @SpringBootTest(classes = { RedisTestConfiguration.class })
@@ -273,6 +284,7 @@ class SessionManagerTest {
 
 MongoDB 테스트 또한 간단합니다. 다음 라이브러리를 활용하여 진행됩니다.
 
+{% include code-header.html %}
 ```groovy
 testImplementation 'de.flapdoodle.embed:de.flapdoodle.embed.mongo.spring3x:4.20.0'
 implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
@@ -285,6 +297,7 @@ implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
 
 사용자가 게시판에 3개의 글을 작성했다고 가정하고 다음과 같은 도큐먼트를 생성하였습니다.
 
+{% include code-header.html %}
 ```java
 @Document
 @Getter
@@ -311,6 +324,7 @@ public class Article {
 
 테스트 코드 작성을 할 때는 `@SpringBootTest`의 `properties` 속성에다 임베디드 MongoDB의 버전을 명시해줘야 합니다.
 
+{% include code-header.html %}
 ```java
 @ActiveProfiles("test")
 @SpringBootTest(properties = "de.flapdoodle.mongodb.embedded.version=5.0.5")
@@ -362,6 +376,7 @@ class ArticleTest {
 
 마지막으로 카프카를 분리해보도록 하겠습니다. 다음 라이브러리들을 불러올 것입니다.
 
+{% include code-header.html %}
 ```groovy
 implementation 'org.springframework.kafka:spring-kafka'
 testImplementation 'org.springframework.kafka:spring-kafka-test'
@@ -375,6 +390,7 @@ spring-kafka-test는 임베디드 카프카를 지원하는 라이브러리입�
 
 비즈니스 로직을 작성하기 전에 카프카의 생산자와 소비자를 설정하는 설정 클래스를 먼저 작성하도록 하겠습니다. 사용자 번호와 메시지를 받는 간단한 DTO가 사용될 것입니다.
 
+{% include code-header.html %}
 ```java
 public record ChatMessage(
         int userId,
@@ -385,6 +401,7 @@ public record ChatMessage(
 
 위 객체를 사용하는 생산자와 소비자를 다음과 같이 설정하였습니다.
 
+{% include code-header.html %}
 ```java
 @Configuration
 public class KafkaProducerConfig {
@@ -412,6 +429,7 @@ public class KafkaProducerConfig {
 }
 ```
 
+{% include code-header.html %}
 ```java
 @EnableKafka
 @Configuration
@@ -451,6 +469,7 @@ public class KafkaConsumerConfig {
 
 사용자가 채팅을 보낸다고 가정하고 비즈니스 로직을 작성하였습니다.
 
+{% include code-header.html %}
 ```java
 @Component
 @RequiredArgsConstructor
@@ -467,6 +486,7 @@ public class ChatProducer {
 
 테스트 코드 작성 이전에 application-test.yml파일에 다음 설정을 추가하도록 하겠습니다.
 
+{% include code-header.html %}
 ```yaml
 kafka:
   topic: chat-test
@@ -476,6 +496,7 @@ kafka:
 
 테스트를 위한 컨슈머 설정을 위해서 카프카 테스트를 다룬 공식문서와 GPT의 도움을 받아서 작성하였습니다.
 
+{% include code-header.html %}
 ```java
 @ActiveProfiles("test")
 @SpringBootTest(properties = "de.flapdoodle.mongodb.embedded.version=5.0.5")
@@ -549,6 +570,7 @@ class ChatProducerTest {
 
 만약 토픽에 메시지를 발행하는 것 뿐 아니라 메시지가 컨슈머에 의해 제대로 소비되었는 지 확인하고자 한다면 AOP와 `CountDownLatch` 를 활용하여 다음과 같은 테스트 코드를 작성하면 됩니다. 다음 비즈니스 로직을 검증한다고 가정할 것입니다.
 
+{% include code-header.html %}
 ```java
 @Slf4j
 @Component
@@ -566,6 +588,7 @@ public class ChatConsumer {
 
 해당 컴포넌트에 대한 AOP 설정 코드는 다음과 같습니다.
 
+{% include code-header.html %}
 ```java
 @Aspect
 public class ListenerInvocationAspect {
@@ -584,6 +607,7 @@ public class ListenerInvocationAspect {
 }
 ```
 
+{% include code-header.html %}
 ```java
 @TestConfiguration
 @EnableAspectJAutoProxy
@@ -597,6 +621,7 @@ public class ChatConsumerTestConfig {
 
 테스트 코드는 다음과 같습니다.
 
+{% include code-header.html %}
 ```java
 @ActiveProfiles("test")
 @SpringBootTest(properties = "de.flapdoodle.mongodb.embedded.version=5.0.5")
@@ -639,6 +664,7 @@ AOP를 사용한 이유는 제가 참고한 블로그에서는 컨슈머 코드�
 
 이를 위해 차라리 통합 테스트 환경을 하나의 추상 클래스로 통일하여 테스트를 진행하여 컨텍스트 초기화 주기를 줄이고, 다른 요소 때문에 테스트가 실패하는 상황을 없애는 것이 낫다고 생각하게 되었습니다. 따라서 다음과 같은 추상 클래스를 정의하였습니다.
 
+{% include code-header.html %}
 ```java
 @ActiveProfiles("test")
 @SpringBootTest(
@@ -654,6 +680,7 @@ public abstract class IntegrationTestEnvironment {
 
 참고로 `TestApplication.class` 는 현재 이 블로그를 진행하기 위해서 만든 프로젝트의 메인 클래스입니다.
 
+{% include code-header.html %}
 ```java
 @SpringBootApplication
 public class TestApplication {
@@ -667,6 +694,7 @@ public class TestApplication {
 
 이렇게 통합한 환경을 상속받고, 세부 클래스에서 각각 별도로 필요한 설정을 하는 식으로 하면 어떨까 생각합니다.
 
+{% include code-header.html %}
 ```java
 @DirtiesContext
 class ChatProducerTest extends IntegrationTestEnvironment {...}

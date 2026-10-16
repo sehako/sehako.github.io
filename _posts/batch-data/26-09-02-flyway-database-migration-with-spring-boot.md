@@ -21,6 +21,7 @@ permalink: "/spring/flyway-database-migration-with-spring-boot/"
 
 Flyway에서는 일반적으로 테이블 생성, 컬럼 추가, 인덱스 추가, 초기 데이터 삽입 같은 DB 변경을 SQL 마이그레이션 파일로 관리합니다.
 
+{% include code-header.html %}
 ```
 src/main/resources/db/migration
  ├── V1__create_member_table.sql
@@ -34,6 +35,7 @@ src/main/resources/db/migration
 
 로컬 환경, 개발 환경, 운영 환경 등 여러 환경의 DB의 현재 상태는 다를 수 있습니다.
 
+{% include code-header.html %}
 ```
 local:   V1, V2, V3 적용됨
 dev:     V1, V2 적용됨
@@ -65,6 +67,7 @@ Flyway는 `flyway_schema_history`를 통해 이미 적용된 Versioned Migration
 
 Spring Boot 에서 Flyway 모듈을 classpath에 추가하면 애플리케이션 시작 시 마이그레이션을 자동 실행할 수 있습니다. 기본 마이그레이션 경로는 다음과 같습니다.
 
+{% include code-header.html %}
 ```
 src/main/resources/db/migration
 ```
@@ -100,6 +103,7 @@ Flyway가 마이그레이션 파일과 `flyway_schema_history`를 비교하여 �
 
 마이그레이션 파일 이름은 다음 규칙을 가지고 있습니다.
 
+{% include code-header.html %}
 ```
 V<버전>__<설명>.sql
 R__<설명>.sql
@@ -119,6 +123,7 @@ R__refresh_member_summary_view.sql
 
 Flyway를 사용하려면 Flyway 의존성과 사용하는 DB에 필요한 Flyway DB 전용 모듈을 추가합니다. PostgreSQL, MySQL 등의 JDBC Driver는 애플리케이션의 DB 연결을 위해 별도로 필요합니다.
 
+{% include code-header.html %}
 ```kotlin
 dependencies {
   implementation("org.flywaydb:flyway-core")
@@ -128,6 +133,7 @@ dependencies {
 
 참고로 Spring Boot 4 이상 부터는 spring-boot-starter-flyway를 사용해야 합니다.
 
+{% include code-header.html %}
 ```kotlin
 implementation("org.springframework.boot:spring-boot-starter-flyway")
 runtimeOnly("org.flywaydb:flyway-database-postgresql")
@@ -135,6 +141,7 @@ runtimeOnly("org.flywaydb:flyway-database-postgresql")
 
 ### application.yml 설정
 
+{% include code-header.html %}
 ```yaml
 spring:
 	# datasource: ...
@@ -156,6 +163,7 @@ spring:
 
 `application.yml`에서 제공하는 설정만으로 부족하거나 Flyway 설정을 프로그래밍 방식으로 구성해야 한다면 `FlywayConfigurationCustomizer`를 사용할 수 있습니다.
 
+{% include code-header.html %}
 ```kotlin
 @Configuration
 class FlywayConfig {

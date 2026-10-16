@@ -27,6 +27,7 @@ OAuth 2.0이 무엇인지 알아봤습니다. 이제 스프링 시큐리티 공�
 
 OAuth 2.0 이나 OpenID Connect 1.0 제공자에 등록된 클라이언트를 나타내는 컴포넌트입니다. 코드를 통해 해당 컴포넌트가 어떤 정보를 가지고 있는지 주석과 함께 알아보겠습니다.
 
+{% include code-header.html %}
 ```java
 public final class ClientRegistration {
 
@@ -86,6 +87,7 @@ public final class ClientRegistration {
 
 `ClientRegistration`를 구성하기 위해서 다음 편의 메서드를 제공합니다.
 
+{% include code-header.html %}
 ```java
 ClientRegistration clientRegistration =
     ClientRegistrations
@@ -109,6 +111,7 @@ ClientRegistration clientRegistration =
 
 `ClientRegistration`을 저장해두는 컴포넌트입니다. 하나의 애플리케이션에서 여러 OAuth 2.0 제공자를 동시에 지원할 수 있기 때문에 해당 컴포넌트에서 설정된 각각의 `ClientRegistration`을 저장합니다. 기본적으로 `InMemoryClientRegistrationRepository`가 사용되며, 해당 구현체는 내부적으로 `Map<String, ClientRegistration>` 형식으로 `ClientRegistration`을 메모리에 보관합니다.
 
+{% include code-header.html %}
 ```java
 public final class InMemoryClientRegistrationRepository
 		implements ClientRegistrationRepository, Iterable<ClientRegistration> {
@@ -124,6 +127,7 @@ public final class InMemoryClientRegistrationRepository
 
 클라이언트가 리소스 오너(End-User)로부터 자원 접근을 인가하여 인가 토큰을 받은 것을 표현하는 컴포넌트입니다. 이 컴포넌트는 `OAuth2AccessToken` (설정에 따라서 `OAuth2RefreshToken`)을 `ClientRegistration`과 리소스 오너(`Principal`)와 하나로 묶어 관리합니다. 이는 내부 구현 필드를 살펴보면 알 수 있습니다.
 
+{% include code-header.html %}
 ```java
 public class OAuth2AuthorizedClient implements Serializable {
 
@@ -146,6 +150,7 @@ public class OAuth2AuthorizedClient implements Serializable {
 
 스프링 부트 자동 구성은 이 두 컴포넌트를 스프링 빈으로 등록하기 때문에 의존성 주입을 통해 애플리케이션 비즈니스 코드에서도 사용할 수 있습니다.
 
+{% include code-header.html %}
 ```java
 @Controller
 public class OAuth2ClientController {
@@ -174,6 +179,7 @@ public class OAuth2ClientController {
 
 하지만 JDBC 구현체는 다음과 같은 스키마를 강제로 사용해야 합니다.
 
+{% include code-header.html %}
 ```sql
 CREATE TABLE oauth2_authorized_client (
   client_registration_id varchar(100) NOT NULL,
@@ -205,6 +211,7 @@ CREATE TABLE oauth2_authorized_client (
 
 `OAuth2AuthorizedClientManager`의 기본 구현체는 `DefaultOAuth2AuthorizedClientManager`이며, 이는 위임 기반 컴포지트 디자인 패턴으로 여러 OAuth 2.0 인가 방식을 지원할 수 있는 `OAuth2AuthorizedClientProvider`와 연관되어 있습니다.
 
+{% include code-header.html %}
 ```java
 @Bean
 public OAuth2AuthorizedClientManager authorizedClientManager(
@@ -233,6 +240,7 @@ public OAuth2AuthorizedClientManager authorizedClientManager(
 
 `DefaultOAuth2AuthorizedClientManager`는 `Function<OAuth2AuthorizeRequest, Map<String, Object>>`타입의 `contextAttributesMapper`와 연관되어 있습니다. 이 매핑 도구는 `OAuth2AuthorizeRequest`의 속성을 `OAuth2AuthorizationContext`와 연결될 `Map`으로 변환하는 역할을 합니다. 이를 통해 `OAuth2AuthorizedClientProvider`에 필수 속성을 제공해야 할 때 유용할 수 있습니다. 코드 예시는 다음과 같습니다.
 
+{% include code-header.html %}
 ```java
 @Bean
 public OAuth2AuthorizedClientManager authorizedClientManager(
@@ -279,6 +287,7 @@ private Function<OAuth2AuthorizeRequest, Map<String, Object>> contextAttributesM
 
 예를 들어 사용자 상호작용 없이 백그라운드에서 실행되어야 하는 client_credentials 권한 부여 유형의 경우에 이 컴포넌트를 사용할 수 있습니다. 다음 코드는 그러한 상황에 대해서 `AuthorizedClientServiceOAuth2AuthorizedClientManager`를 구성하는 예시 코드입니다.
 
+{% include code-header.html %}
 ```java
 @Bean
 public OAuth2AuthorizedClientManager authorizedClientManager(
@@ -305,6 +314,7 @@ OAuth 2.0 인가 과정에서 인가 요청의 중간 상태는 `OAuth2Authoriza
 
 기본 구현체는 HTTP 세션 기반의 `HttpSessionOAuth2AuthorizationRequestRepository`입니다. 하지만 상황에 따라 HTTP 세션을 사용할 수 없거나(또는 세션 의존을 제거하려는 경우) 인가 요청 저장 방식을 커스터마이징해야 합니다. 대상 인터페이스는 다음과 같습니다.
 
+{% include code-header.html %}
 ```java
 public interface AuthorizationRequestRepository<T extends OAuth2AuthorizationRequest> {
 	T loadAuthorizationRequest(HttpServletRequest request);
@@ -316,6 +326,7 @@ public interface AuthorizationRequestRepository<T extends OAuth2AuthorizationReq
 
 예를 들어 이를 구현한 `CustomOAuth2AuthorizationRequestRepository`가 있다면 다음과 같이 스프링 빈으로 등록한 다음에 필터 체인에 명시하면 됩니다.
 
+{% include code-header.html %}
 ```java
 @Bean
 public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -342,6 +353,7 @@ public AuthorizationRequestRepository<OAuth2AuthorizationRequest> authorizationR
 
 이 두 구현체는 각각 `OAuth2User`와 이를 한 번 더 상속한 `OidcUser`를 반환합니다. 일반적으로 서비스 구현체를 상속하는 커스텀 컴포넌트를 만들고 사용자 정보 엔드포인트에 요청하는 것은 기본 구현체에 위임한 다음, 애플리케이션에 적합한 커스텀 `OAuth2User` 객체를 반환하는 식으로 만듭니다.
 
+{% include code-header.html %}
 ```java
 public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
@@ -356,6 +368,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 }
 ```
 
+{% include code-header.html %}
 ```java
 public class CustomOidcUserService extends OidcUserService {
 
@@ -372,6 +385,7 @@ public class CustomOidcUserService extends OidcUserService {
 
 커스텀 `OAuth2UserService`는 OAuth 2.0이나 OIDC 여부에 따라서 시큐리티 필터 체인에 등록하면 됩니다.
 
+{% include code-header.html %}
 ```java
 private final CustomOAuth2UserService customOAuth2UserService;
 private final CustomOidcUserService customOidcUserService;
@@ -472,6 +486,7 @@ public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Excepti
 
 또한 많이 사용되는 OAuth 2.0 제공자는 `CommonOAuth2Provider`를 통해 사전에 미리 정의되어 있습니다. 구글, 깃허브, 페이스북, X(트위터), Okta가 사전에 정의된 OAuth 2.0 제공자에 속합니다. 이러한 경우에는 `client-id`와 `client-secret`만 알고 있으면 됩니다. 구글 OAuth 2.0 로그인을 위해서는 애플리케이션에서 다음과 같이 설정만 해주면 됩니다.
 
+{% include code-header.html %}
 ```yaml
 spring:
   security:
@@ -486,6 +501,7 @@ spring:
 
 참고로 `registrationId`는 이미 yaml 속성에 `google`이라고 명시되어 있기 때문에 별도로 명시해줄 이유는 없습니다. 만약에 해당 속성에 대해서 별도로 사용하고자 한다면 `provider` 속성을 명시해주기만 하면 됩니다.
 
+{% include code-header.html %}
 ```yaml
 spring:
   security:
@@ -503,6 +519,7 @@ spring:
 
 일부 OAuth 2.0 제공자(예: Okta)는 멀티 테넌시 구조를 가지며, 테넌트마다 서로 다른 인증 엔드포인트를 사용하기도 합니다. 또한 Spring Security가 기본 제공하지 않는 OAuth 2.0 제공자도 존재합니다. 이러한 경우 `spring.security.oauth2.client.provider.{providerId}` 설정을 통해 OAuth 2.0 제공자에 대한 정보를 직접 구성해야 합니다.
 
+{% include code-header.html %}
 ```yaml
 spring:
   security:
@@ -533,6 +550,7 @@ spring:
 
 OAuth 2.0 로그인에 대한 설정은 시큐리티 필터 체인에 있는 DSL로 구성할 수 있습니다. 코드 예시를 보도록 하겠습니다.
 
+{% include code-header.html %}
 ```java
 @Configuration
 @EnableWebSecurity
@@ -593,6 +611,7 @@ OAuth2 Client를 위한 자동 구성에 사용되는 컴포넌트입니다. 이
 
 ## ClientRegistrationRepository 빈 등록
 
+{% include code-header.html %}
 ```java
 @Configuration
 public class OAuth2LoginConfig {
@@ -623,6 +642,7 @@ public class OAuth2LoginConfig {
 
 ## SecurityFilterChain 빈 등록
 
+{% include code-header.html %}
 ```java
 @Configuration
 @EnableWebSecurity
@@ -642,6 +662,7 @@ public class OAuth2LoginSecurityConfig {
 
 이 두 개를 종합하여 스프링 부트 자동 구성을 완전히 덮어쓴다면 다음과 같이 설정하면 됩니다.
 
+{% include code-header.html %}
 ```java
 @Configuration
 public class OAuth2LoginConfig {
@@ -684,6 +705,7 @@ public class OAuth2LoginConfig {
 
 때때로 스프링 부트가 아닌 레거시 프로젝트에서 `CommonOAuth2Provider`를 설정하고 싶다면 다음과 같이 설정할 수도 있습니다.
 
+{% include code-header.html %}
 ```java
 @Configuration
 @EnableWebSecurity

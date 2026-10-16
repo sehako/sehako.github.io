@@ -43,6 +43,7 @@ permalink: "/spring/websocket/live-chat-server-with-stomp-04/"
 
 두 번째로 생각한 방법으로, 마지막으로 읽은 채팅 번호를 커서로 두고, 온라인 상태로 현재 클라이언트가 온라인 상태인지 판별하여 다음 쿼리를 통해 몇 명의 클라이언트가 메시지를 읽지 않았는지 판단하는 방법을 생각했습니다.
 
+{% include code-header.html %}
 ```sql
 SELECT
     cl.*,
@@ -77,6 +78,7 @@ LIMIT 20;
 
 설명이 길었는데 DDL과 더미 데이터 INSERT까지 한 쿼리는 다음과 같습니다. 앞서 사용한 테이블을 삭제하기 위해서 `DROP` 문을 추가한 것을 확인할 수 있습니다.
 
+{% include code-header.html %}
 ```sql
 DROP TABLE IF EXISTS chat_log CASCADE;
 DROP TABLE IF EXISTS chatroom_user CASCADE;
@@ -134,6 +136,7 @@ FROM generate_series(1, 20) g;
 
 STOMP에서 발생하는 다양한 이벤트에 대해서 처리를 할 수 있는 어노테이션입니다. 사용 방법은 다음과 같습니다.
 
+{% include code-header.html %}
 ```java
 @Component
 public class StompEventListener {
@@ -165,6 +168,7 @@ public class StompEventListener {
 
 레포지토리에 쿼리를 작성하기 전에 엔티티에 앞서 추가한 두 컬럼에 해당되는 필드를 먼저 추가해주겠습니다.
 
+{% include code-header.html %}
 ```java
 @Entity
 @Table(name = "chatroom_user")
@@ -178,6 +182,7 @@ public class ChatroomUser {
 
 JPA에는 업데이트 관련 쿼리가 없기 때문에 참고 자료를 활용하여 다음과 같이 업데이트 쿼리 메서드를 작성하였습니다.
 
+{% include code-header.html %}
 ```java
 @Repository
 public interface ChatroomUserRepository extends JpaRepository<ChatroomUser, Long> {
@@ -208,6 +213,7 @@ public interface ChatroomUserRepository extends JpaRepository<ChatroomUser, Long
 
 이벤트 리스너를 활용하여 작성한 메서드를 클라이언트 접속 및 접속 해제 상황마다 호출하도록 하겠습니다. 그 전에 기존에 사용하던 테스트 도구는 토픽 구독 및 구독 해제 상황에서 헤더를 보낼 수 있는 방법이 없습니다. 따라서 GPT에게 이걸 가능하게 해주는 HTML 파일을 만들어달라 했는데 생각보다 고퀄리티라서 참고자료에 코드를 공유합니다.
 
+{% include code-header.html %}
 ```java
 @Component
 @RequiredArgsConstructor
@@ -265,6 +271,7 @@ public class StompEventListener {
 
 사실 가장 간단하게 헤더로 처리했지만, 실제 채팅 서비스를 만든다면 세션 정보를 통해서 처리를 해야 할 것 같다고 생각합니다. 클라이언트가 채팅을 하다가 갑자기 연결을 종료한다고 하면 `SessionDisconnectedEvent`가 발생하는데, 이를 로깅을 통해 확인해보면 다음과 같은 값들만 존재하기 때문입니다.
 
+{% include code-header.html %}
 ```java
 @EventListener
 @Transactional
@@ -275,6 +282,7 @@ public void listener(SessionDisconnectEvent event) {
 }
 ```
 
+{% include code-header.html %}
 ```
 SessionDisconnectEvent[sessionId=854cf080-bad6-3da7-d0e3-835f061458f7,
 CloseStatus[code=1000, reason=null]]
@@ -290,6 +298,7 @@ simpSessionId=854cf080-bad6-3da7-d0e3-835f061458f7}]
 
 메시지를 읽지 않은 클라이언트를 계산해야 합니다. 우선 1번 채팅방을 대상으로 채팅 메시지 및 읽지 않은 클라이언트 수 계산을 위한 쿼리는 다음과 같습니다.
 
+{% include code-header.html %}
 ```sql
 SELECT
     cl.id,
@@ -317,6 +326,7 @@ LIMIT 20;
 
 이후 `GROUP BY`를 통해 채팅 내역을 하나로 묶은 다음에 조회된 `chatroom_user` 레코드를 `COUNT()` 연산 처리하면 된다고 생각했습니다. 그리고 이 쿼리를 AI에게 최적화를 맡겨봤더니 다음과 같이 쿼리를 작성해줬습니다.
 
+{% include code-header.html %}
 ```sql
 WITH page AS (
     SELECT id, user_id, message, created_at, chatroom_id
@@ -354,6 +364,7 @@ ORDER BY p.id DESC
 
 레포지토리에서는 조금 색다르게 Native Query와 Interface Projection을 활용하여 처리하였습니다.
 
+{% include code-header.html %}
 ```java
 public interface ChatMessage {
     Long getId();
@@ -370,6 +381,7 @@ public interface ChatMessage {
 
 이 반환 타입을 활용하여 다음과 같이 네이티브 쿼리를 작성하였습니다.
 
+{% include code-header.html %}
 ```java
 @Repository
 public interface ChatLogRepository extends JpaRepository<ChatLog, Long> {
@@ -409,6 +421,7 @@ public interface ChatLogRepository extends JpaRepository<ChatLog, Long> {
 
 서비스는 다음과 같이 수정하였습니다. 이전 포스팅에서는 커서의 존재 여부에 따라서 다른 메서드를 호출했지만 메서드를 하나로 통합했으므로 커서의 유무와 관계 없이 다음과 같이 간단하게 호출이 가능합니다.
 
+{% include code-header.html %}
 ```java
 @Slf4j
 @Service
@@ -437,6 +450,7 @@ public class ChatService {
 
 테스트를 위해서 다음과 같은 쿼리를 통해 클라이언트 정보를 수정할 것입니다.
 
+{% include code-header.html %}
 ```sql
 UPDATE chatroom_user SET last_read_chat_log_id = 10 WHERE user_id = 1;
 UPDATE chatroom_user SET last_read_chat_log_id = 15 WHERE user_id = 3;
@@ -448,6 +462,7 @@ UPDATE chat_log SET user_id = 2 WHERE id > 10;
 
 이 상황에서 2번 클라이언트로 채팅 로그를 확인해보면 다음과 같습니다.
 
+{% include code-header.html %}
 ```json
 메시지 from /user/queue/chat.log
 headers:
@@ -516,6 +531,7 @@ destination: /user/queue/chat.log
 
 ### 레포지토리
 
+{% include code-header.html %}
 ```java
 @Repository
 public interface ChatroomUserRepository extends JpaRepository<ChatroomUser, Long> {
@@ -530,6 +546,7 @@ JPA의 Dirty Checking 기능을 활용하여 UPDATE 처리를 하도록 하겠�
 
 서비스에서는 컨트롤러에 클라이언트 ID와 해당 클라이언트가 이전에 읽은 최신 채팅 ID와 현재 읽은 최신 채팅 ID를 담아서 반환할 것입니다.
 
+{% include code-header.html %}
 ```java
 @Service
 @Transactional
@@ -551,6 +568,7 @@ public class ChatService {
 
 구현을 위해 엔티티와 반환 객체를 다음과 같이 작성하였습니다.
 
+{% include code-header.html %}
 ```java
 public record UserReadInfoResponse(
 	    Long userId,
@@ -563,6 +581,7 @@ public record UserReadInfoResponse(
 }
 ```
 
+{% include code-header.html %}
 ```java
 @Entity
 @Table(name = "chatroom_user")
@@ -580,6 +599,7 @@ public class ChatroomUser {
 
 컨트롤러는 다음과 같이 작성하였습니다.
 
+{% include code-header.html %}
 ```java
 @Slf4j
 @Controller
@@ -624,6 +644,7 @@ public class StompController {
 
 이제 1번 채팅방에 1번 클라이언트가 15번 채팅까지 읽음 처리를 했다고 가정하고 요청을 보내보겠습니다.
 
+{% include code-header.html %}
 ```
 >>> SUBSCRIBE
 userId:1
@@ -665,6 +686,7 @@ destination: /user/queue/chat.info
 
 좀 더 최적화할 수 있겠지만, 간단하게 클라이언트가 채팅을 전송할때마다 `chatroom_user` 테이블에 `COUNT` 쿼리를 통해 해당하는 채팅방의 전체 클라이언트 수를 구하도록 하겠습니다.
 
+{% include code-header.html %}
 ```java
 @Repository
 public interface ChatroomUserRepository extends JpaRepository<ChatroomUser, Long> {
@@ -677,6 +699,7 @@ public interface ChatroomUserRepository extends JpaRepository<ChatroomUser, Long
 
 이제 채팅을 저장하고, 내부적으로 읽지 않은 클라이언트 수를 구한 다음에 반환하도록 서비스 메서드를 수정해보도록 하겠습니다.
 
+{% include code-header.html %}
 ```java
 @Slf4j
 @Service
@@ -706,6 +729,7 @@ public class ChatService {
 
 1번 채팅방에 2번 클라이언트로 접속한 다음에 테스트를 진행해보았습니다.
 
+{% include code-header.html %}
 ```
 headers:
 content-length: 88

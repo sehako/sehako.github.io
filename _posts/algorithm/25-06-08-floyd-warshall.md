@@ -30,6 +30,7 @@ permalink: "/algorithm/floyd-warshall/"
 
 이를 의사 코드로 보면 다음과 같습니다.
 
+{% include code-header.html %}
 ```c
 let dist // 모든 요소의 값이 INF인 |V| x |V| 배열
 for each edge (u,v)
@@ -56,6 +57,7 @@ for k from 1 to |V|
 
 `BufferedReader` 와 `StringTokenizer`를 활용하여 입력을 받을 것입니다. 여기서 최대 비용이 100억이 될 수 있으므로 비용에 관한 부분은 `long` 타입으로 설정해줘야 합니다.
 
+{% include code-header.html %}
 ```java
 import java.util.*;
 import java.io.*;
@@ -87,6 +89,7 @@ public class Main {
 
 가격은 각 도시의 최대 가격으로 하여 $n \times n$ 배열로 설정합니다. 그리고 초기에는 전체 배열을 앞서 정의한 불변 변수인 `INF`로 설정합니다.
 
+{% include code-header.html %}
 ```java
 cost = new long[n][n];
 
@@ -102,6 +105,7 @@ for (int i = 0; i < n; i++) {
 
 이제 입력값에 따라서 노선 정보를 갱신하도록 하겠습니다. 노선 정보는 각각 출발도시, 도착도시, 요금 이렇게 나누어집니다. 이때 요금은 `long` 타입으로 변환시켰습니다.
 
+{% include code-header.html %}
 ```java
 for (int i = 0; i < m; i++) {
 	st = new StringTokenizer(br.readLine(), " ");
@@ -119,6 +123,7 @@ for (int i = 0; i < m; i++) {
 
 이제 한 도시에서 다른 도시로 이동하는 최소 요금을 구하기 위해서 플로이드-워셜 알고리즘을 활용하게 됩니다. 이는 앞서 이론 부분에서 확인했듯이 각 도시를 지나쳐서 가는 경우와 현재 저장된 최소값을 비교해가면서 모든 도시를 대상으로 모든 도시를 경유지로 설정하여 계산하면 됩니다.
 
+{% include code-header.html %}
 ```java
 private static void getDist(int n) {
 	for (int k = 0; k < n; k++) {
@@ -138,6 +143,7 @@ private static void getDist(int n) {
 
 {% include code-header.html %}
 
+{% include code-header.html %}
 ```java
 import java.util.*;
 import java.io.*;

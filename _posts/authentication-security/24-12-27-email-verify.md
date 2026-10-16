@@ -37,6 +37,7 @@ SMTP(Simple Mail Transfer Protocol)는 전자 메일을 전송하는 데 사용�
 
 라이브러리는 스프링에서 제공하는 SMTP 관련 라이브러리를 사용하였습니다.
 
+{% include code-header.html %}
 ```groovy
 implementation group: 'org.springframework.boot', name: 'spring-boot-starter-mail', version: '3.4.1'
 ```
@@ -47,6 +48,7 @@ implementation group: 'org.springframework.boot', name: 'spring-boot-starter-mai
 
 {% include code-header.html %}
 
+{% include code-header.html %}
 ```yaml
 # application.yml
 spring:
@@ -70,6 +72,7 @@ spring:
 
 {% include code-header.html %}
 
+{% include code-header.html %}
 ```java
 @RestController
 @RequestMapping("/api/email")
@@ -99,6 +102,7 @@ public class SmtpController {
 
 {% include code-header.html %}
 
+{% include code-header.html %}
 ```java
 @Service
 @RequiredArgsConstructor
@@ -151,6 +155,7 @@ public class SmtpService {
 
 {% include code-header.html %}
 
+{% include code-header.html %}
 ```java
 public class TokenGenerator {
     // Key for AES encryption (256-bit key)
@@ -196,6 +201,7 @@ public class TokenGenerator {
 
 {% include code-header.html %}
 
+{% include code-header.html %}
 ```java
 @Slf4j
 @EnableAsync
@@ -232,6 +238,7 @@ public class AsyncConfig implements AsyncConfigurer {
 
 {% include code-header.html %}
 
+{% include code-header.html %}
 ```java
 public class SmtpService {
     private final JavaMailSender mailSender;

@@ -25,6 +25,7 @@ OAuth 2.0을 위한 사전 준비는 다른 참고 자료를 통해 살펴보는
 
 스프링 시큐리티 의존성에 이어서 앞서 언급한 OAuth2 Client를 의존성으로 추가하도록 하겠습니다.
 
+{% include code-header.html %}
 ```groovy
 implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 ```
@@ -33,6 +34,7 @@ implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 
 구글과 카카오 OAuth 2.0 관련 클라이언트 정보를 명시했습니다.
 
+{% include code-header.html %}
 ```yaml
 spring:
   application:
@@ -79,6 +81,7 @@ OAuth 2.0에서는 리소스 서버로부터 전달된 식별정보를 기반으
 
 ### 레포지토리
 
+{% include code-header.html %}
 ```java
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
@@ -88,6 +91,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
 ### 서비스
 
+{% include code-header.html %}
 ```java
 @Service
 @Transactional
@@ -119,6 +123,7 @@ public class UserService {
 
 **OAuth2User**
 
+{% include code-header.html %}
 ```java
 @Getter
 public class CustomOAuth2User implements OAuth2User, UserDetails {
@@ -161,6 +166,7 @@ public class CustomOAuth2User implements OAuth2User, UserDetails {
 
 현재는 구글 OAuth 2.0 로그인을 OpenID Connect로 처리하고 있지만, 만약 이를 단순히 OAuth 2.0으로 사용한다면 카카오와 사용자 정보 반환 형식이 다릅니다. 따라서 제공자마다 다르게 반환된 사용자 정보 응답 형식에 맞게 속성을 추출하는 클래스를 사용해야 합니다.
 
+{% include code-header.html %}
 ```java
 public final class OAuthAttributeExtractor {
 
@@ -188,6 +194,7 @@ public final class OAuthAttributeExtractor {
 
 **OAuth2UserService**
 
+{% include code-header.html %}
 ```java
 @Service
 @RequiredArgsConstructor
@@ -219,6 +226,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
 **OidcUser**
 
+{% include code-header.html %}
 ```java
 @Getter
 public class CustomOidcUser implements OidcUser, UserDetails {
@@ -277,6 +285,7 @@ public class CustomOidcUser implements OidcUser, UserDetails {
 
 **OidcUserService**
 
+{% include code-header.html %}
 ```java
 @Slf4j
 @Service
@@ -310,6 +319,7 @@ public class CustomOidcUserService extends OidcUserService {
 
 앞서 인증 정보에서 사용자의 ID 번호를 통해 식별을 하고자 한다면 `OAuth2User`객체와 `OidcUser` 객체를 다음 인터페이스로 묶어서 처리할 수 있습니다.
 
+{% include code-header.html %}
 ```java
 public interface AuthPrincipal {
   Long getId();
@@ -322,11 +332,13 @@ public interface AuthPrincipal {
 
 이를 다음과 같이 공통적으로 명시합니다.
 
+{% include code-header.html %}
 ```java
 public class CustomOidcUser
 		implements OidcUser, AuthPrincipal {...}
 ```
 
+{% include code-header.html %}
 ```java
 public class CustomOAuth2User
 		implements OAuth2User, AuthPrincipal {...}
@@ -334,6 +346,7 @@ public class CustomOAuth2User
 
 이러면 `@AuthenticationPrincipal`을 다음과 같이 사용하면 됩니다.
 
+{% include code-header.html %}
 ```java
 @Slf4j
 @Controller
@@ -348,6 +361,7 @@ public class ExampleController {
 
 ## SecurityFilterChain 설정
 
+{% include code-header.html %}
 ```java
 @Configuration
 @EnableWebSecurity
@@ -391,6 +405,7 @@ JWT 관련 필터 기능은 앞선 포스팅을 참고하도록 하겠습니다.
 
 **build.gradle**
 
+{% include code-header.html %}
 ```groovy
 implementation 'io.jsonwebtoken:jjwt-api:0.13.0'
 runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.13.0'
@@ -399,6 +414,7 @@ runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.13.0'
 
 **application.yml**
 
+{% include code-header.html %}
 ```yaml
 jwt:
   secret: ${JWT_SECRET}
@@ -410,6 +426,7 @@ jwt:
 
 `JwtProvider`는 크게 다를 것 없지만 JWT 파싱 이후에 OAuth2, OIDC 구분 없이 하나의 객체로 간주하기 위해서 `UserDetails`와 `AuthPrincipal` 모두 구현하는 임의의 `JwtUser`를 구현했습니다.
 
+{% include code-header.html %}
 ```java
 @Getter
 @RequiredArgsConstructor
@@ -433,6 +450,7 @@ public class JwtUser implements UserDetails, AuthPrincipal {
 
 이를 파싱 이후에 반환하도록 코드를 약간 수정했습니다. 전체 코드는 다음과 같습니다.
 
+{% include code-header.html %}
 ```java
 @Getter
 @Component
@@ -531,6 +549,7 @@ OAuth 성공과 실패를 핸들링하는 SPA 주소로 보내도록 각각 다�
 
 리프레시 토큰과 액세스 토큰 모두를 쿠키에 담아서 보내는 방식입니다.
 
+{% include code-header.html %}
 ```java
 @Component
 @RequiredArgsConstructor
@@ -577,6 +596,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
 보안이 좋은 방식이므로 권장된다고 하지만 백엔드 쪽에서 CSRF 공격에 유의해야 하므로 세션 쿠키인 JSESSIONID관련 옵션을 다음과 같이 설정해줘야 한다고 합니다.
 
+{% include code-header.html %}
 ```yaml
 server:
   servlet:
@@ -587,6 +607,7 @@ server:
 
 **쿼리 파라미터를 통한 액세스 토큰 전달**
 
+{% include code-header.html %}
 ```java
 @Component
 @RequiredArgsConstructor
@@ -616,6 +637,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
 ### FailureHandler
 
+{% include code-header.html %}
 ```java
 @Component
 public class OAuth2FailureHandler extends SimpleUrlAuthenticationFailureHandler {
@@ -642,6 +664,7 @@ public class OAuth2FailureHandler extends SimpleUrlAuthenticationFailureHandler 
 
 각각의 핸들러를 `oauth2Login()`의 `successHandler()`와 `failureHandler()`를 이용해 추가합니다. 그리고 SPA로 리다이렉트 되는 REST API 이므로 정적 리소스 관련 인가 설정과 `defaultSuccessUrl()`를 굳이 명시할 이유가 없기 때문에 두 설정을 지우면서 REST API에 맞는 설정을 일부 추가하였습니다.
 
+{% include code-header.html %}
 ```java
 @Configuration
 @EnableWebSecurity
@@ -708,6 +731,7 @@ public class SecurityConfiguration {
 
 참고로 쿠키 기반 인증 방식을 사용하는 경우 프론트엔드에서 쿠키 전송을 위해 axios 라이브러리 기준으로 다음과 같이 설정해줘야 한다고 합니다.
 
+{% include code-header.html %}
 ```jsx
 axios.defaults.withCredentials = true;
 ```

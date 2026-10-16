@@ -30,6 +30,7 @@ permalink: "/spring security/spring-security-architecture-overview/"
 - 하위 필터 인스턴스 또는 서블릿의 호출 차단
 - 하위 필터 인스턴스와 서블릿에서 사용하는 `HttpServletRequest` 또는 `HttpServletResponse` 수정
 
+{% include code-header.html %}
 ```java
 public interface Filter {
 	// 서블릿 컨테이너가 필터를 초기화 하는 과정에서 호출
@@ -65,6 +66,7 @@ class ExampleFilter implements Filter {
 
 스프링은 이런 서블릿 컨테이너에 `DelegatingFilterProxy`를 등록하여 서블릿 컨테이너의 생명주기와 스프링의 `ApplicationContext`를 연결합니다. 실제 구현 코드를 간단히 살펴봤을 때, 해당 프록시 객체는 `GenericFilterBean`라는 추상 클래스를 상속하며, 이는 `Filter`를 구현하는 클래스인 것을 확인할 수 있었습니다.
 
+{% include code-header.html %}
 ```java
 public abstract class GenericFilterBean implements Filter, ... { }
 ```
@@ -73,6 +75,7 @@ public abstract class GenericFilterBean implements Filter, ... { }
 
 이렇게 서블릿 컨테이너로 등록하면 해당 객체를 통해 `ApplicationContext`에 등록된 스프링 시큐리티의 필터 빈들이 구동할 수 있게 되는 것입니다. `DelegatingFilterProxy.doFilter()`의 의사 코드를 살펴보겠습니다.
 
+{% include code-header.html %}
 ```java
 public void doFilter(
 		ServletRequest request,
@@ -126,6 +129,7 @@ public void doFilter(
 
 예를 들어 권한 부여 이전에 인증을 수행하는 필터가 먼저 호출되어야 하는 식입니다. 모든 필터의 실행 순서를 알 필요는 없지만 알면 좋은 경우도 있습니다. 따라서 필요하다면 `FilterOrderRegistration`을 참고하면 됩니다. 이에 따라서 내부 코드를 참고해보니 간단하게 `Map`으로 필수적인 필터들을 등록한 것으로 보입니다.
 
+{% include code-header.html %}
 ```java
 final class FilterOrderRegistration {
 
@@ -150,6 +154,7 @@ final class FilterOrderRegistration {
 
 그리고 바로 이 부분이 개발자가 정의하는 부분이 됩니다. 정확히는 일반적인 서블릿 애플리케이션이라고 가정했을 때, `HttpSecurity` DSL을 활용하여 `SecurityFilterChain`을 정의하는 빈이 바로 인증 및 인가에 필요한 필터들을 정의하고, 최종적으로 하나의 `SecurityFilterChain`으로 구성되어 `FilterChainProxy`가 이를 참조하여 요청을 처리하게 됩니다.
 
+{% include code-header.html %}
 ```java
 @Configuration
 @EnableWebSecurity
@@ -179,6 +184,7 @@ public class SecurityConfig {
 
 사용 방법은 모두 필터 인스턴스와 기준이 되는 클래스를 넘기면 메서드에 따라서 해당 필터 클래스의 이전과 이후, 그리고 중복되어 실행되게 만들 수 있습니다. 이를 활용하여 다음과 같이 커스텀 필터를 정의하고 등록하면 됩니다.
 
+{% include code-header.html %}
 ```java
 public class TenantFilter implements Filter {
 
@@ -216,6 +222,7 @@ SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
 여기서 인증된 사용자 정보는 다음과 같이 조회할 수 있습니다.
 
+{% include code-header.html %}
 ```java
 SecurityContext context = SecurityContextHolder.getContext();
 Authentication authentication = context.getAuthentication();
@@ -261,6 +268,7 @@ GrantedAuthority는 애플리케이션 전역 권한을 표현하는 용도로 �
 
 실제로 각 `AuthenticationProvider`는 처리 가능한 인증 타입이 무엇인지를 스스로 알고 있습니다. 이는 인터페이스 설계를 살펴보면 명확하게 알 수 있습니다.
 
+{% include code-header.html %}
 ```java
 public interface AuthenticationProvider {
 	@Nullable Authentication authenticate(Authentication authentication) throws AuthenticationException;
@@ -270,6 +278,7 @@ public interface AuthenticationProvider {
 
 그리고 이를 구현한 `AbstractUserDetailsAuthenticationProvider`를 살펴보면 다음과 같이 메서드가 오버라이딩 되어 있습니다.
 
+{% include code-header.html %}
 ```java
 @Override
 public boolean supports(Class<?> authentication) {
@@ -279,6 +288,7 @@ public boolean supports(Class<?> authentication) {
 
 즉 해당되는 인증 필터에 따라서 적절한 `AuthenticationProvider`가 동작하도록 만들어져 있습니다. `UsernamePasswordAuthenticationFilter.attemptAuthentication()`을 살펴보겠습니다.
 
+{% include code-header.html %}
 ```java
 @Override
 public Authentication attemptAuthentication(
@@ -321,6 +331,7 @@ public Authentication attemptAuthentication(
 
 사용자 자격 증명을 인증하기 위한 기본 필터로 사용됩니다. 인증되지 않은 사용자가 보호된 리소스에 접근했을 때 `AuthenticationEntryPoint`가 먼저 동작해 자격 증명을 요청하고, `AbstractAuthenticationProcessingFilter`는 이 요청을 가로챕니다. 이 과정을 묘사하면 다음과 같습니다.
 
+{% include code-header.html %}
 ```
 [Authorization / Security Filter]
         ↓ (AccessDeniedException / AuthenticationException)
@@ -343,6 +354,7 @@ public Authentication attemptAuthentication(
 
 `HttpServletRequest`로부터 `Authentication` 객체를 생성합니다. 이때 생성되는 `Authentication` 타입은 하위 필터에 의해 결정됩니다.
 
+{% include code-header.html %}
 ```java
 public class UsernamePasswordAuthenticationFilter
 		extends AbstractAuthenticationProcessingFilter {
@@ -369,6 +381,7 @@ public class UsernamePasswordAuthenticationFilter
 
 생성된 `Authentication`을 `AuthenticationManager`에 전달해 실제 인증을 수행합니다.
 
+{% include code-header.html %}
 ```java
 public class UsernamePasswordAuthenticationFilter
 		extends AbstractAuthenticationProcessingFilter {
@@ -395,6 +408,7 @@ public class UsernamePasswordAuthenticationFilter
 - 인증 성공 이벤트 발행
 - `AuthenticationSuccessHandler` 실행
 
+{% include code-header.html %}
 ```java
 public abstract class AbstractAuthenticationProcessingFilter
 		extends GenericFilterBean
@@ -431,6 +445,7 @@ public abstract class AbstractAuthenticationProcessingFilter
 - `RememberMeServices.loginFail()` 호출
 - `AuthenticationFailureHandler` 실행
 
+{% include code-header.html %}
 ```java
 public abstract class AbstractAuthenticationProcessingFilter
 		extends GenericFilterBean
@@ -460,6 +475,7 @@ public abstract class AbstractAuthenticationProcessingFilter
 
 스프링 시큐리티에서 모든 `Authentication` 구현체는 `GrantedAuthority`를 담는 컬렉션 객체를 가지고 있습니다. 이 객체는 `AuthenticationManager`에 의해 `Authentication` 객체에 삽입되고, 이후 `AuthorizationManager` 인스턴스가 권한 부여 결정을 내릴 때 읽어들입니다. 해당 객체의 인터페이스를 한 번 살펴보겠습니다.
 
+{% include code-header.html %}
 ```java
 public interface GrantedAuthority extends Serializable {
 	@Nullable String getAuthority();
@@ -476,6 +492,7 @@ public interface GrantedAuthority extends Serializable {
 
 이러한 권한에 사용할 접두사는 `GrantedAuthorityDefaults`로 다음과 같이 커스텀 할 수 있습니다.
 
+{% include code-header.html %}
 ```java
 @Bean
 static GrantedAuthorityDefaults grantedAuthorityDefaults() {
@@ -489,6 +506,7 @@ static GrantedAuthorityDefaults grantedAuthorityDefaults() {
 
 인가를 처리하는 핵심 주체입니다. 다음과 같은 인터페이스 설계를 가지고 있습니다.
 
+{% include code-header.html %}
 ```java
 @FunctionalInterface
 public interface AuthorizationManager<T extends @Nullable Object> {
@@ -516,6 +534,7 @@ public interface AuthorizationManager<T extends @Nullable Object> {
 
 1. `AuthorizationFilter`는 `SecurityContextHolder`로부터 `Authentication`을 가져오는 `Supplier`를 생성하여 `Supplier<Authentication>`과 `HttpServletRequest`를 `AuthorizationManager`에게 전달합니다.
 
+{% include code-header.html %}
 ```java
 public class AuthorizationFilter extends GenericFilterBean {
 	// ...
@@ -552,6 +571,7 @@ public class AuthorizationFilter extends GenericFilterBean {
 
 2. `AuthorizationManager`는 `authorizeHttpRequests`에 정의된 패턴과 요청을 매칭한 후, 해당하는 인가 규칙을 실행합니다. `RequestMatcherDelegatingAuthorizationManager.authorize()`를 살펴보겠습니다.
 
+{% include code-header.html %}
 ```java
 private static final AuthorizationDecision DENY
                         = new AuthorizationDecision(false);
@@ -581,6 +601,7 @@ public @Nullable AuthorizationResult authorize(
 
 3. 접근이 허용되면 `AuthorizationGrantedEvent`(기본적으로 No-op이라 발행되지 않고 설정된 경우에만 발행)가 발행되고, `AuthorizationFilter`는 필터 체인을 계속 진행하여 애플리케이션이 정상적으로 처리되도록 합니다.
 
+{% include code-header.html %}
 ```java
 public class AuthorizationFilter extends GenericFilterBean {
 	// ...
@@ -604,6 +625,7 @@ public class AuthorizationFilter extends GenericFilterBean {
 
 4. 인가가 거부되면 `AuthorizationDeniedEvent`가 발행되고, `AccessDeniedException`이 발생합니다. 이 경우 `ExceptionTranslationFilter`가 `AccessDeniedException`을 처리합니다.
 
+{% include code-header.html %}
 ```java
 public class AuthorizationFilter extends GenericFilterBean {
 	// ...
@@ -630,6 +652,7 @@ public class AuthorizationFilter extends GenericFilterBean {
 
 스프링 시큐리티에서는 인가 역시 인증과 마찬가지로 `HttpSecurity` DSL을 통해서 다음과 같이 간단하게 구현할 수 있습니다.
 
+{% include code-header.html %}
 ```java
 @Bean
 SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -649,6 +672,7 @@ SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
 `AuthorizationManagerRequestMatcherRegistry`의 메서드로, 인가 규칙이 적용될 엔드포인트(`RequestMatcher`)를 정의할 때 사용합니다.
 
+{% include code-header.html %}
 ```java
 @Bean
 public SecurityFilterChain web(HttpSecurity http) throws Exception {
@@ -669,6 +693,7 @@ public SecurityFilterChain web(HttpSecurity http) throws Exception {
 
 또한 `requestMatchers()`는 Ant-style 경로 패턴 매칭 문법을 지원합니다. 예를 들어 `/board`라는 주소의 하위 주소는 모두 허용하려면 다음과 같이 설정하면 됩니다.
 
+{% include code-header.html %}
 ```java
 @Bean
 public SecurityFilterChain web(HttpSecurity http) throws Exception {
@@ -703,6 +728,7 @@ Any는 조건이 하나라도 만족하면 허용되고, All은 모든 조건이
 
 위 두 내용을 종합하면 `authorizeHttpRequests()`는 `AuthorizationManagerRequestMatcherRegistry.requestMatchers()`를 통해 인가 규칙이 적용될 요청 범위를 정의하고, 이후 인가 규칙 메서드를 통해 해당 엔드포인트에 적용할 규칙을 지정하는 것입니다. 다음은 이를 활용한 서블릿 기반 애플리케이션에서의 인가 설정 예시입니다.
 
+{% include code-header.html %}
 ```java
 @Bean
 public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {

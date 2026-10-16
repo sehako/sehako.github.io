@@ -27,6 +27,7 @@ Spring WebFlux의 장점인 안정성을 확인해보기 위해서 데이터베�
 
 **데이터베이스**
 
+{% include code-header.html %}
 ```bash
 docker run --name mysql-db -e MYSQL_ROOT_PASSWORD=1234 -d -p 3306:3306 mysql:latest
 ```
@@ -35,6 +36,7 @@ docker run --name mysql-db -e MYSQL_ROOT_PASSWORD=1234 -d -p 3306:3306 mysql:lat
 
 **데이터베이스 스키마**
 
+{% include code-header.html %}
 ```sql
 CREATE DATABASE IF NOT EXISTS board;
 
@@ -51,6 +53,7 @@ CREATE TABLE IF NOT EXISTS post
 
 **엔티티**
 
+{% include code-header.html %}
 ```java
 @Table(name = "post")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -73,6 +76,7 @@ public class Post {
 
 **DTO**
 
+{% include code-header.html %}
 ```java
 public record PostWriteRequest(
         String title,
@@ -90,6 +94,7 @@ public record PostWriteRequest(
 
 **데이터베이스 연결 설정**
 
+{% include code-header.html %}
 ```yaml
 spring:
   datasource:
@@ -102,6 +107,7 @@ spring:
 
 JPA를 활용하기 위해서 엔티티에 다음과 같이 어노테이션을 추가하도록 하겠습니다.
 
+{% include code-header.html %}
 ```java
 @Entity
 @Table(name = "post")
@@ -117,6 +123,7 @@ public class Post {
 
 그리고 `createdAt` 필드는 스키마에 따르면 데이터베이스가 기본값을 생성합니다. 따라서 이런 기본값을 활용하기 위해서 JpaAuditing 기능을 활성화시키는 설정 클래스를 만듭니다.
 
+{% include code-header.html %}
 ```java
 @Configuration
 @EnableJpaAuditing
@@ -127,6 +134,7 @@ public class JpaAuditingConfiguration {}
 
 **레포지토리**
 
+{% include code-header.html %}
 ```java
 @Repository
 public interface PostRepository extends JpaRepository<Post, Integer> {
@@ -135,6 +143,7 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
 
 **서비스**
 
+{% include code-header.html %}
 ```java
 @Service
 @Transactional
@@ -151,6 +160,7 @@ public class PostService {
 
 **컨트롤러**
 
+{% include code-header.html %}
 ```java
 @RestController
 @RequestMapping("/post")
@@ -181,6 +191,7 @@ public class PostController {
 
 **데이터베이스 연결 설정**
 
+{% include code-header.html %}
 ```yaml
 spring:
   r2dbc:
@@ -191,6 +202,7 @@ spring:
 
 **R2DBC**
 
+{% include code-header.html %}
 ```java
 @Configuration
 @EnableR2dbcAuditing
@@ -202,6 +214,7 @@ public class R2dbcAuditingConfiguration {
 
 **레포지토리**
 
+{% include code-header.html %}
 ```java
 public interface PostRepository extends ReactiveCrudRepository<Post, Integer> {
 }
@@ -209,6 +222,7 @@ public interface PostRepository extends ReactiveCrudRepository<Post, Integer> {
 
 **서비스**
 
+{% include code-header.html %}
 ```java
 @Service
 @Transactional
@@ -226,6 +240,7 @@ public class PostService {
 
 **컨트롤러**
 
+{% include code-header.html %}
 ```java
 @Slf4j
 @RestController
@@ -257,6 +272,7 @@ Spring WebFlux는 적은 스레드로도 많은 요청을 처리하는 것을 �
 
 ## docker-compose.yml
 
+{% include code-header.html %}
 ```yaml
 services:
   grafana:
@@ -294,6 +310,7 @@ networks:
 
 마운트되는 파일은 다음과 같이 설정되어 있습니다.
 
+{% include code-header.html %}
 ```yaml
 global:
   scrape_interval: 15s
@@ -328,6 +345,7 @@ Grafana에서 대시보드는 간단하게 ID값이 4701인 대시보드를 impo
 
 **build.gradle**
 
+{% include code-header.html %}
 ```groovy
 implementation 'org.springframework.boot:spring-boot-starter-actuator'
 implementation 'io.micrometer:micrometer-registry-prometheus:1.16.0'
@@ -335,6 +353,7 @@ implementation 'io.micrometer:micrometer-registry-prometheus:1.16.0'
 
 **application.yml**
 
+{% include code-header.html %}
 ```yaml
 management:
   endpoints:
@@ -347,6 +366,7 @@ management:
 
 부하 테스트를 위해서 스크립트를 작성해보았습니다.
 
+{% include code-header.html %}
 ```jsx
 import http from "k6/http";
 import { check } from "k6";

@@ -31,6 +31,7 @@ permalink: "/spring/handle-request-and-response-with-enum/"
 
 {% include code-header.html %}
 
+{% include code-header.html %}
 ```java
 @Entity
 @Table(name = "membership")
@@ -42,6 +43,7 @@ public class Membership {
 
 {% include code-header.html %}
 
+{% include code-header.html %}
 ```java
 @Entity
 @Table(name = "user")
@@ -69,6 +71,7 @@ public class Category {
 
 {% include code-header.html %}
 
+{% include code-header.html %}
 ```java
 @Entity
 @Table(name = "user")
@@ -95,6 +98,7 @@ public class Category {
 
 {% include code-header.html %}
 
+{% include code-header.html %}
 ```java
 public enum Membership {
     FREE, BASIC, PREMIUM
@@ -105,6 +109,7 @@ public enum Membership {
 
 {% include code-header.html %}
 
+{% include code-header.html %}
 ```java
 @Entity
 @Table(name = "user")
@@ -121,6 +126,7 @@ public class Category {
 
 그럼 클라이언트에서는 어떻게 위와 같은 `enum` 타입을 전송해줘야 할까요? 그 답은 간단한데 클라이언트에서 `FREE`, `BASIC`, `PREMIUM`이라는 문자열을 전송하기만 하면됩니다.
 
+{% include code-header.html %}
 ```
 POST /api/categories
 Host: example.com
@@ -141,6 +147,7 @@ Content-Type: application/json
 
 {% include code-header.html %}
 
+{% include code-header.html %}
 ```java
 public enum Membership {
     FREE("Free"),
@@ -169,6 +176,7 @@ public enum Membership {
 
 {% include code-header.html %}
 
+{% include code-header.html %}
 ```java
 @JsonCreator
 public static Membership of(String value) {
@@ -183,6 +191,7 @@ public static Membership of(String value) {
 
 {% include code-header.html %}
 
+{% include code-header.html %}
 ```java
 @RequiredArgsConstructor
 public enum Membership {

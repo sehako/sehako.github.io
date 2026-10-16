@@ -60,6 +60,7 @@ permalink: "/note/wooteco-precourse-review-week-3/"
 
 `LottoRank`와 `ErrorMessage`를 `enum`으로 관리했었습니다. 이렇게 하니 비즈니스에서 요구하는 조건을 좀 더 깔끔하게 처리할 수 있었습니다. 예를 들면 오류 메시지 앞에 항상 `[ERROR]`를 붙여야 했습니다. 이를 일반 상수로 관리하면 항상 하드코드를 해야했지만 `enum`으로 관리하니까 다음과 같이 처리할 수 있었습니다.
 
+{% include code-header.html %}
 ```java
 public enum ErrorMessage {
     BONUS_NUMBER_DUPLICATION("보너스 번호는 당첨 번호와 중복될 수 없습니다."),
@@ -87,6 +88,7 @@ public enum ErrorMessage {
 
 이번 과제에서는 입력이 실패하면 다시 입력을 받도록 해야 했습니다. 이 과정에서 중복 코드가 발생했습니다.
 
+{% include code-header.html %}
 ```java
 private LottoCount inputPurchaseAmount() {
     while (true) {
@@ -125,6 +127,7 @@ private WinningLottoInformation inputBonusNumber(Lotto winningLotto) {
 
 이는 MCP 관련 포스팅에서도 작성했듯이 `Supplier<T>`를 활용해서 다음과 같이 깔끔하게 만들 수 있습니다.
 
+{% include code-header.html %}
 ```java
 private <T> T readInputWithValidation(Supplier<T> supplier) {
     while (true) {
@@ -139,6 +142,7 @@ private <T> T readInputWithValidation(Supplier<T> supplier) {
 
 이 함수를 아래와 같이 호출하면 됩니다.
 
+{% include code-header.html %}
 ```java
 private WinningLottoInformation inputBonusNumber(Lotto winningLotto) {
     return readInputWithValidation(() -> {
@@ -155,6 +159,7 @@ private WinningLottoInformation inputBonusNumber(Lotto winningLotto) {
 
 저는 로또 번호가 6개인지 검사하기 위해서 `Set` 자료구조를 활용했습니다. `List`를 `Set`으로 바꿔서 검사한 것입니다.
 
+{% include code-header.html %}
 ```java
 private void validateLottoNumberUnique(List<Integer> numbers) {
     if (new HashSet<>(numbers).size() != numbers.size()) {
@@ -165,6 +170,7 @@ private void validateLottoNumberUnique(List<Integer> numbers) {
 
 하지만 이를 `Stream`을 활용하면 다음과 같이 만들 수 있었습니다.
 
+{% include code-header.html %}
 ```java
 private void validateLottoNumberUnique(List<Integer> numbers) {
     if (numbers.stream().distinct().count() != numbers.size()) {

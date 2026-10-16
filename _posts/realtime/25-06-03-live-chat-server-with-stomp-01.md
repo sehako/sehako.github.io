@@ -38,6 +38,7 @@ STOMP는 다음 명령어들과 함께 동작합니다.
 
 STOMP에서 메시지가 전달되는 예시는 다음과 같습니다.
 
+{% include code-header.html %}
 ```
 SEND
 destination:/queue/a
@@ -55,6 +56,7 @@ STOMP에서 클라이언트와 서버 간 통신은 여러 줄로 구성된 프�
 
 본론에 앞서, 채팅 구현에 대한 테스트는 다음 [페이지](https://jiangxy.github.io/websocket-debug-tool/)에서 진행할 것입니다. 간단하게 웹 소켓을 테스트 할 수 있는 사이트입니다. 스프링에서 STOMP를 활용하여 채팅 서버를 구현하는 방법은 매우 간단합니다. 우선 다음 의존성이 필요합니다.
 
+{% include code-header.html %}
 ```groovy
 implementation 'org.springframework.boot:spring-boot-starter-websocket'
 ```
@@ -63,6 +65,7 @@ implementation 'org.springframework.boot:spring-boot-starter-websocket'
 
 연결 설정도 설정 빈 하나를 등록하면서 끝입니다. 다음 코드를 보도록 하겠습니다.
 
+{% include code-header.html %}
 ```java
 @Configuration
 @EnableWebSocketMessageBroker
@@ -86,6 +89,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
 이렇게 작성하면 `{서버주소}/ws`로 연결 요청을 보내면 연결이 됩니다. 참고로 `registerStompEndpoints`메소드에서 다음과 같이 등록할 수도 있습니다.
 
+{% include code-header.html %}
 ```java
 @Override
 public void registerStompEndpoints(StompEndpointRegistry registry) {
@@ -101,6 +105,7 @@ public void registerStompEndpoints(StompEndpointRegistry registry) {
 
 본론에 앞서, 채팅 구현에 대한 테스트는 다음 [페이지](https://jiangxy.github.io/websocket-debug-tool/)에서 진행할 것입니다. 간단하게 웹 소켓을 테스트 할 수 있는 사이트입니다. 스프링에서 STOMP를 활용하여 채팅 서버를 구현하는 방법은 매우 간단합니다. 우선 다음 의존성이 필요합니다.
 
+{% include code-header.html %}
 ```groovy
 implementation 'org.springframework.boot:spring-boot-starter-websocket'
 ```
@@ -109,6 +114,7 @@ implementation 'org.springframework.boot:spring-boot-starter-websocket'
 
 연결 설정도 설정 빈 하나를 등록하면서 끝입니다. 다음 코드를 보도록 하겠습니다.
 
+{% include code-header.html %}
 ```java
 @Configuration
 @EnableWebSocketMessageBroker
@@ -134,6 +140,7 @@ public class StompConfig implements WebSocketMessageBrokerConfigurer {
 
 채팅도 매우 간단합니다.
 
+{% include code-header.html %}
 ```java
 public record MessageRequest(
         Long userId
@@ -142,6 +149,7 @@ public record MessageRequest(
 }
 ```
 
+{% include code-header.html %}
 ```java
 public record MessageResponse(
         Long userId,
@@ -154,6 +162,7 @@ public record MessageResponse(
 }
 ```
 
+{% include code-header.html %}
 ```java
 @Slf4j
 @Controller
@@ -183,6 +192,7 @@ public class StompController {
 
 이런 경우에는 `@SendTo`를 사용하지 않고 `SimpMessagingTemplate`을 사용하여 특정 토픽에만 메시지를 발행하도록 처리해야 합니다.
 
+{% include code-header.html %}
 ```java
 @Slf4j
 @Controller
@@ -221,6 +231,7 @@ REST에서는 주로 `/`를 이용해 리소스를 구분합니다. 물론 STOMP
 
 이제 테스트를 진행해보겠습니다. 각각 일반 창과 시크릿 창으로 테스트 사이트에 접속하여 `ws://localhost:8080/ws`으로 소켓 연결을 하였고, 하나는 `/app/chat.1`에 발행을, 다른 하나는 `/topic/chat.1`을 구독한 상태에서 다음 메시지를 전송해보았습니다.
 
+{% include code-header.html %}
 ```json
 { "userId": 1, "message": "Hello" }
 ```
@@ -229,6 +240,7 @@ REST에서는 주로 `/`를 이용해 리소스를 구분합니다. 물론 STOMP
 
 **발행자**
 
+{% include code-header.html %}
 ```
 $ _INFO_:Connect STOMP server success, url = ws://localhost:8080/ws, connectHeader =
 $ _INFO_:send STOMP message, destination = /app/chat.1, content = {"userId": 1, "message": "Hello"}, header =
@@ -236,6 +248,7 @@ $ _INFO_:send STOMP message, destination = /app/chat.1, content = {"userId": 1, 
 
 **구독자**
 
+{% include code-header.html %}
 ```
 $ _INFO_:subscribe destination /topic/chat.1 success
 $ _INFO_:Receive subscribed message from destination /topic/chat.1, content = MESSAGE
@@ -251,6 +264,7 @@ content-length:65
 
 서버에서 헤더와 메시지에 대한 로그는 다음과 같이 출력되었습니다.
 
+{% include code-header.html %}
 ```
 headers: {simpMessageType=MESSAGE, stompCommand=SEND,
 nativeHeaders={destination=[/app/chat.1], content-length=[33]},

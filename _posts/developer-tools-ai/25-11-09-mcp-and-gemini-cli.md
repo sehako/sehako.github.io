@@ -96,18 +96,21 @@ RAG(검색 증강 생성)은 AI 답변 품질의 향상(할루시네이션 방�
 
 MCP 호스트 중 하나인 Gemini CLI는 로컬 터미널에서 직접 Gemini에 엑세스할 수 있는 오픈소스 AI 에이전트입니다. 이를 기반으로 사용자의 코딩에 도움을 줄 수 있는 것이 바로 Gemini Code Assist입니다. 원래는 클로드 코드를 사용해보고 싶었지만, Gemini CLI가 하루 1,000회 무료 요청이 가능하기 때문에 이를 직접 사용해보며 MCP가 무엇인지 알아보도록 하겠습니다. 다음 명령어로 Gemini CLI를 설치하겠습니다.
 
+{% include code-header.html %}
 ```bash
 npm install -g @google/gemini-cli
 ```
 
 설치가 완료되면 다음 명령어로 Gemini CLI를 실행하면 됩니다.
 
+{% include code-header.html %}
 ```bash
 gemini
 ```
 
 그러면 다음과 같이 로그인 할 수 있는 방법을 제안합니다.
 
+{% include code-header.html %}
 ```
 1. Login with Google
 2. Use Gemini API Key
@@ -156,18 +159,21 @@ gemini
 
 간단하게 MCP가 어떤 방식으로 동작하는지 알아보도록 하겠습니다. 제가 작성한 깃헙 블로그 마크다운 파일로 제 역량을 한 번 파악해보도록 하겠습니다. 우선 기본적으로 실행된 디렉터리의 하위 파일들을 모두 포함하도록 설정되어 있기 때문에 블로그 프로젝트 루트에서 Gemini CLI를 실행하여 다음과 같이 질문해봤습니다.
 
+{% include code-header.html %}
 ```
 현재 블로그 작성 마크다운 파일을 기반으로 포트폴리오에 작성할만한 내 역량을 리스트 형식으로 알려줘
 ```
 
 이에 대한 답변이 너무 길어서 다시 한 번 이렇게 요청해봤습니다.
 
+{% include code-header.html %}
 ```
 너가 정리한 것을 txt 파일로 만들어 줄 수 있어?
 ```
 
 이후에 사용자 시스템에 쓰기 작업을 실행할 것인가에 대한 허용 여부를 결정할 수 있습니다.
 
+{% include code-header.html %}
 ```
 1. Yes, allow once
 2. Yes, allow always
@@ -176,12 +182,14 @@ gemini
 
 또한 MCP는 제 프로젝트의 파일 구조를 읽어서 적절한 위치에 파일을 생성하기도 합니다. 호기심이 들어서 다음과 같이 질문을 해봤습니다.
 
+{% include code-header.html %}
 ```
 간단한 테스트 코드에 대한 학습 블로그 내용을 마크다운 파일로 작성해줄 수 있어?
 ```
 
 어디에 저장하라는 말도 없었지만, Gemini CLI는 제 블로그 프로젝트의 구조를 기반으로 적절한 위치에 파일을 저장해줬습니다. 좀 더 개발자스럽게 한 번 코드를 수정해보겠습니다. 우테코 프리코스 3주차의 로또 발매기의 입력 기능에 대해서 다음과 같은 코드의 중복이 발생했었습니다.
 
+{% include code-header.html %}
 ```java
 private LottoCount inputPurchaseAmount() {
     while (true) {
@@ -220,12 +228,14 @@ private WinningLottoInformation inputBonusNumber(Lotto winningLotto) {
 
 이 코드의 리팩토링을 Gemini CLI에게 요청해봤습니다.
 
+{% include code-header.html %}
 ```
 @src/main/java/lotto/presentation/LottoController.java 이 코드에서 입력 부분이 너무 중복되는데 한 번 수정해줄 수 있어?
 ```
 
 그리고 다음과 같은 결과를 얻었습니다.
 
+{% include code-header.html %}
 ```java
 private LottoCount inputPurchaseAmount() {
     return readInputWithValidation(() -> {

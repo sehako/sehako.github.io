@@ -27,6 +27,7 @@ DTO(Data Transfer Object)는 계층 간 데이터 전송을 위한 객체입니�
 
 이를 활용하여 회원가입을 위해 사용자로부터 `username`과 `password`를 전달받는 DTO는 다음과 같습니다.
 
+{% include code-header.html %}
 ```java
 public record RegisterRequest(
 		String username,
@@ -37,6 +38,7 @@ public record RegisterRequest(
 
 컨트롤러에서 서비스로 데이터를 넘길 때에는 이 값을 그대로 넘기면 됩니다.
 
+{% include code-header.html %}
 ```java
 @RestController
 @RequiredArgsConstructor
@@ -54,6 +56,7 @@ public class UserController {
 
 저는 서비스에서 적절한 비즈니스 로직 처리 후 필요하다면 별도 DTO를 생성해 컨트롤러에게 넘겨주는 방식으로 개발하고 있습니다. 예를 들어 가입 이후 사용자 ID와 날짜를 리턴해야 한다고 가정해보겠습니다.
 
+{% include code-header.html %}
 ```java
 public record RegisterResponse(
 		Long userId,
@@ -64,6 +67,7 @@ public record RegisterResponse(
 
 이 DTO를 서비스에서 리턴하는 방식으로 개발합니다.
 
+{% include code-header.html %}
 ```java
 @Service
 public class UserService {
@@ -78,6 +82,7 @@ public class UserService {
 
 그리고 하나의 도메인에서 처리하는 일이 많아지다보면 DTO가 너무 많아지는데, 이럴 때에는 하나의 클래스로 묶어 관리하는 것을 고려할 수도 있습니다.
 
+{% include code-header.html %}
 ```java
 public class UserRequest {
   public record Register(
@@ -97,6 +102,7 @@ VO(Value Object)는 값을 표현하는 객체입니다. VO 설계 시 규칙은
 
 이 규칙에 맞춰서 한 번 구현해보도록 하겠습니다. 우선 비즈니스 로직을 포함하면서 객체를 불변하게 어떻게 유지할 수 있을까요? 그 답은 속성의 변경이 있다면 새로운 VO를 리턴하는 방식으로 코드를 작성하는 것입니다.
 
+{% include code-header.html %}
 ```java
 public class Money {
 	private long value;
@@ -121,6 +127,7 @@ public class Money {
 
 그리고 모든 필드를 `final`로 명시하면 불변성도 보장할 수 있습니다.
 
+{% include code-header.html %}
 ```java
 public class Money {
   private final long value;
@@ -132,6 +139,7 @@ public class Money {
 
 따라서 `equals()`를 재정의하여 속성이 같으면 `true`를 반환하도록 만들겠습니다. 이때 자바의 계약(contract)에 의해 `equals()`가 `true`인 두 객체에 대해서 각각의 `hashCode()`는같은 값을 반환해야 하기 때문에 이를 반영하여 다음과 같이 작성해야 합니다.
 
+{% include code-header.html %}
 ```java
 @Override
 public boolean equals(Object obj) {
@@ -160,6 +168,7 @@ public int hashCode() {
 
 `Money` VO의 전체 구현 코드는 다음과 같습니다.
 
+{% include code-header.html %}
 ```java
 public class Money {
   private final long value;
@@ -211,6 +220,7 @@ VO를 클래스로 구현한 코드를 봤을 때, 기본적으로 3개 메서�
 
 즉, 레코드는 사실 VO를 간결하게 구현하기 위한 모던 자바의 대안입니다. 위 VO를 레코드로 바꾼다면 다음과 같이 구현하면 됩니다.
 
+{% include code-header.html %}
 ```java
 public record Money(
 		long value
@@ -231,6 +241,7 @@ VO에 작성하는 로직의 범위는 일반적으로 값에 대한 검증, 연
 
 `Money` VO는 음수로부터 만들어질 수 없습니다. 따라서 VO 생성 시 생성자에서 이를 검사 해줘야 합니다. 이때 레코드는 컴팩트 생성자를 지원하기 때문에 별도 파라미터 명시 없이 다음과 같이 간결하게 작성할 수 있습니다.
 
+{% include code-header.html %}
 ```java
 public Money {
 	if (value < 0) {
@@ -243,6 +254,7 @@ public Money {
 
 연산은 VO를 기반으로 새로운 값을 가지는 VO를 반환하는 것입니다. 앞서 작성했던 `add()`가 이에 해당합니다.
 
+{% include code-header.html %}
 ```java
 public Money add(long value) {
   return new Money(this.value + value);
@@ -251,6 +263,7 @@ public Money add(long value) {
 
 연산 메서드 작성 시 주의해야 할 점은 반환하는 타입이 VO의 타입과 다르면 안된다는 것입니다.
 
+{% include code-header.html %}
 ```java
 public record Won(
 	long value
@@ -263,6 +276,7 @@ public record Won(
 
 이는 환전을 하는 잘못된 VO 로직 예시입니다. 이 경우에는 해당 VO에 적합하지 않은 로직이거나 VO의 범위를 잘못 설정한 것은 아닌지 고민해봐야 합니다. 적절한 예시는 다음과 같습니다.
 
+{% include code-header.html %}
 ```java
 public record Money(
 	long value,
@@ -278,6 +292,7 @@ public record Money(
 
 비교는 VO와 어떤 값을 비교하는 것입니다. `m1` 보다 `m2`가 더 돈이 많은지 검사하려면 다음과 같은 비교 로직을 작성하면 됩니다.
 
+{% include code-header.html %}
 ```java
 public record Money(
 	long value
@@ -299,6 +314,7 @@ m1.isGreaterThan(m2); // true
 
 표현은 VO의 현재 상태나 포매팅 등을 수행합니다. 다음 메서드를 정의하여 파산한 상태를 표현하거나 출력을 화폐단위 형식으로 포매팅할 수도 있습니다.
 
+{% include code-header.html %}
 ```java
 public boolean isBankrupted() {
 	return value == 0;

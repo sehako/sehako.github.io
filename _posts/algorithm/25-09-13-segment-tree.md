@@ -82,6 +82,7 @@ $$
 
 이를 자바 코드로 표현하면 두 가지 방법을 사용할 수 있습니다.
 
+{% include code-header.html %}
 ```java
 int n = arr.length;
 
@@ -100,6 +101,7 @@ long[] tree = new long[treeSize];
 
 두 번째 방법이 성능이 좀 더 빠르다고는 하는데 이걸 실제 코딩 테스트 환경에서 작성할 수 있을까 싶어서 저는 다음과 같이 트리 배열의 크기를 구하는 코드를 사용하였습니다.
 
+{% include code-header.html %}
 ```java
 public class SegmentTree {
 	private final long[] tree;
@@ -116,6 +118,7 @@ public class SegmentTree {
 
 참고로 이러한 높이 계산이 난해하다면 원본 배열 크기에 4를 곱하는 방식을 사용할 수도 있습니다.
 
+{% include code-header.html %}
 ```java
 public class SegmentTree {
 	private final long[] tree;
@@ -133,6 +136,7 @@ public class SegmentTree {
 
 트리 초기화는 재귀적인 방식으로 구현하면 됩니다.
 
+{% include code-header.html %}
 ```java
 private void build(long[] arr, int n, int s, int e) {
 	if (s == e) {
@@ -149,6 +153,7 @@ private void build(long[] arr, int n, int s, int e) {
 
 이 메서드를 트리 배열을 생성할 때 원본 배열과 함께 다음과 같이 호출하면 됩니다.
 
+{% include code-header.html %}
 ```java
 public SegmentTree(int[] org) {
 	// ...
@@ -158,6 +163,7 @@ public SegmentTree(int[] org) {
 
 ## 구간 합 구하기
 
+{% include code-header.html %}
 ```java
 public long query(int n, int s, int e, int l, int r) {
 	if (s > r || e < l) return 0L;
@@ -193,6 +199,7 @@ public long query(int n, int s, int e, int l, int r) {
 
 원본 배열의 인덱스를 변경하는 경우, 해당 인덱스를 포함하는 노드에서 차이점만 연산하면 됩니다. 원래 배열의 값이 `arr[idx]`이고, 변경된 수와 기존의 수가 `diff`라고 했을 때 코드는 다음과 같습니다.
 
+{% include code-header.html %}
 ```java
 public void update(int n, int s, int e, int idx, long diff) {
 	if (idx < s || idx > e) return;
@@ -216,6 +223,7 @@ public void update(int n, int s, int e, int idx, long diff) {
 
 이 방법은 리프 노드까지 탐색을 하고, 해당 노드에서 주어진 차이점을 업데이트한 이후 재귀 호출이 끝날때마다 각 노드를 업데이트하는 방법입니다.
 
+{% include code-header.html %}
 ```java
 public void update(int n, int s, int e, int idx, long diff) {
 	if (idx < s || idx > e) return;
@@ -240,6 +248,7 @@ public void update(int n, int s, int e, int idx, long diff) {
 
 ### 업데이트 적용
 
+{% include code-header.html %}
 ```java
 private final long[] update;
 
@@ -261,6 +270,7 @@ private static void applyUpdate(int n, int s, int e) {
 
 이후에 `s`와 `e`가 같지 않다면 현재 업데이트 값을 하위 노드로 전파시킨 다음에 현재 노드의 업데이트 값을 0으로 초기화 합니다. 이 메서드를 각각 범위 업데이트와 쿼리 메서드의 시작 지점에서 호출하면 됩니다.
 
+{% include code-header.html %}
 ```java
 private static void updateRange(int n, int s, int e, int l, int r, long diff) {
 	applyUpdate(n, s, e);
@@ -275,6 +285,7 @@ private static long query(int n, int s, int e, int l, int r) {
 
 ### 범위 업데이트
 
+{% include code-header.html %}
 ```java
 private static void updateRange(int n, int s, int e, int l, int r, long diff) {
 	applyUpdate(n, s, e);
@@ -305,6 +316,7 @@ private static void updateRange(int n, int s, int e, int l, int r, long diff) {
 
 세그먼트 트리를 자바로 구현한 전체 코드는 다음과 같습니다.
 
+{% include code-header.html %}
 ```java
 public class SegmentTree {
 	private long[] tree, update;

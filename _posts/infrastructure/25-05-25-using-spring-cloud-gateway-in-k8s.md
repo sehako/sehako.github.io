@@ -64,6 +64,7 @@ _여러 대의 물리적 서버를 하나의 서버처럼 통합·관리하고, 
 
 {% include code-header.html %}
 
+{% include code-header.html %}
 ```groovy
 implementation 'org.springframework.cloud:spring-cloud-kubernetes-client-discovery:3.2.1'
 ```
@@ -74,6 +75,7 @@ implementation 'org.springframework.cloud:spring-cloud-kubernetes-client-discove
 
 로그 레벨을 `debug`로 한 다음에 어플리케이션을 실행해보면 게이트웨이에 존재하는 `KubernetesDiscoveryClientUtils`이 쿠버네티스의 모든 서비스를 판별한 것을 볼 수 있습니다.
 
+{% include code-header.html %}
 ```yaml
 s.c.k.c.d.KubernetesDiscoveryClientUtils : service labels from properties are empty, service with name : 'argocd-server' will match
 s.c.k.c.d.KubernetesDiscoveryClientUtils : service labels from properties are empty, service with name : 'argocd-redis' will match
@@ -105,6 +107,7 @@ s.c.k.c.d.KubernetesDiscoveryClientUtils : service labels from properties are em
 
 {% include code-header.html %}
 
+{% include code-header.html %}
 ```yaml
 server:
   port: 8080
@@ -144,6 +147,7 @@ spring:
 
 {% include code-header.html %}
 
+{% include code-header.html %}
 ```yaml
 routes:
   - id: member-service

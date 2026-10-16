@@ -29,6 +29,7 @@ permalink: "/spring/websocket/live-chat-server-with-stomp-03/"
 
 다음 도커 명령어로 PostgreSQL을 실행하도록 하겠습니다.
 
+{% include code-header.html %}
 ```bash
 docker run --name postgres-chat \
     -e POSTGRES_USER=root \
@@ -45,6 +46,7 @@ docker run --name postgres-chat \
 
 접속이 완료되었으면 앞서 설계한 ERD대로 테이블을 만들기 위해 다음 DDL 명령어를 입력하도록 하겠습니다.
 
+{% include code-header.html %}
 ```sql
 CREATE TABLE "user" (
     id INTEGER PRIMARY KEY
@@ -85,6 +87,7 @@ SELECT setval('chat_log_id_seq', COALESCE((SELECT MAX(id) FROM chat_log), 0) + 1
 
 일반적으로는 채팅방을 생성하고, 가입하는 시나리오가 존재해야 합니다. 하지만 여기서는 그러한 시나리오가 이미 완료되었다고 가정하고 다음과 같은 데이터를 쿼리를 통해 삽입하였습니다.
 
+{% include code-header.html %}
 ```sql
 INSERT INTO "user"(id) VALUES (1);
 INSERT INTO "user"(id) VALUES (2);
@@ -103,6 +106,7 @@ INSERT INTO chatroom_user(id, chatroom_id, user_id) VALUES (3, 1, 3);
 
 데이터베이스에 연결하기 위해서 build.gradle에 의존성을 추가하고, application.yml에 설정을 해줍니다.
 
+{% include code-header.html %}
 ```groovy
 runtimeOnly 'org.postgresql:postgresql'
 implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
@@ -110,6 +114,7 @@ implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 
 JPA를 활용하여 편리하게 엔티티를 다룰 것입니다.
 
+{% include code-header.html %}
 ```yaml
 # application.yml
 spring:
@@ -125,6 +130,7 @@ spring:
 
 마지막 사전 설정입니다. 테이블과 매칭되는 엔티티들을 다음과 같이 설계하도록 하겠습니다.
 
+{% include code-header.html %}
 ```java
 @Entity
 @Table(name = "\"user\"")
@@ -136,6 +142,7 @@ public class User {
 }
 ```
 
+{% include code-header.html %}
 ```java
 @Entity
 @Getter
@@ -147,6 +154,7 @@ public class Chatroom {
 }
 ```
 
+{% include code-header.html %}
 ```java
 @Entity
 @Table(name = "chatroom_user")
@@ -164,6 +172,7 @@ public class ChatroomUser {
 }
 ```
 
+{% include code-header.html %}
 ```java
 @Entity
 @Getter
@@ -207,6 +216,7 @@ public class ChatLog {
 
 `ChatLog` 엔티티를 저장하는 JPA레포지토리를 다음과 같이 간단하게 구현하였습니다.
 
+{% include code-header.html %}
 ```java
 @Repository
 public interface ChatLogRepository extends JpaRepository<ChatLog, Long> {
@@ -215,6 +225,7 @@ public interface ChatLogRepository extends JpaRepository<ChatLog, Long> {
 
 ## 서비스
 
+{% include code-header.html %}
 ```java
 @Service
 @RequiredArgsConstructor
@@ -239,6 +250,7 @@ public class ChatService {
 
 서비스 계층에서는 주어진 데이터를 엔티티로 변환하고 저장한 다음에, `MessageResponse`로 변환하여 반환하도록 작성하였습니다.
 
+{% include code-header.html %}
 ```java
 public record MessageSendingDto(
         Long chatroomId,
@@ -255,6 +267,7 @@ public record MessageSendingDto(
 }
 ```
 
+{% include code-header.html %}
 ```java
 public record MessageResponse(
         Long id,
@@ -272,6 +285,7 @@ public record MessageResponse(
 
 컨트롤러에서는 전달받은 메시지 객체를 적절하게 변환하여 서비스에 처리를 위임하고, 그 결과를 활용하여 채팅방에 브로드캐스트 합니다.
 
+{% include code-header.html %}
 ```java
 @Slf4j
 @Controller
@@ -297,6 +311,7 @@ public class StompController {
 
 이를 위해서 다음과 같이 요청 객체에 DTO를 변환하는 메서드를 작성하였습니다.
 
+{% include code-header.html %}
 ```java
 public record MessageRequest(
         Long userId,
@@ -322,6 +337,7 @@ public record MessageRequest(
 
 **채팅 전송**
 
+{% include code-header.html %}
 ```
 $ _INFO_:Connect STOMP server success, url = ws://localhost:8080/ws, connectHeader =
 $ _INFO_:send STOMP message, destination = /app/chat.1, content = {"userId": 1, "message": "Hello"}, header =
@@ -329,6 +345,7 @@ $ _INFO_:send STOMP message, destination = /app/chat.1, content = {"userId": 1, 
 
 **채팅 수신**
 
+{% include code-header.html %}
 ```
 $ _INFO_:Connect STOMP server success, url = ws://localhost:8080/ws, connectHeader =
 $ _INFO_:subscribe destination /topic/chat.1 success
@@ -345,6 +362,7 @@ content-length:64
 
 정상적으로 수신이 된 것을 확인할 수 있습니다. 그렇다면 데이터베이스에도 정상적으로 저장이 되었을까요? 확인을 위해 `SELECT`로 `chat_log` 테이블을 확인해보겠습니다.
 
+{% include code-header.html %}
 ```sql
 SELECT * FROM chat_log;
 ```
@@ -369,6 +387,7 @@ SELECT * FROM chat_log;
 
 그 전에 우선 페이지네이션을 구현하기 위해서 1번 채팅방에 대해 1번 부터 3번 사용자까지 채팅을 나눈 무작위 100개 데이터를 Postgres에 INSERT 하였습니다.
 
+{% include code-header.html %}
 ```sql
 INSERT INTO chat_log (chatroom_id, user_id, message, created_at)
 SELECT
@@ -381,6 +400,7 @@ FROM generate_series(1, 100) g;
 
 그리고 커서 기반 페이지네이션 작업을 처리할 수 있는 메서드를 만들겠습니다.
 
+{% include code-header.html %}
 ```java
 public interface ChatLogRepository extends JpaRepository<ChatLog, Long> {
     // 최초 입장: 최신 20개 (내림차순)
@@ -403,6 +423,7 @@ public interface ChatLogRepository extends JpaRepository<ChatLog, Long> {
 
 `@SendToUser`를 사용하기 위해서 저번 포스팅에서 다뤘던 것처럼 반환값이 있어야 합니다. 조회한 채팅 내역을 `List<MessageResponse>`로 변환하여 반환하는 서비스를 먼저 작성하였습니다.
 
+{% include code-header.html %}
 ```java
 @Service
 @RequiredArgsConstructor
@@ -437,6 +458,7 @@ public class ChatService {
 
 따라서 STOMP SEND 요청 헤더에 커서 값을 담아서 보내는 방식으로 작성하였습니다.
 
+{% include code-header.html %}
 ```java
 @Controller
 @RequiredArgsConstructor
@@ -458,6 +480,7 @@ public class StompController {
 
 ### SimpMessagingTemplate
 
+{% include code-header.html %}
 ```java
 @Controller
 @RequiredArgsConstructor
@@ -498,6 +521,7 @@ public class StompController {
 
 `convertAndSendToUser()`의 내부 구현은 다음과 같습니다.
 
+{% include code-header.html %}
 ```java
 @Override
 public void convertAndSendToUser(
@@ -518,6 +542,7 @@ public void convertAndSendToUser(
 
 STOMP 설정에 사용된 `StompConfig`를 다시 살펴보도록 하겠습니다.
 
+{% include code-header.html %}
 ```java
 @Configuration
 @EnableWebSocketMessageBroker
@@ -534,6 +559,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
 이에 따라서 `/user/queue/chat.log`에 구독을 하였습니다.
 
+{% include code-header.html %}
 ```
 $ _INFO_:subscribe destination /user/queue/chat.log success
 $ _INFO_:send STOMP message, destination = /app/chat.1.log, content = , header =
@@ -541,6 +567,7 @@ $ _INFO_:send STOMP message, destination = /app/chat.1.log, content = , header =
 
 그 다음 아무런 헤더 없이 1번 채팅방의 채팅 내역을 `/app/chat.1.log`에 SEND 요청을 보내어 확인해보도록 하겠습니다.
 
+{% include code-header.html %}
 ```
 $ _INFO_:send STOMP message, destination = /app/chat.1.log, content = , header =
 $ _INFO_:Receive subscribed message from destination /user/queue/chat.log, content = MESSAGE
@@ -559,6 +586,7 @@ content-length:1473
 
 여기서 마지막으로 조회한 가장 오래된 채팅 ID가 81인 것을 확인할 수 있습니다. 따라서 커서에 마지막으로 조회한 채팅 ID인 81을 전달하여 다시 요청을 보내보도록 하겠습니다.
 
+{% include code-header.html %}
 ```
 $ _INFO_:send STOMP message, destination = /app/chat.1.log, content = , header = {"cursor": "82"}
 $ _INFO_:Receive subscribed message from destination /user/queue/chat.log, content = MESSAGE
@@ -597,6 +625,7 @@ content-length:1491
 
 따라서 저는 이 문제에 대해서 스프링이 제공하는 `@MessageExceptionHandler`를 사용해 예외를 잡고, 사용자 전용 목적지(`/user/**`)로 안내 메시지를 보내 연결은 유지하는 방식을 사용하였습니다. 기본적인 사용법은 다음과 같습니다.
 
+{% include code-header.html %}
 ```java
 @ControllerAdvice
 @RequiredArgsConstructor
@@ -625,6 +654,7 @@ public class StompExceptionHandler {
 
 서버 구동 중 데이터베이스가 꺼지면 HikariPool이 없다는 경고 로그가 뜨고, 일정 시간이 지나면 `TransactionException`의 하위 클래스인 `CannotCreateTransactionException`이 발생하는 것을 확인하였습니다. 이를 참고하여 다음과 같이 예외 처리를 하는 메서드를 작성하였습니다.
 
+{% include code-header.html %}
 ```java
 @Slf4j
 @ControllerAdvice
@@ -663,6 +693,7 @@ public class StompExceptionHandler {
 
 이제 `/user/queue/chat.error`에 클라이언트를 구독하고, `/app/chat.1`으로 1번 채팅방에 메시지를 보내보고 기다려보면 서버에서 `CannotCreateTransactionException` 이 발생하고, 이에 대해서 다음과 같이 클라이언트에게 메시지가 전송된 것을 확인할 수 있습니다.
 
+{% include code-header.html %}
 ```
 $ _INFO_:send STOMP message, destination = /app/chat.1, content = {"userId": "1", "message": "ERROR"}, header =
 $ _INFO_:subscribe destination /user/queue/chat.error success
@@ -689,6 +720,7 @@ content-length:13
 
 그렇다면 현재 서비스에서는 어떤 토픽을 하나의 토픽으로 관리할 수 있을까요? 이에 대해서 저는 채팅 내역을 전송하기 위한 토픽과 채팅 시 발생하는 예외를 전송하기 위한 토픽을 `/user/queue/chat.info`로 처리하면 어떨까 생각하였습니다. 또한 하나의 토픽으로 합쳐진만큼 클라이언트에서는 해당 토픽을 통해 발행된 메시지가 어떤 타입인지 알아야 해당 타입에 따른 적절한 처리를 할 수 있다고 생각하였습니다. 따라서 다음과 같은 객체를 작성해보았습니다.
 
+{% include code-header.html %}
 ```java
 public record QueueIntegrationResponse<T>(
         Type type,
@@ -706,6 +738,7 @@ enum Type {
 
 그리고 예외 처리 부분에서 단순히 문자열을 담아 메시지를 보낸 것을 다음과 같이 변경하였습니다.
 
+{% include code-header.html %}
 ```java
 @MessageExceptionHandler
 public void handleTransactionException(
@@ -725,6 +758,7 @@ public void handleTransactionException(
 
 이제 클라이언트 로그를 살펴보겠습니다.
 
+{% include code-header.html %}
 ```
 $ _INFO_:Receive subscribed message from destination /user/queue/chat.info, content = MESSAGE
 content-length:39

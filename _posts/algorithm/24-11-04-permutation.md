@@ -39,6 +39,7 @@ $$
 
 {% include code-header.html %}
 
+{% include code-header.html %}
 ```java
 for (int i = 0; i < N; i++) {
     // 두 번째 원소 선택
@@ -67,6 +68,7 @@ for (int i = 0; i < N; i++) {
 
 {% include code-header.html %}
 
+{% include code-header.html %}
 ```java
 int[] data = {1, 2, 3};
 
@@ -104,6 +106,7 @@ void permutation(int depth) {
 
 {% include code-header.html %}
 
+{% include code-header.html %}
 ```java
 void permutation(int depth, int flag) {
     if(depth == R) return;
@@ -128,6 +131,7 @@ void permutation(int depth, int flag) {
 
 {% include code-header.html %}
 
+{% include code-header.html %}
 ```java
 int[] data = {1, 2, 3, 4, 5};
 
@@ -159,6 +163,7 @@ $$
 
 {% include code-header.html %}
 
+{% include code-header.html %}
 ```java
 void permutation(int depth) {
     if(depth == 3) return;

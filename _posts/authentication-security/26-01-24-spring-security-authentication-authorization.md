@@ -30,12 +30,14 @@ permalink: "/spring security/spring-security-authentication-authorization/"
 
 **Docker 명령어**
 
+{% include code-header.html %}
 ```bash
 docker run --name mysql-db -e MYSQL_ROOT_PASSWORD=1234 -d -p 3306:3306 mysql:latest
 ```
 
 **DDL**
 
+{% include code-header.html %}
 ```sql
 CREATE DATABASE IF NOT EXISTS `security`;
 
@@ -56,6 +58,7 @@ CREATE TABLE IF NOT EXISTS `user`
 
 **application.yml**
 
+{% include code-header.html %}
 ```yaml
 spring:
   application:
@@ -69,6 +72,7 @@ spring:
 
 **JPA 엔티티**
 
+{% include code-header.html %}
 ```java
 @Entity
 @Table(name = "user")
@@ -93,6 +97,7 @@ public class User {
 
 **UserRepository**
 
+{% include code-header.html %}
 ```java
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
@@ -108,6 +113,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
 `PasswordEncoder`는 스프링 시큐리티에서 비밀번호의 단방향 암호화를 담당하는 인터페이스입니다. 다음과 같이 설계되어 있습니다.
 
+{% include code-header.html %}
 ```java
 public interface PasswordEncoder {
 	@Nullable String encode(@Nullable CharSequence rawPassword);
@@ -144,6 +150,7 @@ CPU와 메모리 사용량까지 조절이 가능하여 특수 하드웨어(FPGA
 
 비밀번호 암호화 관련 빈을 등록할 때는 일반적으로 `PasswordEncoder` 구현체를 직접적으로 다음과 같이 빈으로 등록했습니다.
 
+{% include code-header.html %}
 ```java
 @Bean
 public PasswordEncoder passwordEncoder() {
@@ -161,6 +168,7 @@ public PasswordEncoder passwordEncoder() {
 
 이것이 가능한 이유는 `DelegatingPasswordEncoder`가 `PasswordEncoderFactories`에 의해서 다음과 같이 구성되기 때문입니다.
 
+{% include code-header.html %}
 ```java
 public final class PasswordEncoderFactories {
 
@@ -182,6 +190,7 @@ public final class PasswordEncoderFactories {
 
 따라서 요즘에는 다음과 같이 `PasswordEncoder`를 등록하면 됩니다.
 
+{% include code-header.html %}
 ```java
 @Bean
 public PasswordEncoder passwordEncoder() {
@@ -191,6 +200,7 @@ public PasswordEncoder passwordEncoder() {
 
 그리고 이렇게 등록하면, 암호화할 때 어떤 알고리즘으로 암호화되었는지 중괄호 앞에 표시됩니다.
 
+{% include code-header.html %}
 ```
 {bcrypt}$2a$10$oQGVQuacv0iJjWcB6B781.SfrvwHMhJiekjbnpxUQYpduUDyxfIiq
 ```
@@ -213,6 +223,7 @@ public PasswordEncoder passwordEncoder() {
 
 사용자 자격 증명을 저장하는 클래스들은 모두 `CredentialsContainer`를 구현할 수 있습니다. 이는 다음과 같이 이루어진 인터페이스입니다.
 
+{% include code-header.html %}
 ```java
 public interface CredentialsContainer {
 	void eraseCredentials();
@@ -251,6 +262,7 @@ public interface CredentialsContainer {
 
 폼 로그인 구현을 위해서는 다음 의존성이 필요합니다.
 
+{% include code-header.html %}
 ```groovy
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-security'
@@ -274,6 +286,7 @@ dependencies {
 
 **register.html**
 
+{% include code-header.html %}
 ```html
 <html>
   <head>
@@ -307,6 +320,7 @@ dependencies {
 
 **UserRegisterRequest**
 
+{% include code-header.html %}
 ```java
 public record UserRegisterRequest(
 		String username,
@@ -326,6 +340,7 @@ public record UserRegisterRequest(
 
 **UserController**
 
+{% include code-header.html %}
 ```java
 @Slf4j
 @Controller
@@ -355,6 +370,7 @@ public class UserController {
 
 **UserService**
 
+{% include code-header.html %}
 ```java
 @Service
 @RequiredArgsConstructor
@@ -380,6 +396,7 @@ public class UserService {
 
 **SecurityConfiguration**
 
+{% include code-header.html %}
 ```java
 @Configuration
 @EnableWebSecurity
@@ -439,6 +456,7 @@ public class SecurityConfiguration {
 
 이를 설정하는 코드를 살펴보기 위해 `/admin`으로 시작하는 주소의 하위 주소로 `/payment`와 `/shipping`이 있다고 가정해보겠습니다. 이때 `/admin`주소는 관리자 간 메신저 역할을 해야 하므로 위 두 관리 페이지를 제외한 다른 모든 페이지는 `ADMIN`이라는 역할만 있으면 접속할 수 있지만, 각 관리 페이지는 접근 주소 + `_MANAGER` 권한이 있어야 한다면 다음과 같이 설정해주면 됩니다.
 
+{% include code-header.html %}
 ```java
 .requestMatchers("/admin/payment/**").access(AuthorizationManagers.allOf(
     AuthorityAuthorizationManager.hasRole("ADMIN"),
@@ -453,6 +471,7 @@ public class SecurityConfiguration {
 
 **CustomUserDetails**
 
+{% include code-header.html %}
 ```java
 @Getter
 public class CustomUserDetails implements UserDetails, CredentialsContainer {
@@ -505,6 +524,7 @@ UserDetails에는 이 외에도 계정 및 인증 정보의 상태를 판단하�
 
 **CustomUserDetailsService**
 
+{% include code-header.html %}
 ```java
 @Service
 @RequiredArgsConstructor
@@ -529,6 +549,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 
 **login.html**
 
+{% include code-header.html %}
 ```html
 <html>
   <head>
@@ -567,6 +588,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 
 **UserController**
 
+{% include code-header.html %}
 ```java
 @Slf4j
 @Controller
@@ -590,6 +612,7 @@ public class UserController {
 
 JWT를 발급하고 파싱하기 위해서 JJWT 의존성을 사용합니다.
 
+{% include code-header.html %}
 ```groovy
 dependencies {
   implementation 'org.springframework.boot:spring-boot-starter-security'
@@ -611,6 +634,7 @@ dependencies {
 
 JWT의 시그니처와 엑세스 및 리프레시 토큰 만료 시간 설정을 위해 다음 설정을 추가합니다.
 
+{% include code-header.html %}
 ```yaml
 jwt:
 	secret: ${JWT_SECRET}
@@ -626,6 +650,7 @@ jwt:
 
 **UserRegisterRequest**
 
+{% include code-header.html %}
 ```java
 public record UserRegisterRequest(
 		String username,
@@ -644,6 +669,7 @@ public record UserRegisterRequest(
 
 **UserController**
 
+{% include code-header.html %}
 ```java
 @RestController
 @RequiredArgsConstructor
@@ -665,6 +691,7 @@ public class UserController {
 
 **UserService**
 
+{% include code-header.html %}
 ```java
 @Slf4j
 @Service
@@ -690,6 +717,7 @@ public class UserService {
 
 **TokenInformation**
 
+{% include code-header.html %}
 ```java
 public record TokenInformation(
     String accessToken,
@@ -700,6 +728,7 @@ public record TokenInformation(
 
 **JwtProvider**
 
+{% include code-header.html %}
 ```java
 @Component
 public class JwtProvider {
@@ -757,6 +786,7 @@ public class JwtProvider {
 
 **CustomUserDetails**
 
+{% include code-header.html %}
 ```java
 @Getter
 public class CustomUserDetails implements UserDetails, CredentialsContainer {
@@ -797,6 +827,7 @@ public class CustomUserDetails implements UserDetails, CredentialsContainer {
 
 **CustomUserDetailsService**
 
+{% include code-header.html %}
 ```java
 @Service
 @RequiredArgsConstructor
@@ -819,6 +850,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 
 **UserLoginRequest**
 
+{% include code-header.html %}
 ```java
 public record UserLoginRequest(
     String username,
@@ -828,6 +860,7 @@ public record UserLoginRequest(
 
 **UserController**
 
+{% include code-header.html %}
 ```java
 @RestController
 @RequiredArgsConstructor
@@ -853,6 +886,7 @@ public class UserController {
 
 여기서 사용자 ID와 비밀번호를 가지고 인증을 시도하므로 별도의 인증 절차를 만드는 대신에 폼 로그인의 동작 과정을 일부 빌릴 것입니다. `DaoAuthenticationProvider`를 이용해 인증 처리를 한 다음에 반환받은 `Authentication` 객체를 바탕으로 JWT를 발급받도록 하겠습니다. 이를 위해서 우선 `AuthenticationManager`를 스프링 빈으로 등록해야 합니다.
 
+{% include code-header.html %}
 ```java
 @Bean
 public AuthenticationManager authenticationManager(
@@ -864,6 +898,7 @@ public AuthenticationManager authenticationManager(
 
 **UserService**
 
+{% include code-header.html %}
 ```java
 @Slf4j
 @Service
@@ -893,6 +928,7 @@ public class UserService {
 
 JWT를 사용하게 되면 헤더에 전달되는 엑세스 토큰 정보를 바탕으로 사용자 정보를 얻게 됩니다. 매 요청마다 헤더에 전달되는 JWT를 파싱하기 위해서 `JwtProvider`에 다음 코드를 추가합니다.
 
+{% include code-header.html %}
 ```java
 @Component
 public class JwtProvider {
@@ -937,6 +973,7 @@ public class JwtProvider {
 
 모든 요청마다 한 번씩 실행되는 필터에서 `Authorization` 헤더의 JWT를 추출하고, `JwtProvider`를 통해 인증 객체(`Authentication`)를 얻어 `SecurityContextHolder`에 저장하는 방식입니다. 구현이 매우 직관적이고 간편하지만, 스프링 시큐리티의 `AuthenticationManager`를 거치지 않기 때문에 프레임워크가 설계한 표준 인증 흐름을 우회하는 것입니다. 코드를 보도록 하겠습니다.
 
+{% include code-header.html %}
 ```java
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
@@ -968,6 +1005,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 이를 `SecurityFilterChain` 구성 빈에 다음과 같이 등록하기만 하면 됩니다.
 
+{% include code-header.html %}
 ```java
 @EnableWebSecurity
 @RequiredArgsConstructor
@@ -998,6 +1036,7 @@ public class SecurityConfiguration {
 
 **JwtAuthenticationToken**
 
+{% include code-header.html %}
 ```java
 public class JwtAuthenticationToken extends AbstractAuthenticationToken {
 
@@ -1040,6 +1079,7 @@ JWT를 기반으로 인증을 수행하기 위해서는 우선 `UsernamePassword
 
 **JwtAuthenticationProvider**
 
+{% include code-header.html %}
 ```java
 @RequiredArgsConstructor
 public class JwtAuthenticationProvider implements AuthenticationProvider {
@@ -1070,6 +1110,7 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
 
 **JwtAuthenticationFilter**
 
+{% include code-header.html %}
 ```java
 public class JwtAuthenticationFilter extends AbstractAuthenticationProcessingFilter {
 
@@ -1113,6 +1154,7 @@ public class JwtAuthenticationFilter extends AbstractAuthenticationProcessingFil
 
 인증이 성공적으로 처리되면 이후 `successfulAuthentication`이 호출되어 최종적으로 `SecurityContextHolder`에 사용자 정보가 저장됩니다. 최종적으로 등록된 필터를 `SecurityFilterChain` 구성 빈에 다음과 같이 등록하면 됩니다.
 
+{% include code-header.html %}
 ```java
 @Bean
 public SecurityFilterChain filterChain(HttpSecurity http, AuthenticationManager authenticationManager) {
@@ -1130,6 +1172,7 @@ public SecurityFilterChain filterChain(HttpSecurity http, AuthenticationManager 
 
 따라서 다음과 같이 직접적으로 `DaoAuthenticationProvider`와 `JwtAuthenticationProvider`를 가지고 있는`AuthenticationManager`를 빈으로 등록해야 합니다.
 
+{% include code-header.html %}
 ```java
 @EnableWebSecurity
 @RequiredArgsConstructor
@@ -1174,6 +1217,7 @@ public class SecurityConfiguration {
 
 `SecurityFilterChain`을 구성하는 코드를 넣을만한 섹션이 없어서 전체 코드형식으로 마지막에 첨부합니다.
 
+{% include code-header.html %}
 ```java
 @Configuration
 @EnableWebSecurity
@@ -1258,6 +1302,7 @@ public class SecurityConfiguration {
 
 이 정보를 사용하기 위해서는 간단하게 다음과 같이 호출하면 됩니다.
 
+{% include code-header.html %}
 ```java
 SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 ```
@@ -1266,6 +1311,7 @@ SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
 해당 어노테이션은 파라미터 수준에서 동작하는데, 내부적으로 `SecurityContextHolder`에 접근하여 위와 같은 코드를 호출합니다. 따라서 사용자 정보가 필요한 컨트롤러에 다음과 같이 작성하면 됩니다.
 
+{% include code-header.html %}
 ```java
 @GetMapping("/")
 public ResponseEntity<UserInfoResponse> home(
@@ -1281,6 +1327,7 @@ public ResponseEntity<UserInfoResponse> home(
 
 **AuthenticationUser 어노테이션**
 
+{% include code-header.html %}
 ```java
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.PARAMETER)
@@ -1290,6 +1337,7 @@ public @interface AuthenticationUser {
 
 **AuthenticationUserArgumentResolver**
 
+{% include code-header.html %}
 ```java
 @Slf4j
 public class AuthenticationUserArgumentResolver implements HandlerMethodArgumentResolver {
@@ -1330,6 +1378,7 @@ public class AuthenticationUserArgumentResolver implements HandlerMethodArgument
 
 **WebConfiguration**
 
+{% include code-header.html %}
 ```java
 @Configuration
 public class WebConfiguration implements WebMvcConfigurer {
@@ -1344,6 +1393,7 @@ public class WebConfiguration implements WebMvcConfigurer {
 
 **HomeController**
 
+{% include code-header.html %}
 ```java
 @GetMapping("/")
 public ResponseEntity<UserInfoResponse> home(
