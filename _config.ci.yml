@@ -1,0 +1,8 @@
+# Overlay for CI and local checks: `jekyll build --config _config.yml,_config.ci.yml`.
+# Any Sass deprecation introduced up to the pinned Dart Sass version fails the
+# build instead of scrolling past as a warning. Not part of _config.yml so a
+# newer sass-embedded on a deploy host can never break publishing.
+sass:
+  verbose: true
+  fatal_deprecations:
+    - "1.105.0"

@@ -1,0 +1,24 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.3"
+          bundler-cache: true
+      # Sass deprecations are fatal here (see _config.ci.yml), so a regression
+      # fails the build instead of scrolling past as a warning.
+      - name: Jekyll build
+        run: bundle exec jekyll build --config _config.yml,_config.ci.yml
+      - name: Tests
+        run: |
+          gem install minitest --no-document
+          for test in test/*_test.rb; do ruby "$test"; done
