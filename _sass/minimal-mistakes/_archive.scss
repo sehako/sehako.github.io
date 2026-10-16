@@ -1,3 +1,5 @@
+@use "tools" as *;
+
 /* ==========================================================================
    ARCHIVE
    ========================================================================== */
@@ -154,7 +156,7 @@
 
   @include breakpoint($small) {
     float: left;
-    width: span(5 of 10);
+    width: grid-span(5, 10);
 
     &:nth-child(2n + 1) {
       clear: both;
@@ -163,14 +165,14 @@
 
     &:nth-child(2n + 2) {
       clear: none;
-      margin-left: gutter(of 10);
+      margin-left: grid-gutter(10);
     }
   }
 
   @include breakpoint($medium) {
     margin-left: 0; /* override margin*/
     margin-right: 0; /* override margin*/
-    width: span(3 of 12);
+    width: grid-span(3, 12);
 
     &:nth-child(2n + 1) {
       clear: none;
@@ -182,17 +184,17 @@
 
     &:nth-child(4n + 2) {
       clear: none;
-      margin-left: gutter(1 of 12);
+      margin-left: grid-gutter(12);
     }
 
     &:nth-child(4n + 3) {
       clear: none;
-      margin-left: gutter(1 of 12);
+      margin-left: grid-gutter(12);
     }
 
     &:nth-child(4n + 4) {
       clear: none;
-      margin-left: gutter(1 of 12);
+      margin-left: grid-gutter(12);
     }
   }
 
@@ -256,7 +258,7 @@
   @include breakpoint($small) {
     float: left;
     margin-bottom: 0;
-    width: span(4 of 12);
+    width: grid-span(4, 12);
 
     &:nth-child(3n + 1) {
       clear: both;
@@ -265,12 +267,12 @@
 
     &:nth-child(3n + 2) {
       clear: none;
-      margin-left: gutter(of 12);
+      margin-left: grid-gutter(12);
     }
 
     &:nth-child(3n + 3) {
       clear: none;
-      margin-left: gutter(of 12);
+      margin-left: grid-gutter(12);
     }
 
     .feature__item-teaser {
@@ -280,8 +282,8 @@
   }
 
   .archive__item-body {
-    padding-left: gutter(1 of 12);
-    padding-right: gutter(1 of 12);
+    padding-left: grid-gutter(12);
+    padding-right: grid-gutter(12);
   }
 
   a.btn::before {
@@ -322,14 +324,14 @@
     @include breakpoint($small) {
       .archive__item-teaser {
         float: left;
-        width: span(5 of 12);
+        width: grid-span(5, 12);
       }
 
       .archive__item-body {
         float: right;
-        padding-left: gutter(0.5 of 12);
-        padding-right: gutter(1 of 12);
-        width: span(7 of 12);
+        padding-left: grid-gutter(12);
+        padding-right: grid-gutter(12);
+        width: grid-span(7, 12);
       }
     }
   }
@@ -365,14 +367,14 @@
 
       .archive__item-teaser {
         float: right;
-        width: span(5 of 12);
+        width: grid-span(5, 12);
       }
 
       .archive__item-body {
         float: left;
-        width: span(7 of 12);
-        padding-left: gutter(0.5 of 12);
-        padding-right: gutter(1 of 12);
+        width: grid-span(7, 12);
+        padding-left: grid-gutter(12);
+        padding-right: grid-gutter(12);
       }
     }
   }
@@ -409,12 +411,12 @@
 
       .archive__item-teaser {
         margin: 0 auto;
-        width: span(5 of 12);
+        width: grid-span(5, 12);
       }
 
       .archive__item-body {
         margin: 0 auto;
-        width: span(7 of 12);
+        width: grid-span(7, 12);
       }
     }
   }
@@ -460,10 +462,4 @@
 	.feature__wrapper {
 		display: inline-block;
 	}
-}
-
-.pagination {
-  display: flex;
-  justify-content: center;
-  align-items: center;
 }

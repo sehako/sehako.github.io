@@ -1,0 +1,28 @@
+/* ==========================================================================
+   GRID
+   Plain percentage math for the 12/10 column layouts the archive and
+   utilities use. It reproduces what Susy's span()/gutter() produced with the
+   theme's settings (gutters = 1/4 of a column, container-relative widths), so
+   no grid library has to be vendored.
+   ========================================================================== */
+
+@use "sass:math";
+
+$gutter-ratio: 0.25;
+
+// Width of a container of $columns columns, in column units.
+@function -container-width($columns) {
+  @return $columns + ($columns - 1) * $gutter-ratio;
+}
+
+// span(3 of 12) -> grid-span(3, 12). Fractional spans count whole gutters.
+@function grid-span($n, $of) {
+  $gutters: math.ceil($n) - 1;
+  @return math.percentage(math.div($n + $gutters * $gutter-ratio, -container-width($of)));
+}
+
+// gutter(1 of 12) / gutter(of 12) -> grid-gutter(12): the width of one gutter.
+// Susy ignores the span count here, so this does too.
+@function grid-gutter($of) {
+  @return math.percentage(math.div($gutter-ratio, -container-width($of)));
+}

@@ -1,3 +1,7 @@
+@use "sass:color";
+@use "sass:selector";
+@use "tools" as *;
+
 /* ==========================================================================
    NOTICE TEXT BLOCKS
    ========================================================================== */
@@ -17,7 +21,7 @@
   font-family: $global-font-family;
   font-size: $type-size-6 !important;
   text-indent: initial; /* override*/
-  background-color: mix($background-color, $notice-color, $notice-background-mix);
+  background-color: color.mix($background-color, $notice-color, $notice-background-mix);
   border-radius: $border-radius;
   box-shadow: 0 1px 1px rgba($notice-color, 0.25);
 
@@ -46,19 +50,20 @@
   }
 
   a {
-    color: mix(#000, $notice-color, 10%);
+    color: color.mix(#000, $notice-color, 10%);
 
     &:hover {
-      color: mix(#000, $notice-color, 50%);
+      color: color.mix(#000, $notice-color, 50%);
     }
   }
 
-  @at-root #{selector-unify(&, "blockquote")} {
-    border-left-color: mix(#000, $notice-color, 10%);
+  // SITE PATCH (see _sass/site/README.md): blockquote-based notices get a tinted border.
+  @at-root #{selector.unify(&, "blockquote")} {
+    border-left-color: color.mix(#000, $notice-color, 10%);
   }
 
   code {
-    background-color: mix($background-color, $notice-color, $code-notice-background-mix)
+    background-color: color.mix($background-color, $notice-color, $code-notice-background-mix)
   }
 
 	pre code {

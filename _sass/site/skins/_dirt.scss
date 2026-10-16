@@ -1,0 +1,4 @@
+// Site wrapper for the "dirt" skin: a white page instead of the stock #f3f3f3.
+@forward "../../minimal-mistakes/skins/dirt" with (
+  $background-color: #fff
+);

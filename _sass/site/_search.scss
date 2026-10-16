@@ -1,0 +1,7 @@
+@use "../minimal-mistakes/tools" as *;
+
+// Search input text uses one size at every width (upstream shrinks it as the
+// viewport grows).
+.search-content .search-input {
+  font-size: $type-size-3;
+}

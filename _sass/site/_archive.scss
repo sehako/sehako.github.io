@@ -1,0 +1,6 @@
+// Centre the pagination (upstream floats it left).
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

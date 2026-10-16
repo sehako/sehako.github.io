@@ -1,3 +1,5 @@
+@use "tools" as *;
+
 /* ==========================================================================
    SIDEBAR
    ========================================================================== */
@@ -8,7 +10,7 @@
 
 .sidebar {
   @include clearfix();
-  // @include breakpoint(max-width $large) {
+  // @include breakpoint-max($large) {
   //   /* fix z-index order of follow links */
   //   position: relative;
   //   z-index: 10;
@@ -89,13 +91,6 @@
       position: sticky;
       top: 2em;
       float: right;
-
-      .toc {
-        .toc__menu {
-          overflow-y: auto;
-          max-height: calc(100vh - 7em);
-        }
-      }
     }
   }
 

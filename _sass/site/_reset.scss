@@ -1,0 +1,5 @@
+// Upstream scales the root font size up at wider viewports (18/20/22px);
+// the site keeps a constant 16px.
+html {
+  font-size: 16px;
+}

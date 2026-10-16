@@ -1,0 +1,11 @@
+@use "../minimal-mistakes/tools" as *;
+
+// Keep the sticky table of contents scrollable on short viewports.
+.sidebar__right {
+  @include breakpoint($large) {
+    &.sticky .toc .toc__menu {
+      overflow-y: auto;
+      max-height: calc(100vh - 7em);
+    }
+  }
+}

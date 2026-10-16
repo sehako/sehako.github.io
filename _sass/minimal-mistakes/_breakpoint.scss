@@ -1,0 +1,25 @@
+/* ==========================================================================
+   BREAKPOINTS
+   Native media queries expressed in ems (1em = 16px), replacing the
+   Breakpoint library the theme used to vendor.
+   ========================================================================== */
+
+@use "sass:math";
+
+@function to-em($px) {
+  @return math.div($px, 16px) * 1em;
+}
+
+// Viewport at least $min wide:  @include breakpoint($large) { ... }
+@mixin breakpoint($min) {
+  @media (min-width: to-em($min)) {
+    @content;
+  }
+}
+
+// Viewport at most $max wide:   @include breakpoint-max($large - 1px) { ... }
+@mixin breakpoint-max($max) {
+  @media (max-width: to-em($max)) {
+    @content;
+  }
+}

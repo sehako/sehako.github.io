@@ -5,5 +5,10 @@ search: false
 
 @charset "utf-8";
 
-@import "minimal-mistakes/skins/{{ site.minimal_mistakes_skin | default: 'default' }}"; // skin
-@import "minimal-mistakes"; // main partials
+// Order matters: configuration first, then the CSS.
+// 1. Skin palette (site/skins/* forward the theme skin with site tweaks).
+@use "site/skins/{{ site.minimal_mistakes_skin | default: 'default' }}";
+// 2. Layout settings (sidebar widths).
+@use "site/layout";
+// 3. Theme partials and site overrides.
+@use "site/theme";

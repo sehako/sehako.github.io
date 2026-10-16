@@ -1,3 +1,5 @@
+@use "tools" as *;
+
 /* ==========================================================================
    BASE ELEMENTS
    ========================================================================== */
@@ -126,10 +128,6 @@ blockquote {
 /* links */
 
 a {
-
-  // 추가
-  text-decoration: none;
-
   &:focus {
     @extend %tab-focus;
   }
@@ -163,6 +161,10 @@ pre {
 pre {
   overflow-x: auto; /* add scrollbars to wide code blocks*/
 }
+
+// SITE PATCH (see _sass/site/README.md): the upstream inline-code rule for
+// `p > code, a > code, ...` is not emitted; site/_page.scss styles inline code
+// inside .page__content instead.
 
 /* horizontal rule */
 

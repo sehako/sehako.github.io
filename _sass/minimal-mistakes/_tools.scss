@@ -1,0 +1,6 @@
+// Everything a component partial needs: configured variables plus helpers.
+@forward "variables";
+@forward "layout";
+@forward "mixins";
+@forward "breakpoint";
+@forward "grid";

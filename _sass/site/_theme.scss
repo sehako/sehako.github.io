@@ -1,0 +1,51 @@
+/*!
+ * Minimal Mistakes Jekyll Theme 4.24.0 by Michael Rose
+ * Copyright 2013-2020 Michael Rose - mademistakes.com | @mmistakes
+ * Licensed under MIT (https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE)
+*/
+
+// Composes the Minimal Mistakes partials with the site's override partials.
+//
+// The order is the cascade order: every site partial follows the upstream
+// partial it adjusts. The skin (palette) and `layout` must already have been
+// loaded by assets/css/main.scss so their configuration is in place.
+
+@use "../minimal-mistakes/vendor/magnific-popup/magnific-popup";
+
+/* Core CSS */
+@use "../minimal-mistakes/reset";
+@use "reset" as site-reset;
+@use "../minimal-mistakes/base";
+@use "base" as site-base;
+@use "../minimal-mistakes/forms";
+@use "tables" as site-tables; // replaces minimal-mistakes/tables
+@use "../minimal-mistakes/animations";
+
+/* Components */
+@use "../minimal-mistakes/buttons";
+@use "../minimal-mistakes/notices";
+@use "../minimal-mistakes/masthead";
+@use "../minimal-mistakes/navigation";
+@use "navigation" as site-navigation;
+@use "../minimal-mistakes/footer";
+@use "../minimal-mistakes/search";
+@use "search" as site-search;
+@use "../minimal-mistakes/syntax";
+@use "syntax" as site-syntax;
+
+/* Utility classes */
+@use "../minimal-mistakes/utilities";
+
+/* Layout specific */
+@use "../minimal-mistakes/page";
+@use "page" as site-page;
+@use "../minimal-mistakes/archive";
+@use "archive" as site-archive;
+@use "../minimal-mistakes/sidebar";
+@use "sidebar" as site-sidebar;
+@use "../minimal-mistakes/print";
+
+// Extends are resolved against everything this module loads, i.e. the whole theme.
+.comment__date {
+  @extend .page__meta;
+}

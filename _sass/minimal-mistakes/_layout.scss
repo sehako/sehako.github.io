@@ -1,0 +1,10 @@
+/* ==========================================================================
+   Layout
+   Sidebar widths are kept apart from the skin palette so a site can size
+   them through `@use "minimal-mistakes/layout" with (...)` without touching
+   colours.
+   ========================================================================== */
+
+$right-sidebar-width-narrow: 200px !default;
+$right-sidebar-width: 300px !default;
+$right-sidebar-width-wide: 400px !default;

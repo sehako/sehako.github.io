@@ -1,0 +1,5 @@
+// Site wrapper for the "dark" skin: a neutral grey primary colour (everything
+// derived from the primary colour, such as links, follows).
+@forward "../../minimal-mistakes/skins/dark" with (
+  $primary-color: #707070
+);

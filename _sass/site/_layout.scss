@@ -1,0 +1,6 @@
+// Site-specific layout configuration. Sidebar widths are narrower than the
+// theme defaults (300px / 400px).
+@forward "../minimal-mistakes/layout" with (
+  $right-sidebar-width: 250px,
+  $right-sidebar-width-wide: 300px
+);
