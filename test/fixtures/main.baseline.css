@@ -434,7 +434,9 @@
  | .pagination_prev_next--pager:last-child { border-top-left-radius: 0;border-bottom-left-radius: 0; }
  | .pagination_prev_next--pager.disabled { color: rgba(142,139,130,0.5);pointer-events: none;cursor: not-allowed; }
  | .prev_next { color: #525252; }
- | #category_tag_menu>li>ul { margin-bottom: 2%; }
+ | #category_tag_menu>li>ul { margin-bottom: 2%;padding: 0.25em 0.5em; }
+ | #category_tag_menu>li>ul li a { display: block;padding: 0.3em 0.5em;text-decoration: none; }
+ | #category_tag_menu>li>ul li a:hover { text-decoration: underline; }
  | .page__footer { clear: both; }
  | .page__footer::after { clear: both;content: "";display: table; }
  | .page__footer { float: left;margin-left: 0;margin-right: 0;width: 100%;margin-top: 3em;color: #8e8b82;-webkit-animation: intro 0.3s both;animation: intro 0.3s both;-webkit-animation-delay: 0.45s;animation-delay: 0.45s;background-color: #e9dcbe; }

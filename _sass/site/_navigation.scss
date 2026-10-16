@@ -120,4 +120,15 @@
 
 #category_tag_menu > li > ul {
   margin-bottom: 2%;
+  padding: 0.25em 0.5em;
+
+  li a {
+    display: block;
+    padding: 0.3em 0.5em;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
 }
