@@ -4,17 +4,18 @@
 
 <nav class="nav__list">
   <input id="ac-toc" name="accordion-toc" type="checkbox" />
-  <label for="ac-toc">{{ site.data.ui - text[site.locale].menu_label }}</label>
+  <label for="ac-toc">{{ site.data.ui-text[site.locale].menu_label }}</label>
   <ul class="nav__items" id="category_tag_menu">
     <span class="nav__sub-title">Category</span>
     <li>
       <ul>
-        {%- assign categories_list = site.categories | sort -%} {%- for category
-        in categories_list -%} {%- assign category_name = category[0] -%} {%-
-        assign posts_count = category[1] | size -%}
+        {%- for category in site.data.blog_categories.categories -%}
+        {%- assign category_name = category.name -%}
+        {%- assign posts = site.categories[category_name] -%}
+        {%- assign posts_count = posts | size -%}
 
         <li>
-          <a href="/categories/{{ category_name | slugify | downcase }}">
+          <a href="{{ '/categories/' | append: category.slug | append: '/' | relative_url }}">
             {{ category_name }} ({{ posts_count }})
           </a>
         </li>

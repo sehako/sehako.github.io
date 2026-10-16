@@ -1,10 +1,8 @@
 ---
-title: "Reactive Progamming"
-layout: archive
-permalink: categories/reactive-programming
+title: "반응형 프로그래밍"
+layout: category
+permalink: /categories/reactive-programming/
+taxonomy: "반응형 프로그래밍"
 author_profile: true
 sidebar_main: true
 ---
-
-{% assign posts = site.categories['Reactive Programming'] %}
-{% for post in posts %} {% include archive-single.html type=page.entries_layout %} {% endfor %}

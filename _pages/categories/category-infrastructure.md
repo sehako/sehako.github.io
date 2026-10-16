@@ -1,11 +1,8 @@
 ---
-title: "Infrastructure"
-layout: archive
-permalink: categories/infrastructure
+title: "배포와 인프라"
+layout: category
+permalink: /categories/infrastructure/
+taxonomy: "배포와 인프라"
 author_profile: true
 sidebar_main: true
 ---
-
-
-{% assign posts = site.categories.Infrastructure %}
-{% for post in posts %} {% include archive-single.html type=page.entries_layout %} {% endfor %}

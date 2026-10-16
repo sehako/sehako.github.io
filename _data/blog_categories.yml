@@ -1,0 +1,35 @@
+categories:
+  - name: Java
+    slug: java
+  - name: 반응형 프로그래밍
+    slug: reactive-programming
+  - name: 웹 API와 파일 처리
+    slug: web-api
+  - name: 인증과 보안
+    slug: authentication-security
+  - name: 실시간 통신
+    slug: realtime
+  - name: 배치와 데이터 처리
+    slug: batch-data
+  - name: 테스트와 성능
+    slug: testing-performance
+  - name: 배포와 인프라
+    slug: infrastructure
+  - name: 알고리즘
+    slug: algorithm
+  - name: 개발 도구와 AI
+    slug: developer-tools-ai
+  - name: 회고
+    slug: retrospective
+
+redirects:
+  oauth2: authentication-security
+  spring-security: authentication-security
+  spring-batch: batch-data
+  spring-boot: categories
+  spring-cloud: infrastructure
+  spring-webflux: testing-performance
+  test: testing-performance
+  websocket: realtime
+  spring: categories
+  note: categories

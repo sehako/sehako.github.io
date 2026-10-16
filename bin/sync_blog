@@ -1,0 +1,31 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require "optparse"
+require_relative "../lib/blog_sync"
+
+options = { source: File.expand_path("../../obsidian", __dir__) }
+modes = []
+
+parser = OptionParser.new do |opts|
+  opts.banner = "Usage: bin/sync_blog (--check | --write) [--source PATH]"
+  opts.on("--check", "Check synchronization without changing files") { modes << :check }
+  opts.on("--write", "Synchronize posts, category pages, and images") { modes << :write }
+  opts.on("--source PATH", "Obsidian vault (default: ../obsidian)") { |path| options[:source] = path }
+end
+
+begin
+  parser.parse!
+  unless modes.length == 1
+    raise OptionParser::MissingArgument, "choose exactly one of --check or --write"
+  end
+
+  root = File.expand_path("..", __dir__)
+  sync = BlogSync::Synchronizer.new(root: root, source: options[:source])
+  success = sync.run(write: modes.first == :write)
+  exit(success ? 0 : 1)
+rescue OptionParser::ParseError, BlogSync::Error => error
+  warn "sync_blog: #{error.message}"
+  warn parser
+  exit 2
+end
