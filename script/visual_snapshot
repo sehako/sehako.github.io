@@ -1,0 +1,52 @@
+#!/usr/bin/env bash
+# Captures headless-Chrome screenshots of key pages at several viewport widths.
+#
+#   script/visual_snapshot <built-site-dir> <output-dir>
+#
+# Run it for a baseline build and a changed build, then compare directories
+# with `script/visual_snapshot --compare <dir-a> <dir-b>`.
+set -euo pipefail
+
+CHROME="${CHROME:-/Applications/Google Chrome.app/Contents/MacOS/Google Chrome}"
+PAGES=(
+  "/"
+  "/categories/"
+  "/java/dto-and-vo-with-java-record/"
+  "/oauth%202.0/note/oauth-2-openid-connect/"
+  "/java/reactive%20programming/project-reactor/"
+  "/algorithm/graph/"
+  "/spring/"
+)
+WIDTHS=(420 800 1100 1500)
+
+if [[ "${1:-}" == "--compare" ]]; then
+  status=0
+  for file in "$2"/*.png; do
+    name=$(basename "$file")
+    if ! cmp -s "$file" "$3/$name"; then
+      echo "DIFF  $name"
+      status=1
+    fi
+  done
+  [[ $status -eq 0 ]] && echo "all screenshots identical"
+  exit $status
+fi
+
+site="$1"
+out="$2"
+mkdir -p "$out"
+port=$((20000 + RANDOM % 10000))
+(cd "$site" && python3 -m http.server "$port" --bind 127.0.0.1 >/dev/null 2>&1) &
+server=$!
+trap 'kill $server 2>/dev/null || true' EXIT
+sleep 1
+
+for page in "${PAGES[@]}"; do
+  slug=$(echo "$page" | sed 's#[/%]#_#g')
+  for width in "${WIDTHS[@]}"; do
+    "$CHROME" --headless=new --disable-gpu --hide-scrollbars --force-device-scale-factor=1 \
+      --virtual-time-budget=3000 --window-size="${width},3200" \
+      --screenshot="$out/${slug}_${width}.png" "http://127.0.0.1:${port}${page}" >/dev/null 2>&1
+  done
+done
+echo "wrote $(ls "$out"/*.png | wc -l | tr -d ' ') screenshots to $out"

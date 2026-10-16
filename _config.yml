@@ -168,6 +168,7 @@ exclude:
   - tmp
   - /docs # ignore Minimal Mistakes /docs
   - /test # ignore Minimal Mistakes /test
+  - /script # local tooling (visual snapshots, CSS normalizer)
 keep_files:
   - .git
   - .svn

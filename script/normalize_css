@@ -1,0 +1,7 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+# Usage: script/normalize_css path/to/main.css > normalized.css
+require_relative "../test/support/css_normalizer"
+
+puts CssNormalizer.normalize(File.read(ARGV.fetch(0)))
