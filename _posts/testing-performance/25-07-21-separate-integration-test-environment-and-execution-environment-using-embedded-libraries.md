@@ -9,6 +9,7 @@ toc_sticky: true
 published: true
 
 date: 2025-07-21
+source: "[[Practical Testing- 실용적인 테스트 가이드]]"
 
 permalink: "/spring/test/separate-integration-test-environment-and-execution-environment-using-embedded-libraries/"
 ---

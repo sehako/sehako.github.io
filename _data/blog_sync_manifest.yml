@@ -2,6 +2,7 @@
 files:
 - _data/blog_sync_manifest.yml
 - _pages/categories/category-algorithm.md
+- _pages/categories/category-architecture-design.md
 - _pages/categories/category-authentication-security.md
 - _pages/categories/category-batch-data.md
 - _pages/categories/category-developer-tools-ai.md
@@ -39,6 +40,7 @@ files:
 - _posts/algorithm/25-09-13-segment-tree.md
 - _posts/algorithm/25-10-21-kmp.md
 - _posts/algorithm/25-12-27-trie.md
+- _posts/architecture-design/26-10-25-layered-architecture.md
 - _posts/authentication-security/24-12-11-oauth-01.md
 - _posts/authentication-security/24-12-11-oauth-02.md
 - _posts/authentication-security/24-12-11-oauth-03.md
@@ -100,6 +102,7 @@ files:
 - assets/images/algorithm/25-12-27-trie/02.png
 - assets/images/algorithm/25-12-27-trie/03.png
 - assets/images/algorithm/25-12-27-trie/04.png
+- assets/images/architecture-design/26-10-25-layered-architecture/01.png
 - assets/images/authentication-security/24-12-11-oauth-01/01.png
 - assets/images/authentication-security/24-12-11-oauth-01/02.png
 - assets/images/authentication-security/24-12-11-oauth-01/03.png

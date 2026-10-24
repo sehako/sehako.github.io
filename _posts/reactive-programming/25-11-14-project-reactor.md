@@ -9,6 +9,7 @@ toc_sticky: true
 published: true
 
 date: 2025-11-14
+source: "[[Modern Java In Action]]"
 
 permalink: "/java/reactive programming/project-reactor/"
 ---

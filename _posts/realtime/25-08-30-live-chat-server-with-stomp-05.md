@@ -9,6 +9,7 @@ toc_sticky: true
 published: true
 
 date: 2025-08-30
+source: "[[WebSocket STOMP in springboot]]"
 
 permalink: "/spring/websocket/live-chat-server-with-stomp-05/"
 ---

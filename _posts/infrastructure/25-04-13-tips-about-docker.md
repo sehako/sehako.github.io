@@ -9,6 +9,7 @@ toc_sticky: true
 published: true
 
 date: 2025-04-13
+source: "[[시작하세요 도커 그리고 쿠버네티스]]"
 
 permalink: "/infrastructure/tips-about-docker/"
 ---

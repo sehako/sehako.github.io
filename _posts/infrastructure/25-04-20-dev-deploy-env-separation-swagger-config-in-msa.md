@@ -9,6 +9,9 @@ toc_sticky: true
 published: true
 
 date: 2025-04-20
+source:
+  - "[[MSA 개발 환경 완전 분리]]"
+  - "[[Spring Cloud로 개발하는 MSA]]"
 
 permalink: "/infrastructure/dev-deploy-env-separation-swagger-config-in-msa/"
 ---

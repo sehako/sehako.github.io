@@ -9,6 +9,9 @@ toc_sticky: true
 published: true
 
 date: 2026-01-24
+source:
+  - "[[스프링 시큐리티 완전 정복 6.x 개정판]]"
+  - "[[02. 인증 프로세스]]"
 
 permalink: "/spring security/spring-security-authentication-authorization/"
 ---

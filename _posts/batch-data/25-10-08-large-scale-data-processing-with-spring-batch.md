@@ -1,14 +1,14 @@
 ---
 title: Spring Batch - 기본 개념 정리 및 도입
-
 categories:
   - 배치와 데이터 처리
-
 toc: true
 toc_sticky: true
 published: true
-
 date: 2025-10-08
+source:
+  - "[[죽음의 Spring Batch]]"
+  - "[[Spring Batch]]"
 
 permalink: "/spring batch/large-scale-data-processing-with-spring-batch/"
 ---

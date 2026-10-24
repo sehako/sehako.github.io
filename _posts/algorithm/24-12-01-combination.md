@@ -9,6 +9,7 @@ toc_sticky: true
 published: true
 
 date: 2024-12-01
+source: "[[후보키]]"
 
 permalink: "/algorithm/combination/"
 ---

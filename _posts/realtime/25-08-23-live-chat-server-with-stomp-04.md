@@ -9,6 +9,9 @@ toc_sticky: true
 published: true
 
 date: 2025-08-23
+source:
+  - "[[WebSocket STOMP in springboot]]"
+  - "[[읽음 처리]]"
 
 permalink: "/spring/websocket/live-chat-server-with-stomp-04/"
 ---

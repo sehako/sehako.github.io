@@ -9,6 +9,9 @@ toc_sticky: true
 published: true
 
 date: 2025-12-09
+source:
+  - "[[죽음의 Spring Batch]]"
+  - "[[Spring Batch Flow를 활용한 분기 처리]]"
 
 permalink: "/spring batch/large-scale-data-processing-with-spring-batch-with-flow/"
 ---

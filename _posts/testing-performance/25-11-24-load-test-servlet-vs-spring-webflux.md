@@ -9,6 +9,7 @@ toc_sticky: true
 published: true
 
 date: 2025-11-24
+source: "[[백엔드 애플리케이션 성능 테스트하기]]"
 
 permalink: "/spring webflux/reactive programming/load-test-servlet-vs-spring-webflux/"
 ---

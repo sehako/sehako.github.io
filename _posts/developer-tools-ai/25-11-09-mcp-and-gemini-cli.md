@@ -6,6 +6,7 @@ toc: true
 toc_sticky: true
 published: false
 date: 2025-11-09
+source: "[[실벨 개발자 정리본 (바이브 코딩)]]"
 
 permalink: "/note/mcp-and-gemini-cli/"
 ---

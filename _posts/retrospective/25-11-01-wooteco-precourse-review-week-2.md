@@ -9,6 +9,7 @@ toc_sticky: true
 published: false
 
 date: 2025-11-01
+source: "[[우테코 프리코스 회고 - 2주차]]"
 
 permalink: "/note/wooteco-precourse-review-week-2/"
 ---

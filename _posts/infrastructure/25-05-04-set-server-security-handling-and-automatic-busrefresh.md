@@ -9,6 +9,7 @@ toc_sticky: true
 published: true
 
 date: 2025-05-04
+source: "[[Spring Cloud로 개발하는 MSA]]"
 
 permalink: "/infrastructure/set-server-security-handling-and-automatic-busrefresh/"
 ---

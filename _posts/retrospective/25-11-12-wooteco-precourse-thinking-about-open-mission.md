@@ -9,6 +9,7 @@ toc_sticky: true
 published: false
 
 date: 2025-11-12
+source: "[[우테코 프리코스 오픈 미션 - 기획]]"
 
 permalink: "/note/wooteco-precourse-thinking-about-open-mission/"
 ---

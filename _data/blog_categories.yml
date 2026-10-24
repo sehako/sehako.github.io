@@ -15,6 +15,8 @@ categories:
     slug: testing-performance
   - name: 배포와 인프라
     slug: infrastructure
+  - name: 아키텍처와 설계
+    slug: architecture-design
   - name: 알고리즘
     slug: algorithm
   - name: 개발 도구와 AI

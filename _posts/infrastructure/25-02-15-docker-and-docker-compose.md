@@ -9,6 +9,9 @@ toc_sticky: true
 published: true
 
 date: 2025-02-15
+source:
+  - "[[시작하세요 도커 그리고 쿠버네티스]]"
+  - "[[컴포즈 파일 설정]]"
 
 permalink: "/infrastructure/docker-and-docker-compose/"
 ---
@@ -385,7 +388,7 @@ docker build --rm -t {IMAGE_NAME:TAG} .
 docker push ${IMAGE_NAME}:latest
 ```
 
-도커와 현재 cli 환경이 로그인 되었다고 가정했을 때, 특정 레포지토리의 이미지를 도커 허브에 업로드 하는 명령어입니다. CI/CD를 할 때 이 명령어를 사용할 것입니다. 도커 허브에 이미지를 업로드하는 자세한 과정은 다음 글을 참고하면 좋을 것 같습니다. ([[docker] docker hub에 image 올리기](https://velog.io/@eoveol/docker-docker-hub%EC%97%90-image-%EC%98%AC%EB%A6%AC%EA%B8%B0))
+도커와 현재 cli 환경이 로그인 되었다고 가정했을 때, 특정 레포지토리의 이미지를 도커 허브에 업로드 하는 명령어입니다. CI/CD를 할 때 이 명령어를 사용할 것입니다. 도커 허브에 이미지를 업로드하는 자세한 과정은 다음 글을 참고하면 좋을 것 같습니다. ([\[docker\] docker hub에 image 올리기](https://velog.io/@eoveol/docker-docker-hub%EC%97%90-image-%EC%98%AC%EB%A6%AC%EA%B8%B0))
 
 {% include code-header.html %}
 

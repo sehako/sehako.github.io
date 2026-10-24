@@ -9,6 +9,9 @@ toc_sticky: true
 published: true
 
 date: 2025-05-25
+source:
+  - "[[Spring Cloud로 개발하는 MSA]]"
+  - "[[Kubernetes (k8s) 이론 정리]]"
 
 permalink: "/infrastructure/using-spring-cloud-gateway-in-k8s/"
 ---

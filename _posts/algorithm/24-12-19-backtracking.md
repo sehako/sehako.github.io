@@ -9,6 +9,7 @@ toc_sticky: true
 published: true
 
 date: 2024-12-19
+source: "[[불량 사용자]]"
 
 permalink: "/algorithm/backtracking/"
 ---
