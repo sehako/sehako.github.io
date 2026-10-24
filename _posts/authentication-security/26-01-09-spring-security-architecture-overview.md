@@ -9,9 +9,6 @@ toc_sticky: true
 published: true
 
 date: 2026-01-06
-source:
-  - "[[스프링 시큐리티 완전 정복 6.x 개정판]]"
-  - "[[03. 인증 아키텍처]]"
 
 permalink: "/spring security/spring-security-architecture-overview/"
 ---

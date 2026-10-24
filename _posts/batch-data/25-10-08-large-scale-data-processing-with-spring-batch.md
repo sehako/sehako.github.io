@@ -6,9 +6,6 @@ toc: true
 toc_sticky: true
 published: true
 date: 2025-10-08
-source:
-  - "[[죽음의 Spring Batch]]"
-  - "[[Spring Batch]]"
 
 permalink: "/spring batch/large-scale-data-processing-with-spring-batch/"
 ---

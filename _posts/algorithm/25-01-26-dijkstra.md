@@ -9,7 +9,6 @@ toc_sticky: true
 published: true
 
 date: 2025-01-26
-source: "[[합승 택시 요금]]"
 
 permalink: "/algorithm/dijkstra/"
 ---

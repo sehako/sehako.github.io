@@ -6,8 +6,6 @@ toc: true
 toc_sticky: true
 published: true
 date: 2026-10-25
-source:
-  - "[[계층형(Layered) 아키텍처]]"
 
 permalink: "/architecture-design/layered-architecture/"
 ---

@@ -9,9 +9,6 @@ toc_sticky: true
 published: true
 
 date: 2025-02-15
-source:
-  - "[[시작하세요 도커 그리고 쿠버네티스]]"
-  - "[[컴포즈 파일 설정]]"
 
 permalink: "/infrastructure/docker-and-docker-compose/"
 ---

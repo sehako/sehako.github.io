@@ -9,7 +9,6 @@ toc_sticky: true
 published: true
 
 date: 2025-03-23
-source: "[[resource/개발/책과 강의/Spring/김영한의 스프링/17. 파일 업로드]]"
 
 permalink: "/spring/saving-uploaded-file/"
 ---

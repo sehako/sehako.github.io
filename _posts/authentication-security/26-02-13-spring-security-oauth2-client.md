@@ -9,7 +9,6 @@ toc_sticky: true
 published: true
 
 date: 2026-02-13
-source: "[[스프링 시큐리티 완전 정복 6.x 개정판]]"
 
 permalink: "/spring security/spring-security-oauth2-client/"
 ---

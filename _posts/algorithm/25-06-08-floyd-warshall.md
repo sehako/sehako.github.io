@@ -9,9 +9,6 @@ toc_sticky: true
 published: true
 
 date: 2025-06-08
-source:
-  - "[[플로이드-워셜]]"
-  - "[[순위]]"
 
 permalink: "/algorithm/floyd-warshall/"
 ---

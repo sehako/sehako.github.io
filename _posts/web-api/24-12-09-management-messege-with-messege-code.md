@@ -9,7 +9,6 @@ toc_sticky: true
 published: true
 
 date: 2024-12-09
-source: "[[resource/개발/책과 강의/Spring/김영한의 스프링/09. 메시지 국제화]]"
 
 permalink: "/spring/management-messege-with-messege-code/"
 ---

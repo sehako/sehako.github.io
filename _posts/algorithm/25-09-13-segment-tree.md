@@ -9,7 +9,6 @@ toc_sticky: true
 published: true
 
 date: 2025-09-13
-source: "[[세그먼트 트리 (Segment Tree)]]"
 
 permalink: "/algorithm/segment-tree/"
 ---

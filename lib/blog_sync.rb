@@ -118,6 +118,7 @@ module BlogSync
         transformed = transform_internal_links(transformed)
         transformed = add_code_headers(transformed)
         transformed = normalize_trailing_whitespace(transformed)
+        transformed = remove_source_metadata(transformed)
         files["_posts/#{slug}/#{post.basename}"] = with_permalink(transformed, permalink)
 
         asset_directory = source.join(SOURCE_ASSETS, name, stem)
@@ -137,6 +138,14 @@ module BlogSync
       YAML.safe_load(match[1], permitted_classes: [Date, Time], aliases: true) || {}
     rescue Psych::SyntaxError => error
       raise Error, "Invalid front matter in #{path}: #{error.message}"
+    end
+
+    def remove_source_metadata(raw)
+      match = raw.match(/\A---[ \t]*\r?\n(.*?)\r?\n---[ \t]*\r?\n/m)
+      return raw unless match
+
+      yaml = match[1].sub(/^source:.*(?:\r?\n(?:[ \t]+|-[ \t]).*)*(?:\r?\n|\z)/, "")
+      raw.sub(match[0]) { "---\n#{yaml.rstrip}\n---\n" }
     end
 
     def with_permalink(raw, permalink)

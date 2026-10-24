@@ -9,7 +9,6 @@ toc_sticky: true
 published: true
 
 date: 2025-08-12
-source: "[[벨만-포드]]"
 
 permalink: "/algorithm/bellman-ford/"
 ---
