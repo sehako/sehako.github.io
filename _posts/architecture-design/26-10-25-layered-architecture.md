@@ -150,8 +150,8 @@ Model은 구분이 필요합니다. `org.springframework.ui.Model`은 뷰에 전
 
 # 참고 자료
 
-- [Understanding the Layered Architecture Pattern: A Comprehensive Guide](https://dev.to/yasmine_ddec94f4d4/understanding-the-layered-architecture-pattern-a-comprehensive-guide-1e2j)
-- [콘웨이의 법칙 / 역 콘웨이 전략 ( Reverse Conway maneuver )](https://kscodebase.tistory.com/696)
-- [Microsoft - N-tier Architecture Style](https://learn.microsoft.com/en-us/azure/architecture/guide/architecture-styles/n-tier)
-- [Microsoft - Common Web Application Architectures](https://learn.microsoft.com/en-us/dotnet/architecture/modern-web-apps-azure/common-web-application-architectures)
-- [Martin Fowler - GUI Architectures](https://martinfowler.com/eaaDev/uiArchs.html)
+- [**Understanding the Layered Architecture Pattern: A Comprehensive Guide**](https://dev.to/yasmine_ddec94f4d4/understanding-the-layered-architecture-pattern-a-comprehensive-guide-1e2j)
+- [**콘웨이의 법칙 / 역 콘웨이 전략 ( Reverse Conway maneuver )**](https://kscodebase.tistory.com/696)
+- [**Microsoft - N-tier Architecture Style**](https://learn.microsoft.com/en-us/azure/architecture/guide/architecture-styles/n-tier)
+- [**Microsoft - Common Web Application Architectures**](https://learn.microsoft.com/en-us/dotnet/architecture/modern-web-apps-azure/common-web-application-architectures)
+- [**Martin Fowler - GUI Architectures**](https://martinfowler.com/eaaDev/uiArchs.html)
