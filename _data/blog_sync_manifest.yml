@@ -8,6 +8,7 @@ files:
 - _pages/categories/category-developer-tools-ai.md
 - _pages/categories/category-infrastructure.md
 - _pages/categories/category-java.md
+- _pages/categories/category-object-oriented-design.md
 - _pages/categories/category-reactive-programming.md
 - _pages/categories/category-realtime.md
 - _pages/categories/category-retrospective.md
@@ -67,6 +68,7 @@ files:
 - _posts/infrastructure/25-05-04-set-server-security-handling-and-automatic-busrefresh.md
 - _posts/infrastructure/25-05-25-using-spring-cloud-gateway-in-k8s.md
 - _posts/java/26-04-03-dto-and-vo-with-java-record.md
+- _posts/object-oriented-design/26-11-08-solid-principles.md
 - _posts/reactive-programming/25-11-13-java-reactive-programming.md
 - _posts/reactive-programming/25-11-14-project-reactor.md
 - _posts/reactive-programming/25-11-21-spring-webflux-and-r2dbc.md

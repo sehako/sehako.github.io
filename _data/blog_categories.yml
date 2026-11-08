@@ -17,6 +17,8 @@ categories:
     slug: infrastructure
   - name: 아키텍처와 설계
     slug: architecture-design
+  - name: 객체지향 설계
+    slug: object-oriented-design
   - name: 알고리즘
     slug: algorithm
   - name: 개발 도구와 AI
