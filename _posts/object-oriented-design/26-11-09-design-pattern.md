@@ -49,6 +49,7 @@ permalink: "/object-oriented-design/design-pattern/"
 ## 생성 패턴
 
 - [싱글턴 패턴 (Java 구현 방법과 Spring 싱글톤 빈과의 차이)](/object-oriented-design/singleton-pattern/)
+- [팩토리 메서드 패턴 (구조와 단순 팩토리와의 차이)](/object-oriented-design/factory-method-pattern/)
 
 ## 구조 패턴
 

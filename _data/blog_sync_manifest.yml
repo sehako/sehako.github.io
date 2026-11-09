@@ -70,6 +70,7 @@ files:
 - _posts/java/26-04-03-dto-and-vo-with-java-record.md
 - _posts/object-oriented-design/26-11-08-solid-principles.md
 - _posts/object-oriented-design/26-11-09-design-pattern.md
+- _posts/object-oriented-design/26-11-09-factory-method-pattern.md
 - _posts/object-oriented-design/26-11-09-singleton-pattern.md
 - _posts/reactive-programming/25-11-13-java-reactive-programming.md
 - _posts/reactive-programming/25-11-14-project-reactor.md
