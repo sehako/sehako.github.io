@@ -187,6 +187,8 @@ ConnectionPool.INSTANCE.getConnection();
 
 # 장단점
 
+싱글턴 패턴의 장단점은 다음과 같습니다.
+
 **장점**
 
 - 클래스가 하나의 인스턴스만 가진다는 것을 보장합니다.
