@@ -52,6 +52,24 @@ class BlogSyncTest < Minitest::Test
     refute_match(/[ \t]+$/, post)
   end
 
+  def test_wikilinks_become_permalink_links_outside_code
+    source_post("24-01-02-existing")
+    body = "[[24-01-02-existing|기존 글]] [[25-03-04-new-post]]\n\n```md\n[[24-01-02-existing]]\n```\n"
+    source_post("25-03-04-new-post", body: body)
+
+    sync.run(write: true)
+
+    post = read("#{@root}/_posts/authentication-security/25-03-04-new-post.md")
+    assert_includes post, "[기존 글](/spring/existing/) [25-03-04-new-post](/authentication-security/new-post/)"
+    assert_includes post, "```md\n[[24-01-02-existing]]\n```"
+  end
+
+  def test_unresolved_wikilink_raises
+    source_post("25-03-04-new-post", body: "[[missing-note]]\n")
+
+    assert_raises(BlogSync::Error) { sync.run(write: true) }
+  end
+
   def test_code_blocks_get_copy_header_once
     header = "{% include code-header.html %}"
     body = "```java\nint a;\n```\n\n#{header}\n```bash\nls\n```\n\n````md\n```java\nx\n```\n````\n"

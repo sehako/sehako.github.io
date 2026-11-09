@@ -119,6 +119,7 @@ module BlogSync
         transformed = add_code_headers(transformed)
         transformed = normalize_trailing_whitespace(transformed)
         transformed = remove_source_metadata(transformed)
+        transformed = transform_wikilinks(transformed, stem)
         files["_posts/#{slug}/#{post.basename}"] = with_permalink(transformed, permalink)
 
         asset_directory = source.join(SOURCE_ASSETS, name, stem)
@@ -204,6 +205,44 @@ module BlogSync
     def transform_internal_links(raw)
       LEGACY_INTERNAL_LINKS.reduce(raw) do |content, (old_url, current_url)|
         content.gsub(old_url, current_url)
+      end
+    end
+
+    WIKILINK = /\[\[([^\]|#\n]+)(?:#[^\]|\n]*)?(?:\|([^\]\n]*))?\]\]/
+
+    # Converts Obsidian [[stem|label]] links to markdown links outside code fences.
+    def transform_wikilinks(raw, current_stem)
+      fence = nil
+      raw.each_line.map do |line|
+        marker = line[FENCE, 1]
+        if fence.nil? && marker
+          fence = marker
+          next line
+        elsif fence
+          fence = nil if marker && marker[0] == fence[0] && marker.length >= fence.length && line.strip == marker
+          next line
+        end
+
+        line.gsub(WIKILINK) do
+          target = Regexp.last_match(1).strip
+          label = Regexp.last_match(2) || target
+          permalink = post_permalinks[target]
+          raise Error, "Unresolved wikilink [[#{target}]] in #{current_stem}" unless permalink
+
+          "[#{label}](#{permalink})"
+        end
+      end.join
+    end
+
+    def post_permalinks
+      @post_permalinks ||= categories.each_with_object({}) do |category, map|
+        directory = source.join(SOURCE_POSTS, category.fetch("name"))
+        next unless directory.directory?
+
+        directory.glob("*.md").each do |post|
+          stem = post.basename(".md").to_s
+          map[stem] = legacy_urls[stem] || "/#{category.fetch('slug')}/#{post_slug(stem)}/"
+        end
       end
     end
 
