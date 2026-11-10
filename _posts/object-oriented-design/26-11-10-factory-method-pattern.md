@@ -5,7 +5,7 @@ categories:
 toc: true
 toc_sticky: true
 published: true
-date: 2026-11-09
+date: 2026-11-10
 
 permalink: "/object-oriented-design/factory-method-pattern/"
 ---
@@ -32,7 +32,7 @@ permalink: "/object-oriented-design/factory-method-pattern/"
 
 # 구조
 
-팩토리 메서드 패턴의 구현은 다음과 같은 구조를 가집니다.
+팩토리 메서드 패턴은 다음과 같은 구조를 가집니다.
 
 - 제품은 인터페이스를 통해 선언하며, 이 인터페이스를 구현한 것을 구상 제품이라고 합니다.
 - 팩토리 메서드를 가지는 크리에이터 클래스를 만듭니다. 이 클래스의 책임은 제품과 관련된 핵심 비즈니스 로직을 구상 제품 클래스들로부터 디커플링하는 것입니다.
@@ -220,7 +220,7 @@ class LinuxDialog extends Dialog {
 
 ---
 
-지금까지 살펴본 내용을 기준으로 팩토리 메서드를 쓸지 판단하는 신호를 표로 나타내면 다음과 같습니다.
+지금까지 살펴본 내용을 기준으로 팩토리 메서드를 도입할지 판단하는 신호를 표로 나타내면 다음과 같습니다.
 
 | 상황 | 판단 | 근거 |
 | --- | --- | --- |
