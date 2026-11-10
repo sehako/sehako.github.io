@@ -56,7 +56,7 @@ permalink: "/object-oriented-design/design-pattern/"
 
 ## 구조 패턴
 
-아직 정리한 패턴이 없습니다.
+- [프록시 패턴 (구조와 스프링 AOP 프록시)](/object-oriented-design/proxy-pattern/)
 
 ## 행동 패턴
 
