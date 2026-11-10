@@ -50,6 +50,9 @@ permalink: "/object-oriented-design/design-pattern/"
 
 - [싱글턴 패턴 (Java 구현 방법과 Spring 싱글톤 빈과의 차이)](/object-oriented-design/singleton-pattern/)
 - [팩토리 메서드 패턴 (구조와 단순 팩토리와의 차이)](/object-oriented-design/factory-method-pattern/)
+- [추상 팩토리 패턴 (구조와 DI 컨테이너와의 차이)](/object-oriented-design/abstract-factory-pattern/)
+- [빌더 패턴 (GoF 방식과 자바 플루언트 빌더)](/object-oriented-design/builder-pattern/)
+- [프로토타입 패턴 (복사 생성자와 Cloneable)](/object-oriented-design/prototype-pattern/)
 
 ## 구조 패턴
 

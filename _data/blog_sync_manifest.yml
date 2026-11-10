@@ -72,6 +72,9 @@ files:
 - _posts/object-oriented-design/26-11-09-design-pattern.md
 - _posts/object-oriented-design/26-11-09-singleton-pattern.md
 - _posts/object-oriented-design/26-11-10-factory-method-pattern.md
+- _posts/object-oriented-design/26-11-11-abstract-factory-pattern.md
+- _posts/object-oriented-design/26-11-12-builder-pattern.md
+- _posts/object-oriented-design/26-11-13-prototype-pattern.md
 - _posts/reactive-programming/25-11-13-java-reactive-programming.md
 - _posts/reactive-programming/25-11-14-project-reactor.md
 - _posts/reactive-programming/25-11-21-spring-webflux-and-r2dbc.md

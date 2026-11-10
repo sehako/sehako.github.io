@@ -5,7 +5,7 @@ categories:
 toc: true
 toc_sticky: true
 published: true
-date: 2026-11-10
+date: 2026-11-09
 
 permalink: "/object-oriented-design/factory-method-pattern/"
 ---
