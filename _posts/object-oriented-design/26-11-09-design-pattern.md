@@ -58,6 +58,7 @@ permalink: "/object-oriented-design/design-pattern/"
 
 - [프록시 패턴 (구조와 스프링 AOP 프록시)](/object-oriented-design/proxy-pattern/)
 - [데코레이터 패턴 (구조와 프록시 패턴과의 차이)](/object-oriented-design/decorator-pattern/)
+- [어댑터 패턴 (구조와 인터페이스 변환)](/object-oriented-design/adapter-pattern/)
 
 ## 행동 패턴
 
