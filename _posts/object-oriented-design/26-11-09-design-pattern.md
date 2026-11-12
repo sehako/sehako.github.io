@@ -61,6 +61,7 @@ permalink: "/object-oriented-design/design-pattern/"
 - [어댑터 패턴 (구조와 인터페이스 변환)](/object-oriented-design/adapter-pattern/)
 - [브리지 패턴 (구조와 합성을 통한 계층 분리)](/object-oriented-design/bridge-pattern/)
 - [퍼사드 패턴 (구조와 전지전능한 객체 문제)](/object-oriented-design/facade-pattern/)
+- [복합체 패턴 (구조와 재귀적 합성)](/object-oriented-design/composite-pattern/)
 
 ## 행동 패턴
 
