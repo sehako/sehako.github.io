@@ -78,6 +78,8 @@ files:
 - _posts/object-oriented-design/26-11-14-proxy-pattern.md
 - _posts/object-oriented-design/26-11-15-decorator-pattern.md
 - _posts/object-oriented-design/26-11-16-adapter-pattern.md
+- _posts/object-oriented-design/26-11-17-bridge-pattern.md
+- _posts/object-oriented-design/26-11-18-facade-pattern.md
 - _posts/reactive-programming/25-11-13-java-reactive-programming.md
 - _posts/reactive-programming/25-11-14-project-reactor.md
 - _posts/reactive-programming/25-11-21-spring-webflux-and-r2dbc.md
