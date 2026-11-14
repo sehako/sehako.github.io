@@ -62,10 +62,11 @@ permalink: "/object-oriented-design/design-pattern/"
 - [브리지 패턴 (구조와 합성을 통한 계층 분리)](/object-oriented-design/bridge-pattern/)
 - [퍼사드 패턴 (구조와 전지전능한 객체 문제)](/object-oriented-design/facade-pattern/)
 - [복합체 패턴 (구조와 재귀적 합성)](/object-oriented-design/composite-pattern/)
+- [플라이웨이트 패턴 (공유 상태와 Java 문자열·정수 캐시)](/object-oriented-design/flyweight-pattern/)
 
 ## 행동 패턴
 
-아직 정리한 패턴이 없습니다.
+- [옵서버 패턴 (구조와 Spring 이벤트)](/object-oriented-design/observer-pattern/)
 
 # 참고 자료
 
