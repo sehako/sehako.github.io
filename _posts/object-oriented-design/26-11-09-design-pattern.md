@@ -68,6 +68,7 @@ permalink: "/object-oriented-design/design-pattern/"
 
 - [옵서버 패턴 (구조와 Spring 이벤트)](/object-oriented-design/observer-pattern/)
 - [템플릿 메서드 패턴 (구조와 콜백과의 차이)](/object-oriented-design/template-method-pattern/)
+- [전략 패턴 (구조와 조건 분기 대체 기준)](/object-oriented-design/strategy-pattern/)
 
 # 참고 자료
 
