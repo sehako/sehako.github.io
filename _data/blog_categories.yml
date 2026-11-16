@@ -21,8 +21,8 @@ categories:
     slug: object-oriented-design
   - name: 알고리즘
     slug: algorithm
-  - name: 개발 도구와 AI
-    slug: developer-tools-ai
+  - name: 개발 노트
+    slug: dev-notes
   - name: 회고
     slug: retrospective
 
@@ -37,3 +37,4 @@ redirects:
   websocket: realtime
   spring: categories
   note: categories
+  developer-tools-ai: dev-notes

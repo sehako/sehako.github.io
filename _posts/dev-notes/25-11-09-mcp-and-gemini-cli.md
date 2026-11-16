@@ -1,7 +1,7 @@
 ---
 title: MCP와 Gemini CLI 알아보기
 categories:
-  - 개발 도구와 AI
+  - 개발 노트
 toc: true
 toc_sticky: true
 published: false
@@ -52,7 +52,7 @@ MCP에는 세 가지 핵심 역할이 있습니다. MCP 서버, MCP 클라이언
 
 ### MCP 서버
 
-![image.png](/assets/images/developer-tools-ai/25-11-09-mcp-and-gemini-cli/01.png)
+![image.png](/assets/images/dev-notes/25-11-09-mcp-and-gemini-cli/01.png)
 
 MCP 서버는 LLM이 사용할 수 있는 도구와 데이터 엑세스 기능을 제공합니다. 로컬 또는 원격 서버에 배포될 수 있습니다.
 
@@ -64,19 +64,19 @@ LLM과 MCP 서버를 연결하여 다음과 같은 일을 수행합니다.
 - 적절한 MCP 서버로 요청 전달
 - MCP 서버로부터 결과를 LLM에 반환
 
-![image.png](/assets/images/developer-tools-ai/25-11-09-mcp-and-gemini-cli/02.png)
+![image.png](/assets/images/dev-notes/25-11-09-mcp-and-gemini-cli/02.png)
 
 ### MCP 호스트
 
 Claude Code, Gemini CLI이 바로 여기에 해당합니다. 사용자가 LLM과 상호작용 할 수 있는 인터페이스를 제공함과 동시에, MCP 클라이언트 통합하여 MCP 서버가 제공하는 도구를 사용합니다.
 
-![image.png](/assets/images/developer-tools-ai/25-11-09-mcp-and-gemini-cli/03.png)
+![image.png](/assets/images/dev-notes/25-11-09-mcp-and-gemini-cli/03.png)
 
 ---
 
 위 세 가지 요소가 결합하여 다음과 같이 동작하는 것이 바로 MCP입니다.
 
-![image.png](/assets/images/developer-tools-ai/25-11-09-mcp-and-gemini-cli/04.png)
+![image.png](/assets/images/dev-notes/25-11-09-mcp-and-gemini-cli/04.png)
 
 ## RAG와의 차이점
 

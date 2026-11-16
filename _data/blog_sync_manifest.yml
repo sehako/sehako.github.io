@@ -5,7 +5,7 @@ files:
 - _pages/categories/category-architecture-design.md
 - _pages/categories/category-authentication-security.md
 - _pages/categories/category-batch-data.md
-- _pages/categories/category-developer-tools-ai.md
+- _pages/categories/category-dev-notes.md
 - _pages/categories/category-infrastructure.md
 - _pages/categories/category-java.md
 - _pages/categories/category-object-oriented-design.md
@@ -15,6 +15,7 @@ files:
 - _pages/categories/category-testing-performance.md
 - _pages/categories/category-web-api.md
 - _pages/category.md
+- _pages/redirects/category-developer-tools-ai.html
 - _pages/redirects/category-note.html
 - _pages/redirects/category-oauth2.html
 - _pages/redirects/category-spring-batch.html
@@ -58,7 +59,8 @@ files:
 - _posts/batch-data/25-10-08-large-scale-data-processing-with-spring-batch.md
 - _posts/batch-data/25-12-09-large-scale-data-processing-with-spring-batch-with-flow.md
 - _posts/batch-data/26-09-02-flyway-database-migration-with-spring-boot.md
-- _posts/developer-tools-ai/25-11-09-mcp-and-gemini-cli.md
+- _posts/dev-notes/25-11-09-mcp-and-gemini-cli.md
+- _posts/dev-notes/26-11-24-mysql-and-postgresql.md
 - _posts/infrastructure/25-02-15-docker-and-docker-compose.md
 - _posts/infrastructure/25-02-22-nginx.md
 - _posts/infrastructure/25-02-25-deploy-frontend.md
@@ -164,10 +166,10 @@ files:
 - assets/images/batch-data/25-12-09-large-scale-data-processing-with-spring-batch-with-flow/02.png
 - assets/images/check.svg
 - assets/images/copy.svg
-- assets/images/developer-tools-ai/25-11-09-mcp-and-gemini-cli/01.png
-- assets/images/developer-tools-ai/25-11-09-mcp-and-gemini-cli/02.png
-- assets/images/developer-tools-ai/25-11-09-mcp-and-gemini-cli/03.png
-- assets/images/developer-tools-ai/25-11-09-mcp-and-gemini-cli/04.png
+- assets/images/dev-notes/25-11-09-mcp-and-gemini-cli/01.png
+- assets/images/dev-notes/25-11-09-mcp-and-gemini-cli/02.png
+- assets/images/dev-notes/25-11-09-mcp-and-gemini-cli/03.png
+- assets/images/dev-notes/25-11-09-mcp-and-gemini-cli/04.png
 - assets/images/infrastructure/25-02-15-docker-and-docker-compose/01.png
 - assets/images/infrastructure/25-02-22-nginx/01.png
 - assets/images/infrastructure/25-02-22-nginx/02.png
