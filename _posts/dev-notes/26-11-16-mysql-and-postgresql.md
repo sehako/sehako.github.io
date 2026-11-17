@@ -8,7 +8,7 @@ toc: true
 toc_sticky: true
 published: true
 
-date: 2026-11-24
+date: 2026-11-16
 
 permalink: "/dev-notes/mysql-and-postgresql/"
 ---

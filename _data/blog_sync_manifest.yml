@@ -60,7 +60,7 @@ files:
 - _posts/batch-data/25-12-09-large-scale-data-processing-with-spring-batch-with-flow.md
 - _posts/batch-data/26-09-02-flyway-database-migration-with-spring-boot.md
 - _posts/dev-notes/25-11-09-mcp-and-gemini-cli.md
-- _posts/dev-notes/26-11-24-mysql-and-postgresql.md
+- _posts/dev-notes/26-11-16-mysql-and-postgresql.md
 - _posts/infrastructure/25-02-15-docker-and-docker-compose.md
 - _posts/infrastructure/25-02-22-nginx.md
 - _posts/infrastructure/25-02-25-deploy-frontend.md
