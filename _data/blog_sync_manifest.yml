@@ -87,6 +87,7 @@ files:
 - _posts/object-oriented-design/26-11-21-observer-pattern.md
 - _posts/object-oriented-design/26-11-22-template-method-pattern.md
 - _posts/object-oriented-design/26-11-23-strategy-pattern.md
+- _posts/object-oriented-design/26-11-25-chain-of-responsibility-pattern.md
 - _posts/reactive-programming/25-11-13-java-reactive-programming.md
 - _posts/reactive-programming/25-11-14-project-reactor.md
 - _posts/reactive-programming/25-11-21-spring-webflux-and-r2dbc.md
