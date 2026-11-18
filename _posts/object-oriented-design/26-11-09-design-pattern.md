@@ -70,6 +70,7 @@ permalink: "/object-oriented-design/design-pattern/"
 - [템플릿 메서드 패턴 (구조와 콜백과의 차이)](/object-oriented-design/template-method-pattern/)
 - [전략 패턴 (구조와 조건 분기 대체 기준)](/object-oriented-design/strategy-pattern/)
 - [책임 연쇄 패턴 (구조와 Spring Security 필터 체인)](/object-oriented-design/chain-of-responsibility-pattern/)
+- [상태 패턴 (구조와 상태 전이 규칙 구현)](/object-oriented-design/state-pattern/)
 
 # 참고 자료
 
