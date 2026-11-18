@@ -275,6 +275,45 @@ private static final class VirtualFilterChain implements FilterChain {
 
 필터가 `filterChain.doFilter()`를 호출하면 다음 필터의 `doFilter()`가 실행되고, 마지막 필터까지 호출이 쌓였다가 풀리면서 각 필터의 호출 이후 코드가 실행됩니다.
 
+## 필터와 인터셉터의 구현 차이
+
+스프링 MVC의 `HandlerInterceptor`도 요청이 여러 인터셉터를 차례로 거치므로 책임 연쇄 패턴으로 볼 수 있습니다. 다만 필터가 `doFilter()` 호출을 중첩해 전후 처리를 한 메서드에 묶는 것과 달리, `HandlerExecutionChain`이 인터셉터 목록을 반복문으로 돌며 호출 시점별 메서드(`preHandle`, `postHandle`, `afterCompletion`)를 따로 부릅니다.
+
+{% include code-header.html %}
+```java
+// HandlerExecutionChain 단순화
+boolean applyPreHandle(...) {
+    for (int i = 0; i < interceptorList.size(); i++) {
+        if (!interceptorList.get(i).preHandle(...)) {
+            triggerAfterCompletion(...);  // 성공한 인터셉터까지만 호출
+            return false;
+        }
+        interceptorIndex = i;
+    }
+    return true;
+}
+
+void applyPostHandle(...) {
+    for (int i = interceptorList.size() - 1; i >= 0; i--) {  // 전체 역순
+        interceptorList.get(i).postHandle(...);
+    }
+}
+
+void triggerAfterCompletion(...) {
+    for (int i = interceptorIndex; i >= 0; i--) {  // 성공한 것만 역순
+        interceptorList.get(i).afterCompletion(...);
+    }
+}
+```
+
+| 구분 | 서블릿 필터, Spring Security | 스프링 인터셉터 |
+| --- | --- | --- |
+| 전달 방식 | `chain.doFilter(request, response)` 중첩 호출 | `HandlerExecutionChain`의 반복문 |
+| 전후 처리 | 한 `doFilter()` 안에서 호출 앞뒤에 작성 | `preHandle`, `postHandle`, `afterCompletion`으로 분리 |
+| 체인 중단 | `doFilter()`를 호출하지 않고 반환 | `preHandle()`이 `false` 반환 |
+| 후처리 순서 | 호출 스택이 풀리며 자연스럽게 역순 | 반복문 인덱스를 거꾸로 돌려 역순 |
+| 중단 시 후처리 | 호출한 쪽의 `finally` 등에서 직접 보장 | `postHandle`은 건너뛰고, `afterCompletion`만 성공한 인터셉터까지 역순 호출 |
+
 ---
 
 지금까지 살펴본 내용을 기준으로 책임 연쇄를 도입할지 판단하는 신호를 표로 나타내면 다음과 같습니다.
@@ -299,3 +338,7 @@ private static final class VirtualFilterChain implements FilterChain {
 [**디자인 패턴의 아름다움**](https://product.kyobobook.co.kr/detail/S000202093794)
 
 [**Spring Security Architecture**](https://docs.spring.io/spring-security/reference/servlet/architecture.html)
+
+[**HandlerExecutionChain 소스**](https://github.com/spring-projects/spring-framework/blob/main/spring-webmvc/src/main/java/org/springframework/web/servlet/HandlerExecutionChain.java)
+
+[**DispatcherServlet 소스**](https://github.com/spring-projects/spring-framework/blob/main/spring-webmvc/src/main/java/org/springframework/web/servlet/DispatcherServlet.java)
