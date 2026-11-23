@@ -1,5 +1,5 @@
 ---
-title: 반복자 패턴 (구조와 Fail-Fast)
+title: 반복자 패턴 (구조, Fail-Fast, 스냅숏)
 categories:
   - 객체지향 설계
 toc: true
@@ -10,7 +10,7 @@ date: 2026-11-27
 permalink: "/object-oriented-design/iterator-pattern/"
 ---
 
-[디자인 패턴](/object-oriented-design/design-pattern/) 시리즈의 행동 패턴 편입니다. 이번에는 반복자 패턴을 다룹니다. 동적 배열 기반 리스트의 순회를 반복자로 분리해 보고, 순회 중 컬렉션을 수정할 때 생기는 문제와 자바의 Fail-Fast 동작, 반복자 패턴을 도입해야 하는 기준을 정리하겠습니다.
+[디자인 패턴](/object-oriented-design/design-pattern/) 시리즈의 행동 패턴 편입니다. 이번에는 반복자 패턴을 다룹니다. 동적 배열 기반 리스트의 순회를 반복자로 분리해 보고, 순회 중 컬렉션을 수정할 때 생기는 문제와 자바의 Fail-Fast 동작, 수정이 있어도 끝까지 순회하는 스냅숏 반복자, 반복자 패턴을 도입해야 하는 기준을 정리하겠습니다.
 
 # 반복자 패턴이란
 
@@ -208,6 +208,118 @@ private void checkForComodification() {
 순회 중 삭제는 반복자의 `remove()`로 해야 합니다. 삭제 후 커서를 `lastRet`로 되돌리고 `expectedModCount = modCount`로 동기화해서 이후 검사를 통과합니다. `next()` 한 번에 한 번만 호출할 수 있고, 연달아 호출하면 `IllegalStateException`이 발생합니다.
 
 같은 컬렉션의 반복자 `iter1`, `iter2` 중 `iter1.remove()`를 호출하면 `iter2`의 `expectedModCount`는 갱신되지 않아서, 이후 `iter2.next()`는 `ConcurrentModificationException`을 던집니다.
+
+
+# 스냅숏 반복자
+
+Fail-Fast가 변경을 감지해 순회를 중단시키는 방어적 접근이라면, 스냅숏 반복자는 순회 중 원본이 바뀌어도 예외 없이 끝까지 순회하게 하는 접근입니다.
+
+반복자를 생성한 시점의 컬렉션 상태를 기준으로 순회하므로, 이후 원본에서 요소를 추가하거나 삭제해도 영향을 받지 않습니다. `[3, 8, 2]`에서 `iter1`을 만든 뒤 원본에서 `2`를 삭제해도 `iter1`은 `3, 8, 2`를 모두 순회합니다.
+
+스냅숏을 구현하는 방법은 크게 두 가지입니다.
+
+## 전체 복사본 방식
+
+반복자를 만들 때 컬렉션의 요소를 반복자 내부에 복사해 두고 그 복사본을 순회합니다.
+
+{% include code-header.html %}
+```java
+public class SnapshotArrayIterator<E> implements Iterator<E> {
+
+    private int cursor = 0;
+    private final ArrayList<E> snapshot;
+
+    public SnapshotArrayIterator(ArrayList<E> arrayList) {
+        this.snapshot = new ArrayList<>();
+        this.snapshot.addAll(arrayList); // 생성 시점에 전체 요소를 얕은 복사
+    }
+
+    @Override
+    public boolean hasNext() {
+        return cursor < snapshot.size();
+    }
+
+    @Override
+    public E next() {
+        return snapshot.get(cursor++);
+    }
+}
+```
+
+구현이 단순하지만 반복자를 만들 때마다 복사본을 새로 할당합니다. 반복자를 자주 만들거나 컬렉션이 크면 메모리와 생성 시간 부담이 커집니다. 자바의 복사는 참조만 복사하는 얕은 복사라서 요소 객체까지 중복 생성되지는 않습니다.
+
+## 타임스탬프 방식
+
+요소마다 추가 시각(`addTimestamp`)과 삭제 시각(`delTimestamp`)을 기록해 스냅숏에 속하는 요소인지 판별합니다.
+
+- 추가할 때는 `addTimestamp`에 현재 시각을, `delTimestamp`에 `Long.MAX_VALUE`를 기록합니다.
+- 삭제할 때는 메모리에서 지우지 않고 `delTimestamp`만 현재 시각으로 바꿉니다.
+- 반복자를 만들 때는 현재 시각을 `snapshotTimestamp`로 보관합니다.
+
+반복자는 `addTimestamp < snapshotTimestamp < delTimestamp`인 요소만 순회합니다. 반복자 생성 전에 추가되었고, 생성 시점에는 아직 삭제되지 않은 요소라는 뜻입니다.
+
+시각은 `System.currentTimeMillis()` 대신 증가하는 논리 시계로 가정합니다. 밀리초 시각을 쓰면 같은 시각에 일어난 추가·삭제·반복자 생성이 `<` 비교에서 누락될 수 있기 때문입니다. 반복자는 생성 시점의 시각을 `snapshotTimestamp`로 받아 보관합니다.
+
+{% include code-header.html %}
+```java
+public class Entry<E> {
+    final E item;
+    final long addTimestamp;
+    long delTimestamp = Long.MAX_VALUE; // 삭제 전에는 최댓값
+
+    Entry(E item, long addTimestamp) {
+        this.item = item;
+        this.addTimestamp = addTimestamp;
+    }
+}
+
+public class TimestampSnapshotIterator<E> implements Iterator<E> {
+
+    private final List<Entry<E>> entries;
+    private final long snapshotTimestamp;
+    private int cursor = 0;
+
+    public TimestampSnapshotIterator(List<Entry<E>> entries, long snapshotTimestamp) {
+        this.entries = entries;
+        this.snapshotTimestamp = snapshotTimestamp;
+    }
+
+    @Override
+    public boolean hasNext() {
+        skipOutOfSnapshot();
+        return cursor < entries.size();
+    }
+
+    @Override
+    public E next() {
+        if (!hasNext()) {
+            throw new NoSuchElementException("더 이상 순회할 요소가 없다.");
+        }
+        return entries.get(cursor++).item;
+    }
+
+    // 스냅숏에 속하지 않는 요소는 건너뛴다.
+    private void skipOutOfSnapshot() {
+        while (cursor < entries.size()) {
+            Entry<E> entry = entries.get(cursor);
+            if (entry.addTimestamp < snapshotTimestamp && snapshotTimestamp < entry.delTimestamp) {
+                return;
+            }
+            cursor++;
+        }
+    }
+}
+```
+
+`[3, 8, 2]`가 시각 1, 2, 3에 추가된 상태에서 시각 4에 반복자를 만들었다고 합시다. 이후 시각 5에 `2`를 삭제하고 시각 6에 `7`을 추가해도 `iter1`은 `3, 8, 2`를 순회합니다. `2`는 `4 < 5`라서 삭제 전 요소이고, `7`은 `6 < 4`가 거짓이라서 스냅숏 이후 요소입니다. 이후 만든 반복자는 `3, 8, 7`을 순회합니다.
+
+## 방식 비교
+
+| 구분 | Fail-Fast 반복자 | 스냅숏 반복자(복사본) | 스냅숏 반복자(타임스탬프) |
+| --- | --- | --- | --- |
+| 순회 중 원본 수정 | `ConcurrentModificationException` 발생 | 예외 없이 생성 시점 기준으로 순회 | 예외 없이 생성 시점 기준으로 순회 |
+| 반복자 생성 비용 | `O(1)` (참조만 유지) | `O(N)` (요소 복사) | `O(1)` (시각만 기록) |
+| 추가 메모리 | 거의 없음 (커서 등) | 반복자 생성 횟수에 비례 | 요소별 타임스탬프와 삭제 표시된 요소 |
 
 ---
 
