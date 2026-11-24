@@ -73,6 +73,7 @@ permalink: "/object-oriented-design/design-pattern/"
 - [상태 패턴 (구조와 상태 전이 규칙 구현)](/object-oriented-design/state-pattern/)
 - [반복자 패턴 (구조, Fail-Fast, 스냅숏)](/object-oriented-design/iterator-pattern/)
 - [비지터 패턴 (구조와 이중 디스패치)](/object-oriented-design/visitor-pattern/)
+- [커맨드 패턴 (구조와 Undo 구현)](/object-oriented-design/command-pattern/)
 
 # 참고 자료
 
