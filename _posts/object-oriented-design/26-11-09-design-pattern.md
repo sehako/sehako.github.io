@@ -74,6 +74,8 @@ permalink: "/object-oriented-design/design-pattern/"
 - [반복자 패턴 (구조, Fail-Fast, 스냅숏)](/object-oriented-design/iterator-pattern/)
 - [비지터 패턴 (구조와 이중 디스패치)](/object-oriented-design/visitor-pattern/)
 - [커맨드 패턴 (구조와 Undo 구현)](/object-oriented-design/command-pattern/)
+- [인터프리터 패턴 (구조와 규칙 엔진 구현)](/object-oriented-design/interpreter-pattern/)
+- [중재자 패턴 (구조와 옵서버 패턴과의 차이)](/object-oriented-design/mediator-pattern/)
 
 # 참고 자료
 
