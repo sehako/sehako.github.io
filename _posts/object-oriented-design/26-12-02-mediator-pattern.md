@@ -5,7 +5,7 @@ categories:
 toc: true
 toc_sticky: true
 published: true
-date: 2026-12-01
+date: 2026-12-02
 
 permalink: "/object-oriented-design/mediator-pattern/"
 ---

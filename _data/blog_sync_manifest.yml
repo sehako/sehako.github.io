@@ -91,9 +91,10 @@ files:
 - _posts/object-oriented-design/26-11-26-state-pattern.md
 - _posts/object-oriented-design/26-11-27-iterator-pattern.md
 - _posts/object-oriented-design/26-11-28-visitor-pattern.md
-- _posts/object-oriented-design/26-11-29-command-pattern.md
-- _posts/object-oriented-design/26-11-30-interpreter-pattern.md
-- _posts/object-oriented-design/26-12-01-mediator-pattern.md
+- _posts/object-oriented-design/26-11-29-memento-pattern.md
+- _posts/object-oriented-design/26-11-30-command-pattern.md
+- _posts/object-oriented-design/26-12-01-interpreter-pattern.md
+- _posts/object-oriented-design/26-12-02-mediator-pattern.md
 - _posts/reactive-programming/25-11-13-java-reactive-programming.md
 - _posts/reactive-programming/25-11-14-project-reactor.md
 - _posts/reactive-programming/25-11-21-spring-webflux-and-r2dbc.md
