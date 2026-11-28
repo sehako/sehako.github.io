@@ -81,7 +81,10 @@ Controller → Use Case → Presenter
 
 그러면 `Use Case`는 `Presenter`의 구체적인 구현을 알 필요 없이 내부에 선언된 인터페이스를 호출할 수 있습니다. 반대로 `Presenter`는 해당 인터페이스를 구현해야 하므로 안쪽 원에 선언된 규약에 의존하게 됩니다.
 
-![image.png](/assets/images/architecture-design/26-11-27-clean-and-hexagonal-architecture/02.png)
+{% include code-header.html %}
+```text
+Controller → Use Case → Output Port ← Presenter (Output Port Implementation)
+```
 
 즉, 실행 시에는 `Use Case`에서 `Presenter`로 제어 흐름이 이동하지만, 소스 코드의 의존성은 `Presenter`에서 안쪽 영역에 선언된 인터페이스를 향하게 됩니다.
 
@@ -91,7 +94,7 @@ Controller → Use Case → Presenter
 
 사용자 호출, 다른 프로그램, 배치 스크립트, 자동화된 테스트 등 다양한 실행 방식으로 애플리케이션을 동등하게 구동할 수 있도록 하고, 최종적인 실행 환경 및 인프라 요소와 독립적으로 애플리케이션을 개발하고 테스트할 수 있게 하는 소프트웨어 아키텍처 패턴입니다.
 
-![image.png](/assets/images/architecture-design/26-11-27-clean-and-hexagonal-architecture/03.png)
+![image.png](/assets/images/architecture-design/26-11-27-clean-and-hexagonal-architecture/02.png)
 
 이 아키텍처는 포트와 어댑터(Port and Adapter) 아키텍처라고도 합니다.
 
