@@ -551,6 +551,7 @@
  | .highlight .il { color: #ca7f32; }
  | .gist th,.gist td { border-bottom: 0; }
  | .highlight pre { tab-size: 4; }
+ | div.highlighter-rouge,figure.highlight { font-size: 0.875em; }
  | .hidden,.is--hidden { display: none;visibility: hidden; }
  | .load { display: none; }
  | .transparent { opacity: 0; }
